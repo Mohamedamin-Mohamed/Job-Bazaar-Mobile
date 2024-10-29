@@ -1,22 +1,31 @@
 import {Text, View, StyleSheet, TouchableOpacity, TextInput} from "react-native";
 import {useState} from "react";
 import emailValidation from "@/app/Regex/emailValidation";
+import emailLookup from "@/app/fetchRequests/emailLookup";
 
-const HomePanel = ({ navigation }) => {
-    const[email, setEmail] = useState('')
-    const[err, setErr] = useState('')
+const HomePanel = ({route, navigation}) => {
+    const {usrEmail} = route.params
+    const [email, setEmail] = useState(usrEmail)
+    const [err, setErr] = useState('')
 
-    const handleEmail = ()=>{
-        if(!email){
+    const handleEmail = async () => {
+        if (!email) {
             setErr('Email is mandatory.')
             return
         }
         const valid = emailValidation(email)
-        if (!valid){
+        if (!valid) {
             setErr('Email is not valid.')
             return;
         }
         setErr('')
+        //check if the users email exits and then based on that redirect the user to either of the accounts panel
+        const emailVerify = await emailLookup(email)
+        if (emailVerify.ok) {
+            navigation.navigate('LoginPanel', {email: email})
+        } else {
+            navigation.navigate('CreateAccount', {email: email})
+        }
     }
     return (
         <View style={styles.container}>
@@ -25,31 +34,33 @@ const HomePanel = ({ navigation }) => {
             </View>
             <Text style={styles.header}>Your work people are here</Text>
             <View style={styles.childContainer}>
-            <View>
-                <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create an account or sign in</Text>
                 <View>
-                    <TouchableOpacity>
-                        <Text style={styles.sameButtons}>Continue with Google</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text style={styles.sameButtons}>Continue with GitHub</Text>
-                    </TouchableOpacity>
-                </View>
+                    <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create an account
+                        or sign in</Text>
+                    <View>
+                        <TouchableOpacity>
+                            <Text style={styles.sameButtons}>Continue with Google</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text style={styles.sameButtons}>Continue with GitHub</Text>
+                        </TouchableOpacity>
+                    </View>
                     <Text style={{fontWeight: "bold", paddingVertical: 10, marginLeft: 6}}>Enter Email</Text>
-                <TextInput autoCapitalize="none" style={styles.inputEmail} keyboardType="email-address" onChangeText={text => setEmail(text)} value={email} />
-                <View>
-                    {err && <Text style={styles.errorText}>{err}</Text>}
+                    <TextInput autoCapitalize="none" style={styles.inputEmail} keyboardType="email-address"
+                               onChangeText={text => setEmail(text)} value={email}/>
+                    <View>
+                        {err && <Text style={styles.errorText}>{err}</Text>}
+                    </View>
+                    <TouchableOpacity onPress={handleEmail}>
+                        <Text style={styles.continueEmail}>Continue with email</Text>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleEmail}>
-                    <Text style={styles.continueEmail}>Continue with email</Text>
-                </TouchableOpacity>
-            </View>
             </View>
             <View style={styles.bottomParentButton}>
-                <TouchableOpacity onPress={()=> navigation.navigate("Signup")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={styles.underlinedButton}>Join now</Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={()=> navigation.navigate('Login')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.underlinedButton}>Sign in</Text>
                 </TouchableOpacity>
             </View>
@@ -58,7 +69,7 @@ const HomePanel = ({ navigation }) => {
 }
 const styles = StyleSheet.create({
     container: {
-       flex: 1,
+        flex: 1,
         justifyContent: "flex-start",
         display: "flex"
     },
