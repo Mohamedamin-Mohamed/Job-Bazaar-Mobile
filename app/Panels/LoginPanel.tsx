@@ -42,7 +42,7 @@ const LoginPanel = ({route, navigation}) => {
                 <Text style={[styles.headerText, {marginVertical: 16}]}>Welcome back to Job Bazaar</Text>
                 <View style={{marginVertical: 12}}>
                     <Text style={styles.textCentered}>Sign into your account as</Text>
-                    <Text style={[styles.textCentered, {fontSize: 18, fontWeight: "bold", marginTop: 4}]}>{email}</Text>
+                    <Text style={[styles.textCentered, {fontSize: 14, fontWeight: "bold", marginTop: 4}]}>{email}</Text>
                 </View>
                 <TouchableOpacity disabled={disabled} onPress={() => handleHomePanel()}>
                     <Text style={[styles.textCentered, styles.differentEmail, {marginVertical: 12}]}>Sign in with a
