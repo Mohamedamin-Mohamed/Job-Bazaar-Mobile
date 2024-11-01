@@ -1,10 +1,6 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {Location} from "@/app/Types/types";
 
-type Location = {
-    city: string,
-    state: string,
-    country: string
-}
 const initialState: Location = {
     city: '',
     state: '',
@@ -15,18 +11,12 @@ const locationSlice = createSlice({
     name: 'locationInfo',
     initialState: initialState,
     reducers: {
-        setLocationInfo: (state,action) =>{
-            const {city, states, country} = action.payload
-            state.city
-            state.state = states
-            state.country = country
-        },
-        clearLocationInfo: (state) =>{
-            state.city = ''
-            state.state = ''
-            state.country = ''
-        }
+       setLocationInfo: (state, action: PayloadAction<Location>) =>{
+           return{...state, ...action.payload}
+       },
+        clearLocationInfo: ()=> initialState
     }
 })
+
 export default locationSlice
 export const { setLocationInfo, clearLocationInfo } = locationSlice.actions
