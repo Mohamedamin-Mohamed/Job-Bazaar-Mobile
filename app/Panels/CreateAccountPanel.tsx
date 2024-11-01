@@ -3,15 +3,21 @@ import {useState} from "react";
 import {Picker} from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
 import signup from "@/app/fetchRequests/signup";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList, RootState} from "@/app/Types/types";
+import {useSelector} from "react-redux";
 
-const CreateAccountPanel = ({route, navigation}) => {
-    const {email} = route.params
+type CreateAccountPanelProp = StackNavigationProp<RootStackParamList, 'CreateAccount'>
+
+const CreateAccountPanel = ({navigation} : {navigation: CreateAccountPanelProp}) => {
+    const email = useSelector((state: RootState) => state.userInfo.email)
+
     const [userDetails, setUserDetails] = useState({
         email: email, firstName: '', lastName: '', password: '', role: ''
     })
     const [disabled, setDisabled] = useState(false)
     const handleHomePanel = () => {
-        navigation.navigate('HomePanel', {usrEmail: email})
+        navigation.navigate('HomePanel')
     }
     const handleUserDetails = (name: string, value: string) => {
         setUserDetails(prevState => ({
