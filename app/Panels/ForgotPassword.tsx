@@ -3,8 +3,12 @@ import {useState} from "react";
 import emailLookup from "@/app/fetchRequests/emailLookup";
 import Toast from "react-native-toast-message";
 import emailValidation from "@/app/Regex/emailValidation";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "@/app/Types/types";
 
-const ForgotPassword = ({route, navigation}) => {
+type ForgotPassword = StackNavigationProp<RootStackParamList, 'ForgotPassword'>
+
+const ForgotPassword = ({navigation}: {navigation: ForgotPassword}) => {
     const [email, setEmail] = useState('')
     const [err, setErr] = useState('')
     const [disabled, setDisabled] = useState(false)
@@ -22,6 +26,7 @@ const ForgotPassword = ({route, navigation}) => {
         setErr('')
         const emailVerify = await emailLookup(email)
         const message = await emailVerify.text()
+        console.log('Message from response is ', message)
         if (emailVerify.ok) {
             Toast.show({
                 type: 'success',
@@ -29,7 +34,7 @@ const ForgotPassword = ({route, navigation}) => {
                 onShow: () => setDisabled(true),
                 onHide: () => {
                     setDisabled(false)
-                    navigation.navigate('ResetPassword', {email: email})
+                    navigation.navigate('ResetPassword')
                 }
             })
         } else {
