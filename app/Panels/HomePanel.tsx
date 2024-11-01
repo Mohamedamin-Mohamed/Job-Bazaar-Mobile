@@ -1,11 +1,19 @@
-import {Text, View, StyleSheet, TouchableOpacity, TextInput} from "react-native";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {useState} from "react";
 import emailValidation from "@/app/Regex/emailValidation";
 import emailLookup from "@/app/fetchRequests/emailLookup";
+import {useDispatch, useSelector} from "react-redux";
+import {setUserInfo} from "@/app/Redux/userSlice";
+import {RootStackParamList, RootState} from "@/app/Types/types";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-const HomePanel = ({route, navigation}) => {
-    const {usrEmail} = route.params
-    const [email, setEmail] = useState(usrEmail)
+type HomePanelNavigationProp = StackNavigationProp<RootStackParamList, 'HomePanel'>
+
+const HomePanel = ({navigation}: {navigation: HomePanelNavigationProp}) => {
+    const userInfo = useSelector((state: RootState) => state.userInfo)
+    const dispatch = useDispatch()
+
+    const [email, setEmail] = useState(userInfo.email)
     const [err, setErr] = useState('')
 
     const handleEmail = async () => {
@@ -19,12 +27,15 @@ const HomePanel = ({route, navigation}) => {
             return;
         }
         setErr('')
+
         //check if the users email exits and then based on that redirect the user to either of the accounts panel
         const emailVerify = await emailLookup(email)
+        dispatch(setUserInfo({email: email}))
+
         if (emailVerify.ok) {
-            navigation.navigate('LoginPanel', {email: email})
+            navigation.navigate('LoginPanel')
         } else {
-            navigation.navigate('CreateAccount', {email: email})
+            navigation.navigate('CreateAccount')
         }
     }
     return (
@@ -35,7 +46,8 @@ const HomePanel = ({route, navigation}) => {
             <Text style={styles.header}>Your work people are here</Text>
             <View style={styles.childContainer}>
                 <View>
-                    <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create an account
+                    <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create an
+                        account
                         or sign in</Text>
                     <View>
                         <TouchableOpacity>
