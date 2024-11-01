@@ -3,9 +3,14 @@ import {useState} from "react";
 import userInfo from "@/app/fetchRequests/userInfo";
 import Toast from "react-native-toast-message";
 import passwordReset from "@/app/fetchRequests/passwordReset";
+import {useSelector} from "react-redux";
+import {RootStackParamList, RootState} from "@/app/Types/types";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-const ResetPassword = ({route, navigation}) => {
-    const {email} = route.params
+type ResetPasswordProp = StackNavigationProp<RootStackParamList, 'ResetPassword'>
+
+const ResetPassword = ({navigation}: {navigation: ResetPasswordProp}) => {
+    const email = useSelector((state: RootState) => state.userInfo.email)
 
     const [disabled, setDisabled] = useState(false)
     const [err, setErr] = useState('')
@@ -34,6 +39,7 @@ const ResetPassword = ({route, navigation}) => {
                 setErr('Password must be at least 16 characters, or 8 characters with one number and one letter.')
                 return
             } else {
+                setErr('')
                 const userInfoResponse = await userInfo(email)
                 if (userInfoResponse.ok) {
                     const user = await userInfoResponse.json()
