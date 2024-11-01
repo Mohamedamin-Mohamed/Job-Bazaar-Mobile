@@ -2,14 +2,29 @@ import {View, Text, TouchableOpacity, TextInput, StyleSheet} from "react-native"
 import {useState} from "react";
 import login from "@/app/fetchRequests/login";
 import Toast from "react-native-toast-message";
+import {useSelector} from "react-redux";
+import {RootStackParamList, RootState} from "@/app/Types/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-const LoginPanel = ({route, navigation}) => {
-    const {email} = route.params
+type LoginPanelNavigationProp = StackNavigationProp<RootStackParamList, 'LoginPanel'>
+
+const LoginPanel = ({navigation}: {navigation: LoginPanelNavigationProp}) => {
+    const email = useSelector((state: RootState) => state.userInfo.email)
     const [password, setPassword] = useState('')
     const [err, setErr] = useState('')
     const [disabled, setDisabled] = useState(false)
+
     const handleHomePanel = () => {
-        navigation.navigate('HomePanel', {usrEmail: email})
+        navigation.navigate('HomePanel')
+    }
+
+    const storeToken = async (token: string) => {
+        try {
+            await AsyncStorage.setItem('token', token)
+        } catch (err) {
+            console.error('Token could not be stored ', err)
+        }
     }
     const handleSignIn = async () => {
         if (!password) {
@@ -22,13 +37,17 @@ const LoginPanel = ({route, navigation}) => {
         if (loginResponse.ok) {
             setDisabled(true)
             const data = await loginResponse.json()
+
+            const token = data.token
+            await storeToken(token)
+
             const message = data.message
             Toast.show({
                 type: 'success',
                 text1: message,
                 onHide: () => {
                     setDisabled(false)
-                    navigation.replace('Login')
+                    navigation.replace('CareerHub')
                 }
             })
         } else {
@@ -59,7 +78,7 @@ const LoginPanel = ({route, navigation}) => {
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity disabled={disabled}
-                                  onPress={() => navigation.navigate('ResetPassword', {email: email})}>
+                                  onPress={() => navigation.navigate('ResetPassword')}>
                     <Text style={[styles.differentEmail, styles.textCentered, {marginTop: 18}]}>Forgot Password</Text>
                 </TouchableOpacity>
             </View>
