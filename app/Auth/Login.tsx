@@ -5,14 +5,20 @@ import usePreventRemove from "@react-navigation/core/src/usePreventRemove";
 import emailValidation from "@/app/Regex/emailValidation";
 import login from "@/app/fetchRequests/login";
 import Toast from 'react-native-toast-message'
+import {useDispatch} from "react-redux";
+import {setUserInfo} from "@/app/Redux/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "@/app/Types/types";
 
 interface Error {
     email: string,
     password: string
 }
+type LoginProp = StackNavigationProp<RootStackParamList, 'Login'>
 
-const Login = () => {
-    const navigation = useNavigation()
+const Login = ({ navigation }: {navigation: LoginProp}) => {
+    const dispatch = useDispatch()
     const [loginDetails, setLoginDetails] = useState({
         email: '', password: ''
     })
@@ -40,7 +46,14 @@ const Login = () => {
             }
         ])
     })
-
+    const storeToken = async (token: string)=>{
+        try{
+            await AsyncStorage.setItem('token', token)
+        }
+        catch (err) {
+            console.error('Token could not be stored ', err)
+        }
+    }
     const handleLogin = async () => {
         if (!loginDetails.email) {
             setErr({email: 'Email is required'})
@@ -69,13 +82,25 @@ const Login = () => {
         }
         //if we reach here it means account is valid
         else {
+            setLoginDetails({email: '', password: ''})
             const data = await loginResponse.json()
+
+            const token = data.token
+            await storeToken(token)
+
+            const user = data.user
+            dispatch(setUserInfo(user))
+
             const message = data.message
+
             Toast.show({
                 type: 'success',
                 text1: message,
                 onShow: ()=> setDisabled(true),
-                onHide: ()=> setDisabled(false)
+                onHide: ()=> {
+                    setDisabled(false)
+                    navigation.replace('CareerHub')
+                }
             })
         }
 
