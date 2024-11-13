@@ -1,4 +1,13 @@
-import {Text, View, StyleSheet, TextInput, TouchableOpacity} from "react-native";
+import {
+    Text,
+    View,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator
+} from "react-native";
 import {useState} from "react";
 import emailLookup from "@/app/fetchRequests/emailLookup";
 import Toast from "react-native-toast-message";
@@ -8,10 +17,11 @@ import {RootStackParamList} from "@/app/Types/types";
 
 type ForgotPassword = StackNavigationProp<RootStackParamList, 'ForgotPassword'>
 
-const ForgotPassword = ({navigation}: {navigation: ForgotPassword}) => {
+const ForgotPassword = ({navigation}: { navigation: ForgotPassword }) => {
     const [email, setEmail] = useState('')
     const [err, setErr] = useState('')
     const [disabled, setDisabled] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = async () => {
         if (!email) {
@@ -24,48 +34,59 @@ const ForgotPassword = ({navigation}: {navigation: ForgotPassword}) => {
             return
         }
         setErr('')
-        const emailVerify = await emailLookup(email)
-        const message = await emailVerify.text()
-        console.log('Message from response is ', message)
-        if (emailVerify.ok) {
-            Toast.show({
-                type: 'success',
-                text1: message,
-                onShow: () => setDisabled(true),
-                onHide: () => {
-                    setDisabled(false)
-                    navigation.navigate('ResetPassword')
-                }
-            })
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: message,
-                onShow: () => setDisabled(true),
-                onHide: () => {
-                    setDisabled(false)
-                    navigation.replace('Signup')
-                }
-            })
+        try {
+            setLoading(true)
+            const emailVerify = await emailLookup(email)
+            const message = await emailVerify.text()
+            if (emailVerify.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => {
+                        setDisabled(false)
+                        navigation.navigate('ResetPassword')
+                    }
+                })
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => {
+                        setDisabled(false)
+                        navigation.replace('Signup')
+                    }
+                })
+            }
+        } catch (exp) {
+            throw exp
+        } finally {
+            setLoading(false)
         }
     }
     return (
-        <View style={styles.parentContainer}>
-            <View style={styles.childContainer}>
-                <Text style={[styles.headerText]}>Forgot Password</Text>
-                <View style={{marginVertical: 12}}>
-                    <Text style={styles.textCentered}>Enter your email to find account.</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.parentContainer}>
+                <View style={styles.childContainer}>
+                    <Text style={[styles.headerText]}>Forgot Password</Text>
+                    <View style={{marginVertical: 12}}>
+                        <Text style={styles.textCentered}>Enter your email to find account.</Text>
+                    </View>
+                    <TextInput autoCapitalize="none" editable={!disabled} style={styles.passwordInput}
+                               keyboardType="email-address"
+                               onChangeText={setEmail}/>
+                    {err && <Text style={styles.errorMessage}>{err}</Text>}
+                    <TouchableOpacity disabled={disabled} onPress={() => handleSubmit()}>
+                        {
+                            loading ? <ActivityIndicator size="small" color="#367c2b" style={styles.submitButton}/> :
+                                <Text style={styles.submitButton}>Submit</Text>
+                        }
+                    </TouchableOpacity>
                 </View>
-                <TextInput autoCapitalize="none" editable={!disabled} style={styles.passwordInput}
-                           keyboardType="email-address"
-                           onChangeText={setEmail}/>
-                {err && <Text style={styles.errorMessage}>{err}</Text>}
-                <TouchableOpacity disabled={disabled} onPress={() => handleSubmit()}>
-                    <Text style={styles.submitButton}>Submit</Text>
-                </TouchableOpacity>
+                <Toast/>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({
