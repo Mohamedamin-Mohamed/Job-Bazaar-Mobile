@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 22,
-        textAlign: "center",
     },
     interestsButton: {
         width: 250,
