@@ -32,7 +32,7 @@ const Explore = ({navigation}: {navigation: CareerHubProp}) => {
                 setRecentJob(sortedAvailableJobs[0])
             }
         } catch (err) {
-            console.error("Couldn't retrieve latest job ", err)
+            throw err
         }
     }
     useEffect(() => {
@@ -48,7 +48,7 @@ const Explore = ({navigation}: {navigation: CareerHubProp}) => {
         if (role === 'Employer') {
             navigation.navigate('UploadedJobs')
         } else {
-
+            navigation.navigate('AvailableJobs')
         }
     }
     return (
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 22,
-        textAlign: "center",
     },
     jobButton: {
         width: 250,
