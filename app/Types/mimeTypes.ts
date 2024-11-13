@@ -1,0 +1,21 @@
+const mimeTypes = {
+    'pdf': 'application/pdf',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'txt': 'text/plain',
+    'doc': 'application/msword',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'mp3': 'audio/mpeg',
+    'wav': 'audio/wav',
+    'mp4': 'video/mp4',
+    'zip': 'application/zip',
+    'rar': 'application/x-rar-compressed',
+    'tar': 'application/x-tar',
+    'gz': 'application/gzip',
+    'json': 'application/json',
+    'xml': 'application/xml',
+}
+export default mimeTypes

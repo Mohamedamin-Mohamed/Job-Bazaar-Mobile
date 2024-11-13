@@ -1,4 +1,3 @@
-import {registerRootComponent} from "expo";
-import Home from './Panels/HomePanel'
+import { registerRootComponent } from "expo";
 import App from "@/app/App";
-registerRootComponent(App)
+registerRootComponent(App);

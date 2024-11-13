@@ -1,4 +1,5 @@
 import {
+    ActivityIndicator,
     Alert,
     StyleSheet,
     Text,
@@ -13,6 +14,8 @@ import usePreventRemove from "@react-navigation/core/src/usePreventRemove";
 import emailValidation from "@/app/Regex/emailValidation";
 import signup from "@/app/fetchRequests/signup";
 import Toast from "react-native-toast-message";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "@/app/Types/types";
 
 type Error = {
     email: string,
@@ -20,9 +23,9 @@ type Error = {
     names: string,
     role: string
 }
+type SignupNavigationProp = StackNavigationProp<RootStackParamList, 'Signup'>
 
-const Signup = () => {
-    const navigation = useNavigation()
+const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
     const [userDetails, setUserDetails] = useState({
         email: '', firstName: '', lastName: '', role: '', password: ''
     })
@@ -35,7 +38,8 @@ const Signup = () => {
     }
     const [err, setErr] = useState<Partial<Error>>(initialErrorInit)
     const [selectedVal, setSelectedVal] = useState('')
-    const[disabled, setDisabled] = useState(false)
+    const [disabled, setDisabled] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleUserDetails = (name: string, value: string) => {
         setUserDetails(prevState => ({
@@ -105,23 +109,30 @@ const Signup = () => {
         }
         //since there were no errors, set error object to the initial declared error object
         setErr(initialErrorInit)
-        const signResponse = await signup({...userDetails, password: passwords.confirmPasswd, role: selectedVal})
-        const data = await signResponse.json()
-        const message = data.message
-        if (signResponse.ok) {
-            Toast.show({
-                type: 'success',
-                text1: message,
-                onShow: ()=> setDisabled(true),
-                onHide: ()=> setDisabled(false)
-            })
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: message,
-                onShow: ()=> setDisabled(true),
-                onHide: ()=> setDisabled(false)
-            })
+        try {
+            setLoading(true)
+            const signResponse = await signup({...userDetails, password: passwords.confirmPasswd, role: selectedVal})
+            const data = await signResponse.json()
+            const message = data.message
+            if (signResponse.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => setDisabled(false)
+                })
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => setDisabled(false)
+                })
+            }
+        } catch (exp) {
+            console.error(exp)
+        } finally {
+            setLoading(true)
         }
     }
     return (
@@ -142,11 +153,13 @@ const Signup = () => {
                            onChangeText={text => handleUserDetails('lastName', text)}
                            value={userDetails.lastName}/>
                 {err.names && <Text style={styles.errorMessage}>{err.names}</Text>}
-                <TextInput editable={!disabled} style={styles.commonText} secureTextEntry={true} autoCapitalize="none" keyboardType="default"
+                <TextInput editable={!disabled} style={styles.commonText} secureTextEntry={true} autoCapitalize="none"
+                           keyboardType="default"
                            placeholder="Create Password"
                            onChangeText={text => handlePasswords('createPasswd', text)}
                            value={passwords.createPasswd}/>
-                <TextInput editable={!disabled} style={styles.commonText} secureTextEntry={true} autoCapitalize="none" keyboardType="default"
+                <TextInput editable={!disabled} style={styles.commonText} secureTextEntry={true} autoCapitalize="none"
+                           keyboardType="default"
                            placeholder="Confirm Password"
                            onChangeText={text => handlePasswords('confirmPasswd', text)}
                            value={passwords.confirmPasswd}/>
@@ -161,13 +174,12 @@ const Signup = () => {
                 </View>
                 {err.role && <Text style={[styles.errorMessage, {marginVertical: 10}]}>{err.role}</Text>}
                 <TouchableOpacity disabled={disabled} onPress={handleSignup}>
-                    <Text style={[styles.commonText, {
-                        color: "#367c2b",
-                        fontWeight: "bold",
-                        borderColor: "#367c2b",
-                        textAlign: "center",
-                        fontSize: 20
-                    }]}>Sign Up</Text>
+                    {
+                        loading ?
+                            <ActivityIndicator size="small" color="#367c2b"
+                                               style={[styles.commonText, styles.addedStyling]}/> :
+                            <Text style={[styles.commonText, styles.addedStyling]}>Sign Up</Text>
+                    }
                 </TouchableOpacity>
                 <View style={{display: "flex", justifyContent: "center", flexDirection: "row",}}>
                     <Text style={{fontSize: 17, marginRight: 10, paddingTop: 3, marginVertical: 8}}>Already have an
@@ -177,7 +189,7 @@ const Signup = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Toast />
+            <Toast/>
         </View>
     )
 }
@@ -233,6 +245,13 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         width: 250,
         padding: 5
+    },
+    addedStyling: {
+        color: "#367c2b",
+        fontWeight: "bold",
+        borderColor: "#367c2b",
+        textAlign: "center",
+        fontSize: 20
     }
 })
 export default Signup

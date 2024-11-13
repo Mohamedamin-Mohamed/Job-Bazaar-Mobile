@@ -1,12 +1,26 @@
-import {Text, View, StyleSheet, TextInput, TouchableOpacity} from "react-native";
+import {
+    Text,
+    View,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator
+} from "react-native";
 import {useState} from "react";
-import userInfo from "@/app/fetchRequests/userInfo";
+import getUserInfo from "@/app/fetchRequests/getUserInfo";
 import Toast from "react-native-toast-message";
 import passwordReset from "@/app/fetchRequests/passwordReset";
+import {useSelector} from "react-redux";
+import {RootStackParamList, RootState} from "@/app/Types/types";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-const ResetPassword = ({route, navigation}) => {
-    const {email} = route.params
+type ResetPasswordProp = StackNavigationProp<RootStackParamList, 'ResetPassword'>
 
+const ResetPassword = ({navigation}: { navigation: ResetPasswordProp }) => {
+    const email = useSelector((state: RootState) => state.userInfo.email)
+    const [loading, setLoading] = useState(false)
     const [disabled, setDisabled] = useState(false)
     const [err, setErr] = useState('')
     const [passwords, setPasswords] = useState({
@@ -34,72 +48,86 @@ const ResetPassword = ({route, navigation}) => {
                 setErr('Password must be at least 16 characters, or 8 characters with one number and one letter.')
                 return
             } else {
-                const userInfoResponse = await userInfo(email)
-                if (userInfoResponse.ok) {
-                    const user = await userInfoResponse.json()
-                    const requestBody = {
-                        ...user, password: passwords.confirmPass
-                    }
-                    const passwordResetResponse = await passwordReset(requestBody)
-                    const message = await passwordResetResponse.text()
-                    if (passwordResetResponse.ok) {
-                        Toast.show({
-                            type: 'success',
-                            text1: message,
-                            onShow: () => setDisabled(true),
-                            onHide: () => {
-                                setDisabled(false)
-                                navigation.replace('Login')
-                            }
-                        })
+                setErr('')
+                try {
+                    setLoading(true)
+                    const userInfoResponse = await getUserInfo(email, new AbortController())
+                    if (userInfoResponse.ok) {
+                        const user = await userInfoResponse.json()
+                        const requestBody = {
+                            ...user, password: passwords.confirmPass
+                        }
+                        const passwordResetResponse = await passwordReset(requestBody)
+                        const message = await passwordResetResponse.text()
+                        if (passwordResetResponse.ok) {
+                            Toast.show({
+                                type: 'success',
+                                text1: message,
+                                onShow: () => setDisabled(true),
+                                onHide: () => {
+                                    setDisabled(false)
+                                    navigation.replace('Login')
+                                }
+                            })
+                        } else {
+                            Toast.show({
+                                type: 'error',
+                                text1: message,
+                                onShow: () => setDisabled(true),
+                                onHide: () => {
+                                    setDisabled(false)
+                                    navigation.replace('Signup')
+                                }
+                            })
+                        }
+
                     } else {
                         Toast.show({
                             type: 'error',
-                            text1: message,
+                            text1: 'Something went wrong',
                             onShow: () => setDisabled(true),
                             onHide: () => {
                                 setDisabled(false)
-                                navigation.replace('Signup')
+                                navigation.goBack()
                             }
                         })
                     }
-
-                } else {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Something went wrong',
-                        onShow: () => setDisabled(true),
-                        onHide: () => {
-                            setDisabled(false)
-                            navigation.goBack()
-                        }
-                    })
+                } catch (exp) {
+                    throw exp
+                } finally {
+                    setLoading(false)
                 }
             }
         }
     }
     return (
-        <View style={styles.parentContainer}>
-            <View style={[styles.childContainer, err ? (err.length > 22 ? {flex: 0.54} : {flex: 0.44}) : {flex: 0.4}]}>
-                <Text style={[styles.headerText]}>Password Reset</Text>
-                <View style={{marginVertical: 12}}>
-                    <Text style={styles.textCentered}>Set a new password.</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.parentContainer}>
+                <View
+                    style={[styles.childContainer, err ? (err.length > 22 ? {flex: 0.54} : {flex: 0.44}) : {flex: 0.4}]}>
+                    <Text style={[styles.headerText]}>Password Reset</Text>
+                    <View style={{marginVertical: 12}}>
+                        <Text style={styles.textCentered}>Set a new password.</Text>
+                    </View>
+                    <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
+                               style={styles.passwordInput} keyboardType="default"
+                               onChangeText={text => handlePasswords('newPass', text)} passwordRules="minlength: 16"
+                               placeholder="New Password"/>
+                    <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
+                               style={styles.passwordInput} keyboardType="default"
+                               onChangeText={text => handlePasswords('confirmPass', text)}
+                               placeholder="Confirm new password"/>
+                    {err && <Text style={styles.errorMessage}>{err}</Text>}
+                    <TouchableOpacity disabled={disabled} onPress={() => handleSubmit()}>
+                        {
+                            loading ? <ActivityIndicator size="small" color="#367c2b" style={styles.resetPassButton}/> :
+                                <Text style={styles.resetPassButton}>Reset Password</Text>
+                        }
+                    </TouchableOpacity>
                 </View>
-                <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
-                           style={styles.passwordInput} keyboardType="default"
-                           onChangeText={text => handlePasswords('newPass', text)} passwordRules="minlength: 16"
-                           placeholder="New Password"/>
-                <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
-                           style={styles.passwordInput} keyboardType="default"
-                           onChangeText={text => handlePasswords('confirmPass', text)}
-                           placeholder="Confirm new password"/>
-                {err && <Text style={styles.errorMessage}>{err}</Text>}
-                <TouchableOpacity disabled={disabled} onPress={() => handleSubmit()}>
-                    <Text style={styles.resetPassButton}>Reset Password</Text>
-                </TouchableOpacity>
+                <Toast/>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({

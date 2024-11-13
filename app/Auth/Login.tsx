@@ -1,22 +1,29 @@
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert} from "react-native";
-import {useNavigation} from "@react-navigation/native";
+import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {useState} from "react";
 import usePreventRemove from "@react-navigation/core/src/usePreventRemove";
 import emailValidation from "@/app/Regex/emailValidation";
 import login from "@/app/fetchRequests/login";
 import Toast from 'react-native-toast-message'
+import {useDispatch} from "react-redux";
+import {setUserInfo} from "@/app/Redux/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParamList} from "@/app/Types/types";
 
 interface Error {
     email: string,
     password: string
 }
 
-const Login = () => {
-    const navigation = useNavigation()
+type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>
+
+const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
+    const dispatch = useDispatch()
     const [loginDetails, setLoginDetails] = useState({
         email: '', password: ''
     })
-    const[disabled, setDisabled] = useState(false)
+    const [disabled, setDisabled] = useState(false)
+    const [loading, setLoading] = useState(false)
     const initialError: Error = {email: '', password: ''}
     const [err, setErr] = useState<Partial<Error>>(initialError)
     const handleLoginDetailsChange = (name: string, value: string) => {
@@ -40,7 +47,13 @@ const Login = () => {
             }
         ])
     })
-
+    const storeToken = async (token: string) => {
+        try {
+            await AsyncStorage.setItem('token', token)
+        } catch (err) {
+            console.error('Token could not be stored ', err)
+        }
+    }
     const handleLogin = async () => {
         if (!loginDetails.email) {
             setErr({email: 'Email is required'})
@@ -50,33 +63,53 @@ const Login = () => {
             setErr({password: 'Password is required'})
             return
         }
+
         const emailValid = emailValidation(loginDetails.email)
         if (!emailValid) {
             setErr({email: 'Email is not valid'})
             return
         }
         setErr(initialError)
-        const loginResponse = await login(loginDetails)
-        //check if email is valid
-        if (loginResponse.status === 404) {
-            const message = await loginResponse.text()
-            setErr({email: message})
-        }
-        //check if password is valid
-        else if (loginResponse.status === 401) {
-            const message = await loginResponse.text()
-            setErr({password: message})
-        }
-        //if we reach here it means account is valid
-        else {
-            const data = await loginResponse.json()
-            const message = data.message
-            Toast.show({
-                type: 'success',
-                text1: message,
-                onShow: ()=> setDisabled(true),
-                onHide: ()=> setDisabled(false)
-            })
+        try {
+            setLoading(true)
+            const loginResponse = await login(loginDetails)
+            //check if email is valid
+            if (loginResponse.status === 404) {
+                const message = await loginResponse.text()
+                setErr({email: message})
+            }
+            //check if password is valid
+            else if (loginResponse.status === 401) {
+                const message = await loginResponse.text()
+                setErr({password: message})
+            }
+            //if we reach here it means account is valid
+            else {
+                setLoginDetails({email: '', password: ''})
+                const data = await loginResponse.json()
+
+                const token = data.token
+                await storeToken(token)
+
+                const user = data.user
+                dispatch(setUserInfo(user))
+
+                const message = data.message
+
+                Toast.show({
+                    type: 'success',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => {
+                        setDisabled(false)
+                        navigation.replace('CareerHub')
+                    }
+                })
+            }
+        } catch (exp) {
+            console.error(exp)
+        } finally {
+            setLoading(false)
         }
 
     }
@@ -84,17 +117,22 @@ const Login = () => {
         <View style={styles.container}>
             <View style={styles.childContainer}>
                 <Text style={styles.headerText}>Login</Text>
-                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs} keyboardType="email-address"
+                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
+                           keyboardType="email-address"
                            placeholder="Email" onChangeText={text => handleLoginDetailsChange('email', text)}/>
                 {err.email && <Text style={styles.errorMessage}>{err.email}</Text>}
-                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs} keyboardType="default" secureTextEntry={true}
+                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs} keyboardType="default"
+                           secureTextEntry={true}
                            placeholder="Password" onChangeText={text => handleLoginDetailsChange('password', text)}/>
                 {err.password && <Text style={styles.errorMessage}>{err.password}</Text>}
                 <TouchableOpacity disabled={disabled} onPress={handleLogin}>
-                    <Text style={styles.loginButton}>Login</Text>
+                    {
+                        loading ? <ActivityIndicator size="small" color="#367c2b" style={styles.loginButton}/> :
+                            <Text style={styles.loginButton}>Login</Text>
+                    }
                 </TouchableOpacity>
                 <View style={styles.forgotPasswordContainer}>
-                    <TouchableOpacity disabled={disabled} onPress={()=> navigation.navigate('ForgotPassword')}>
+                    <TouchableOpacity disabled={disabled} onPress={() => navigation.navigate('ForgotPassword')}>
                         <Text style={{fontSize: 17, margin: 6, color: "#367c2b", fontWeight: "bold"}}>Forgot
                             Password</Text>
                     </TouchableOpacity>
