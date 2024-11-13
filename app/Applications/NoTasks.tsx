@@ -1,4 +1,6 @@
-import {Image, Text, View, StyleSheet} from "react-native";
+import {Image, StyleSheet, Text, View} from "react-native";
+import {useSelector} from "react-redux";
+import {RootState} from "@/app/Types/types";
 
 const NoTasks = () => {
     /*
@@ -19,31 +21,56 @@ const NoTasks = () => {
             </div>
         </>
      */
+    const userInfo = useSelector((state: RootState) => state.userInfo)
+    const names = {
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName
+    }
     return (
-        <View style={style.container}>
-            <View style={style.childContainer}>
-                <Text>My Tasks</Text>
-                <View style={style.imageView}>
-                    <Image source={require('../Images/no_tasks.png')} />
-                    <Text>You have no tasks</Text>
+        <>
+            <View style={style.namesView}>
+                <Text style={style.text}>Welcome {names.firstName} {names.lastName}</Text>
+            </View>
+            <View style={style.container}>
+                <View style={style.childContainer}>
+                    <Text style={style.text}>My Tasks</Text>
+                    <View style={style.imageView}>
+                        <Image source={require('../Images/no_tasks.png')} style={style.image}/>
+                        <Text style={{fontSize: 16}}>You have no tasks</Text>
+                    </View>
                 </View>
             </View>
-        </View>
+        </>
     )
 }
 const style = StyleSheet.create({
+    namesView: {
+        marginTop: 24,
+        marginLeft: 24
+    },
     container: {
+        marginVertical: 24,
         justifyContent: "center",
         alignItems: "center"
     },
     childContainer: {
+        width: "90%",
+        padding: 24,
         backgroundColor: "white",
         borderColor: "white",
         borderRadius: 4,
     },
+    text: {
+        fontSize: 20,
+        fontWeight: "bold"
+    },
     imageView: {
         justifyContent: "center",
         alignItems: "center"
-    }
+    },
+    image: {
+        width: 360,
+        height: 180
+    },
 })
 export default NoTasks
