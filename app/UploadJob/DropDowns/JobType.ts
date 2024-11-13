@@ -1,4 +1,4 @@
-const JobTypes = [
+const JobType = [
     "Full-time", "Part-time", "Contract", "Temporary", "Other", "Volunteer", "Internship"
 ]
-export default JobTypes
+export default JobType
