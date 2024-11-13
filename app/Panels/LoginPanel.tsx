@@ -1,19 +1,31 @@
-import {View, Text, TouchableOpacity, TextInput, StyleSheet} from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    TextInput,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator
+} from "react-native";
 import {useState} from "react";
 import login from "@/app/fetchRequests/login";
 import Toast from "react-native-toast-message";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootStackParamList, RootState} from "@/app/Types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {StackNavigationProp} from "@react-navigation/stack";
+import {setUserInfo} from "@/app/Redux/userSlice";
 
 type LoginPanelNavigationProp = StackNavigationProp<RootStackParamList, 'LoginPanel'>
 
-const LoginPanel = ({navigation}: {navigation: LoginPanelNavigationProp}) => {
+const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
     const email = useSelector((state: RootState) => state.userInfo.email)
+    const dispatch = useDispatch()
     const [password, setPassword] = useState('')
     const [err, setErr] = useState('')
     const [disabled, setDisabled] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleHomePanel = () => {
         navigation.navigate('HomePanel')
@@ -22,8 +34,8 @@ const LoginPanel = ({navigation}: {navigation: LoginPanelNavigationProp}) => {
     const storeToken = async (token: string) => {
         try {
             await AsyncStorage.setItem('token', token)
-        } catch (err) {
-            console.error('Token could not be stored ', err)
+        } catch (exp) {
+            throw exp
         }
     }
     const handleSignIn = async () => {
@@ -33,57 +45,80 @@ const LoginPanel = ({navigation}: {navigation: LoginPanelNavigationProp}) => {
         }
         setErr('')
         const loginRequest = {email: email, password: password}
-        const loginResponse = await login(loginRequest)
-        if (loginResponse.ok) {
-            setDisabled(true)
-            const data = await loginResponse.json()
+        try {
+            setLoading(true)
 
-            const token = data.token
-            await storeToken(token)
+            const loginResponse = await login(loginRequest)
+            if (loginResponse.ok) {
+                setDisabled(true)
+                const data = await loginResponse.json()
 
-            const message = data.message
-            Toast.show({
-                type: 'success',
-                text1: message,
-                onHide: () => {
-                    setDisabled(false)
-                    navigation.replace('CareerHub')
-                }
-            })
-        } else {
-            const message = await loginResponse.text()
-            setErr(message)
+                const token = data.token
+                await storeToken(token)
+
+                const message = data.message
+                const user = data.user
+                Toast.show({
+                    type: 'success',
+                    text1: message,
+                    onHide: () => {
+                        setDisabled(false)
+                        dispatch(setUserInfo(user))
+                        navigation.replace('CareerHub')
+                    }
+                })
+            } else {
+                const message = await loginResponse.text()
+                setErr(message)
+            }
+        } catch (exp) {
+            throw exp
+        } finally {
+            setTimeout(()=> {
+                setLoading(false)
+            }, 6000)
         }
     }
     return (
-        <View style={styles.parentContainer}>
-            <View style={styles.childContainer}>
-                <Text style={[styles.headerText, {marginVertical: 16}]}>Welcome back to Job Bazaar</Text>
-                <View style={{marginVertical: 12}}>
-                    <Text style={styles.textCentered}>Sign into your account as</Text>
-                    <Text style={[styles.textCentered, {fontSize: 14, fontWeight: "bold", marginTop: 4}]}>{email}</Text>
-                </View>
-                <TouchableOpacity disabled={disabled} onPress={() => handleHomePanel()}>
-                    <Text style={[styles.textCentered, styles.differentEmail, {marginVertical: 12}]}>Sign in with a
-                        different email.</Text>
-                </TouchableOpacity>
-                <View>
-                    <Text style={styles.labelText}>Password</Text>
-                    <TextInput editable={!disabled} secureTextEntry={true} keyboardType="default"
-                               style={styles.passwordInput}
-                               onChangeText={setPassword}/>
-                    {err && <Text style={styles.errorMessage}>{err}</Text>}
-                    <TouchableOpacity disabled={disabled} onPress={() => handleSignIn()}>
-                        <Text style={styles.signInButton}>Sign In</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.parentContainer}>
+                <View style={styles.childContainer}>
+                    <Text style={[styles.headerText, {marginVertical: 16}]}>Welcome back to Job Bazaar</Text>
+                    <View style={{marginVertical: 12}}>
+                        <Text style={styles.textCentered}>Sign into your account as</Text>
+                        <Text style={[styles.textCentered, {
+                            fontSize: 14,
+                            fontWeight: "bold",
+                            marginTop: 4
+                        }]}>{email}</Text>
+                    </View>
+                    <TouchableOpacity disabled={disabled} onPress={() => handleHomePanel()}>
+                        <Text style={[styles.textCentered, styles.differentEmail, {marginVertical: 12}]}>Sign in with a
+                            different email.</Text>
+                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.labelText}>Password</Text>
+                        <TextInput editable={!disabled} secureTextEntry={true} keyboardType="default"
+                                   style={styles.passwordInput}
+                                   onChangeText={setPassword}/>
+                        {err && <Text style={styles.errorMessage}>{err}</Text>}
+                        <TouchableOpacity disabled={disabled} onPress={() => handleSignIn()}>
+                            {
+                                loading ?
+                                    <ActivityIndicator size="small" color="#367c2b" style={styles.signInButton}/> :
+                                    <Text style={styles.signInButton}>Sign In</Text>
+                            }
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity disabled={disabled}
+                                      onPress={() => navigation.navigate('ResetPassword')}>
+                        <Text style={[styles.differentEmail, styles.textCentered, {marginTop: 18}]}>Forgot
+                            Password</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity disabled={disabled}
-                                  onPress={() => navigation.navigate('ResetPassword')}>
-                    <Text style={[styles.differentEmail, styles.textCentered, {marginTop: 18}]}>Forgot Password</Text>
-                </TouchableOpacity>
+                <Toast/>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({
