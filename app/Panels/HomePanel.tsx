@@ -1,15 +1,27 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {useState} from "react";
+import {
+    ActivityIndicator,
+    Image,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
+import {useEffect, useState} from "react";
 import emailValidation from "@/app/Regex/emailValidation";
 import emailLookup from "@/app/fetchRequests/emailLookup";
 import {useDispatch, useSelector} from "react-redux";
 import {setUserInfo} from "@/app/Redux/userSlice";
 import {RootStackParamList, RootState} from "@/app/Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomePanelNavigationProp = StackNavigationProp<RootStackParamList, 'HomePanel'>
 
-const HomePanel = ({navigation}: {navigation: HomePanelNavigationProp}) => {
+const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
+    const [loading, setLoading] = useState(false)
     const userInfo = useSelector((state: RootState) => state.userInfo)
     const dispatch = useDispatch()
 
@@ -28,55 +40,91 @@ const HomePanel = ({navigation}: {navigation: HomePanelNavigationProp}) => {
         }
         setErr('')
 
-        //check if the users email exits and then based on that redirect the user to either of the accounts panel
-        const emailVerify = await emailLookup(email)
-        dispatch(setUserInfo({email: email}))
+        try {
+            setLoading(true)
+            //check if the users email exits and then based on that redirect the user to either of the accounts panel
+            const emailVerify = await emailLookup(email)
+            dispatch(setUserInfo({email: email}))
 
-        if (emailVerify.ok) {
-            navigation.navigate('LoginPanel')
-        } else {
-            navigation.navigate('CreateAccount')
+            if (emailVerify.ok) {
+                navigation.navigate('LoginPanel')
+            } else {
+                navigation.navigate('CreateAccount')
+            }
+        } catch (exp) {
+            throw exp
+        } finally {
+            setLoading(false)
         }
     }
+
+    const fetchToken = async () => {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+            navigation.navigate("CareerHub");
+        }
+    }
+
+    useEffect(() => {
+        return navigation.addListener('focus', () => {
+            fetchToken().catch(err => {
+                console.error(err);
+            });
+        });
+    }, [navigation]);
+
     return (
-        <View style={styles.container}>
-            <View style={styles.parentView}>
-                <Text style={styles.mainText}>Job Bazaar</Text>
-            </View>
-            <Text style={styles.header}>Your work people are here</Text>
-            <View style={styles.childContainer}>
-                <View>
-                    <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create an
-                        account
-                        or sign in</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+            <View style={styles.container}>
+                <View style={styles.parentView}>
+                    <Text style={styles.mainText}>Job Bazaar</Text>
+                </View>
+                <Text style={styles.header}>Your work people are here</Text>
+                <View style={styles.imageView}>
+                    <Image source={require('../Images/b.png')} style={styles.firstImage}/>
+                </View>
+                <View style={styles.childContainer}>
                     <View>
-                        <TouchableOpacity>
-                            <Text style={styles.sameButtons}>Continue with Google</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text style={styles.sameButtons}>Continue with GitHub</Text>
+                        <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create
+                            an
+                            account
+                            or sign in</Text>
+                        <View>
+                            <TouchableOpacity>
+                                <Text style={styles.sameButtons}>Continue with Google</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Text style={styles.sameButtons}>Continue with GitHub</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={{fontWeight: "bold", paddingVertical: 10, marginLeft: 6}}>Enter
+                            Email</Text>
+                        <TextInput autoCapitalize="none" style={styles.inputEmail} keyboardType="email-address"
+                                   onChangeText={text => setEmail(text)} value={email}/>
+                        <View>
+                            {err && <Text style={styles.errorText}>{err}</Text>}
+                        </View>
+                        <TouchableOpacity onPress={handleEmail}>
+                            {
+                                loading ?
+                                    <ActivityIndicator size="small" color="#367c2b"
+                                                       style={styles.continueEmail}/> :
+                                    <Text style={styles.continueEmail}>Continue with email</Text>
+                            }
                         </TouchableOpacity>
                     </View>
-                    <Text style={{fontWeight: "bold", paddingVertical: 10, marginLeft: 6}}>Enter Email</Text>
-                    <TextInput autoCapitalize="none" style={styles.inputEmail} keyboardType="email-address"
-                               onChangeText={text => setEmail(text)} value={email}/>
-                    <View>
-                        {err && <Text style={styles.errorText}>{err}</Text>}
-                    </View>
-                    <TouchableOpacity onPress={handleEmail}>
-                        <Text style={styles.continueEmail}>Continue with email</Text>
+                </View>
+                <View style={styles.bottomParentButton}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                        <Text style={styles.underlinedButton}>Join now</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                        <Text style={styles.underlinedButton}>Sign in</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.bottomParentButton}>
-                <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                    <Text style={styles.underlinedButton}>Join now</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                    <Text style={styles.underlinedButton}>Sign in</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({
@@ -193,6 +241,15 @@ const styles = StyleSheet.create({
     emailWrong: {
         borderColor: "#fff1f0",
         backgroundColor: "fff1f0"
+    },
+    imageView: {
+        justifyContent: "center",
+        alignItems: "center",
+        marginVertical: 30
+    },
+    firstImage: {
+        width: 190,
+        height: 160,
     }
 })
 export default HomePanel
