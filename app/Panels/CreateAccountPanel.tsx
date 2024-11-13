@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from "react-native";
+import {Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 import {useState} from "react";
 import {Picker} from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
@@ -9,7 +9,7 @@ import {useSelector} from "react-redux";
 
 type CreateAccountPanelProp = StackNavigationProp<RootStackParamList, 'CreateAccount'>
 
-const CreateAccountPanel = ({navigation} : {navigation: CreateAccountPanelProp}) => {
+const CreateAccountPanel = ({navigation}: { navigation: CreateAccountPanelProp }) => {
     const email = useSelector((state: RootState) => state.userInfo.email)
 
     const [userDetails, setUserDetails] = useState({
@@ -61,46 +61,52 @@ const CreateAccountPanel = ({navigation} : {navigation: CreateAccountPanelProp})
         }
     }
     return (
-        <View style={styles.parentContainer}>
-            <View style={styles.childContainer}>
-                <Text style={[styles.headerText, {marginVertical: 16}]}>Welcome to Job Bazaar</Text>
-                <View style={{marginVertical: 12}}>
-                    <Text style={styles.textCentered}>Create your account as</Text>
-                    <Text style={[styles.textCentered, {fontSize: 18, fontWeight: "bold", marginTop: 4}]}>{email}</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.parentContainer}>
+                <View style={styles.childContainer}>
+                    <Text style={[styles.headerText, {marginVertical: 8}]}>Welcome to Job Bazaar</Text>
+                    <View style={{marginVertical: 12}}>
+                        <Text style={styles.textCentered}>Create your account as</Text>
+                        <Text style={[styles.textCentered, {
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            marginTop: 4
+                        }]}>{email}</Text>
+                    </View>
+                    <TouchableOpacity disabled={disabled} onPress={() => handleHomePanel()}>
+                        <Text style={[styles.textCentered, styles.differentEmail, {marginVertical: 12}]}>Register with a
+                            different email.</Text>
+                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.labelsText}>First Name*</Text>
+                        <TextInput editable={!disabled} style={styles.textInputs} keyboardType="default"
+                                   onChangeText={text => handleUserDetails('firstName', text)}/>
+                    </View>
+                    <View>
+                        <Text style={styles.labelsText}>Last Name*</Text>
+                        <TextInput editable={!disabled} style={styles.textInputs} keyboardType="default"
+                                   onChangeText={text => handleUserDetails('lastName', text)}/>
+                    </View>
+                    <View style={{height: 160}}>
+                        <Picker enabled={!disabled} style={styles.pickerItems} selectedValue={userDetails.role}
+                                onValueChange={(itemValue, itemIndex) => handleUserDetails('role', itemValue)}>
+                            <Picker.Item label="Select your role*" value=""/>
+                            <Picker.Item label="Employer" value="Employer"/>
+                            <Picker.Item label="Applicant" value="Applicant"/>
+                        </Picker>
+                    </View>
+                    <View>
+                        <Text style={styles.labelsText}>Password*</Text>
+                        <TextInput editable={!disabled} style={styles.textInputs} secureTextEntry={true}
+                                   keyboardType="default" onChangeText={text => handleUserDetails('password', text)}/>
+                    </View>
+                    <TouchableOpacity disabled={disabled} onPress={() => handleCreateAccount()}>
+                        <Text style={styles.createAccountButton}>Create Account</Text>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity disabled={disabled} onPress={() => handleHomePanel()}>
-                    <Text style={[styles.textCentered, styles.differentEmail, {marginVertical: 12}]}>Register with a
-                        different email.</Text>
-                </TouchableOpacity>
-                <View>
-                    <Text style={styles.labelsText}>First Name*</Text>
-                    <TextInput editable={!disabled} style={styles.textInputs} keyboardType="default"
-                               onChangeText={text => handleUserDetails('firstName', text)}/>
-                </View>
-                <View>
-                    <Text style={styles.labelsText}>Last Name*</Text>
-                    <TextInput editable={!disabled} style={styles.textInputs} keyboardType="default"
-                               onChangeText={text => handleUserDetails('lastName', text)}/>
-                </View>
-                <View style={{height: 160}}>
-                    <Picker enabled={!disabled} style={styles.pickerItems} selectedValue={userDetails.role}
-                            onValueChange={(itemValue, itemIndex) => handleUserDetails('role', itemValue)}>
-                        <Picker.Item label="Select your role*" value=""/>
-                        <Picker.Item label="Employer" value="Employer"/>
-                        <Picker.Item label="Applicant" value="Applicant"/>
-                    </Picker>
-                </View>
-                <View>
-                    <Text style={styles.labelsText}>Password*</Text>
-                    <TextInput editable={!disabled} style={styles.textInputs} secureTextEntry={true}
-                               keyboardType="default" onChangeText={text => handleUserDetails('password', text)}/>
-                </View>
-                <TouchableOpacity disabled={disabled} onPress={() => handleCreateAccount()}>
-                    <Text style={styles.createAccountButton}>Create Account</Text>
-                </TouchableOpacity>
+                <Toast/>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({
@@ -156,7 +162,7 @@ const styles = StyleSheet.create({
         padding: 8,
         borderWidth: 1,
         borderRadius: 6,
-        marginTop: 16,
+        marginTop: 14,
         marginLeft: 4,
         fontSize: 18,
         color: "#367c2b",
