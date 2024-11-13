@@ -1,13 +1,17 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Referral} from "@/app/Types/types";
 import {useState} from "react";
-import ResumeViewer from "@/app/Referrals/ResumeViewer";
+import ResumeViewer from "@/app/Modals/ResumeViewer";
 
 const ReferralItem = ({referral}: { referral: Referral }) => {
     const[showModal, setShowModal] = useState(false)
 
     const handleDisplayModel = ()=> {
-        setShowModal(!showModal)
+        setShowModal(prevState => !prevState)
+    }
+    const resumeDetails = {
+        resumeName: referral.fileName,
+        resume: referral.resume
     }
     return (
         <View style={styles.card}>
@@ -28,7 +32,7 @@ const ReferralItem = ({referral}: { referral: Referral }) => {
                 </TouchableOpacity>
             </View>
             {showModal && (
-                <ResumeViewer handleDisplayModel={handleDisplayModel} showModal={showModal} />
+                <ResumeViewer handleDisplayModel={handleDisplayModel} showModal={showModal} resumeDetails={resumeDetails}/>
             )}
         </View>
     );
