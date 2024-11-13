@@ -1,26 +1,72 @@
-import {View, Text, StyleSheet, Animated} from "react-native";
+import {Animated, StyleSheet, Text, View} from "react-native";
 import Interests from "@/app/CareerHub/Interests";
 import {useSelector} from "react-redux";
-import {RootStackParamList, RootState} from "@/app/Types/types";
+import {Application, Job, Referral, RootStackParamList, RootState} from "@/app/Types/types";
 import Explore from "@/app/CareerHub/Explore";
-import ScrollView = Animated.ScrollView;
 import {StackNavigationProp} from "@react-navigation/stack";
-
-interface User {
-    email: string,
-    firstName: string,
-    lastName: string,
-    role: string,
-    createdAt: string
-}
+import Activity from "@/app/CareerHub/Activity";
+import {useEffect, useState} from "react";
+import getAppliedJobs from "@/app/fetchRequests/getAppliedJobs";
+import getUploadedJobs from "@/app/fetchRequests/getUploadedJobs";
+import getReferrals from "@/app/fetchRequests/getReferrals";
+import countApplications from "@/app/countJobsOrApplications/countApplications";
+import countJobs from "@/app/countJobsOrApplications/countJobs";
+import ScrollView = Animated.ScrollView;
 
 type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
 
-const CareerHub = ({navigation}: {navigation: CareerHubProp}) => {
+const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
     const user = useSelector((state: RootState) => state.userInfo)
-    console.log('Role of the user is', user.role)
-
     const abbreviatedName = user.firstName.substring(0, 1) + user.lastName.substring(0, 1)
+
+    const email = user.email
+    const role = user.role
+
+    const [records, setRecords] = useState<Application[] | Job[]>([])
+    const [referrals, setReferrals] = useState<Referral[]>([])
+    const [count, setCount] = useState(0)
+
+    const fetchData = async (controller: AbortController) => {
+        try {
+            const fetchJobsOrApplications = role === 'Applicant'
+                ? await getAppliedJobs(email, controller)
+                : await getUploadedJobs(email, controller);
+
+            const referralsResponse = role === 'Applicant' ? await getReferrals(email, controller) : null;
+
+            const [jobsOrApplications, referrals] = await Promise.all([
+                fetchJobsOrApplications.json(),
+                referralsResponse?.ok ? await referralsResponse.json() : []
+            ]);
+
+            setRecords(jobsOrApplications);
+            setReferrals(referrals);
+
+        } catch (exp) {
+            console.error(exp);
+        }
+    };
+
+    useEffect(() => {
+        if (role === 'Applicant') {
+            setCount(countApplications(records as Application[]));
+        } else {
+            setCount(countJobs(records as Job[]));
+        }
+    }, [records, role]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchData(controller).catch(err => console.error("Focus fetch error:", err));
+        });
+        return () => {
+            unsubscribe();
+            controller.abort();
+        };
+    }, [navigation, email, role]);
+
+
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -31,13 +77,15 @@ const CareerHub = ({navigation}: {navigation: CareerHubProp}) => {
                         </View>
                         <View style={{justifyContent: "center", marginLeft: 20}}>
                             <Text style={{fontSize: 22, fontWeight: "bold"}}>Hi {user.firstName}</Text>
-                            <Text style={{color: "#757575", fontSize: 14, fontWeight: "bold"}}>Welcome to your Career
+                            <Text style={{color: "#757575", fontSize: 14, fontWeight: "bold"}}>Welcome to your
+                                Career
                                 Hub</Text>
                         </View>
                     </View>
                     <View style={{gap: 24, width: "100%"}}>
                         <Interests navigation={navigation}/>
                         <Explore navigation={navigation}/>
+                        <Activity navigation={navigation} records={records} referrals={referrals} count={count}/>
                     </View>
                 </View>
             </View>
