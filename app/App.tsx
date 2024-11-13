@@ -14,6 +14,13 @@ import {PersistGate} from "redux-persist/integration/react";
 import UploadedJobs from "@/app/UploadedJobs/UploadedJobs";
 import {RootStackParamList} from "@/app/Types/types";
 import CareerInterests from "@/app/CareerHub/CareerInterests";
+import UploadJob from "@/app/UploadJob/UploadJob";
+import AvailableJobs from "@/app/AvailableJobs/AvailableJobs";
+import Apply from "@/app/ApplyJob/Apply";
+import Edit from "@/app/EditJob/Edit";
+import MyReferrals from "@/app/Referrals/MyReferrals";
+import Refer from "@/app/Referrals/Refer";
+import AppliedJobs from "@/app/Applications/AppliedJobs";
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const App = () => {
@@ -32,6 +39,13 @@ const App = () => {
                     <Stack.Screen name="CareerHub" component={CareerHub}/>
                     <Stack.Screen name="UploadedJobs" component={UploadedJobs}/>
                     <Stack.Screen name="CareerInterests" component={CareerInterests}/>
+                    <Stack.Screen name="UploadJob" component={UploadJob}/>
+                    <Stack.Screen name="AvailableJobs" component={AvailableJobs}/>
+                    <Stack.Screen name="Apply" component={Apply}/>
+                    <Stack.Screen name="Edit" component={Edit}/>
+                    <Stack.Screen name="MyReferrals" component={MyReferrals} options={{title: 'Referrals'}}/>
+                    <Stack.Screen name="Refer" component={Refer}/>
+                    <Stack.Screen name="AppliedJobs" component={AppliedJobs}/>
                 </Stack.Navigator>
             </PersistGate>
         </Provider>
