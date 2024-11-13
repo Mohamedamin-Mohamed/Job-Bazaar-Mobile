@@ -2,7 +2,7 @@ import {format} from "date-fns";
 import {JobApplication, User} from "@/app/Types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ApplyToJob = async (controller: AbortController, jobApplication: JobApplication, user: User) => {
+const applyToJobFormData = async (jobApplication: JobApplication, user: User) => {
     const token = await AsyncStorage.getItem('token')
     if (!token) {
         throw new Error('No token available')
@@ -45,17 +45,9 @@ const ApplyToJob = async (controller: AbortController, jobApplication: JobApplic
     formData.append("isActive", "true")
     formData.append("lastName", user.lastName)
 
-    const date = new Date().toISOString()
-    const formattedDate = date ? format(date, 'MM-dd-yyy') : ''
+    const formattedDate = date ? format(new Date().toISOString(), 'MM-dd-yyy') : ''
     formData.append("applicationDate", formattedDate)
 
-    return await fetch('http://192.168.1.252:8080/api/applications/add', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        body: formData,
-        signal: controller.signal
-    })
+    return formData
 }
-export default ApplyToJob
+export default applyToJobFormData
