@@ -9,7 +9,7 @@ import {useEffect, useState} from "react";
 import getAppliedJobs from "@/app/fetchRequests/getAppliedJobs";
 import getUploadedJobs from "@/app/fetchRequests/getUploadedJobs";
 import getReferrals from "@/app/fetchRequests/getReferrals";
-import countApplications from "@/app/countJobsOrApplications/countApplications";
+import countActiveApplications from "@/app/countJobsOrApplications/countActiveApplications";
 import countJobs from "@/app/countJobsOrApplications/countJobs";
 import ScrollView = Animated.ScrollView;
 
@@ -49,7 +49,7 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
 
     useEffect(() => {
         if (role === 'Applicant') {
-            setCount(countApplications(records as Application[]));
+            setCount(countActiveApplications(records as Application[]));
         } else {
             setCount(countJobs(records as Job[]));
         }
