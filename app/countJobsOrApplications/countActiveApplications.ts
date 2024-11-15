@@ -1,6 +1,6 @@
 import {Application} from "@/app/Types/types";
 
-const countApplications = (applications: Application[]) => {
+const countActivepplications = (applications: Application[]) => {
     return applications.filter(app => app.isActive === 'true').length
 }
-export default countApplications
+export default countActivepplications
