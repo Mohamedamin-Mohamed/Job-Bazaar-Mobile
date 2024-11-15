@@ -1,18 +1,20 @@
 import {RootStackParamList} from "@/app/Types/types";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {StyleSheet, View} from "react-native";
+import {ScrollView, StyleSheet, View} from "react-native";
 import NoTasks from "@/app/Applications/NoTasks";
 import DisplayAppliedJobs from "@/app/Applications/DisplayAppliedJobs";
 
-type AppliedNavigationProp = NativeStackScreenProps<RootStackParamList, 'AppliedJobs'>
+type AppliedJobsNavigationProp = NativeStackScreenProps<RootStackParamList, 'AppliedJobs'>
 
-const AppliedJobs = ({navigation, route}: AppliedNavigationProp) => {
+const AppliedJobs = ({navigation, route}: AppliedJobsNavigationProp) => {
     const {jobs} = route.params
     return (
-        <View>
-            <NoTasks/>
-            <DisplayAppliedJobs appliedJobs={jobs}/>
-        </View>
+        <ScrollView>
+            <View>
+                <NoTasks/>
+                <DisplayAppliedJobs navigation={navigation} appliedJobs={jobs}/>
+            </View>
+        </ScrollView>
     )
 }
 const styles = StyleSheet.create({})
