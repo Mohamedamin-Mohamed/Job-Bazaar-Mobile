@@ -106,7 +106,7 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
         } else {
             try {
                 setLoading(true)
-                const formData = applyToJobFormData(updatedJobApplication, userInfo)
+                const formData = await applyToJobFormData(updatedJobApplication, userInfo)
 
                 const response = await applyToJob(formData)
                 const text = await response.text()
