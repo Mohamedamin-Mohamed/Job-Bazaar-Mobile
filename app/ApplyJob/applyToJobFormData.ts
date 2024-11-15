@@ -45,7 +45,7 @@ const applyToJobFormData = async (jobApplication: JobApplication, user: User) =>
     formData.append("isActive", "true")
     formData.append("lastName", user.lastName)
 
-    const formattedDate = date ? format(new Date().toISOString(), 'MM-dd-yyy') : ''
+    const formattedDate = format(new Date().toISOString(), 'MM-dd-yyy')
     formData.append("applicationDate", formattedDate)
 
     return formData
