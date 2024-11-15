@@ -10,7 +10,7 @@ interface ResumeViewerProps {
 
 const ResumeViewer = ({handleDisplayModel, showModal, resumeDetails}: ResumeViewerProps) => {
     // Ensure the file extension is lowercase for consistency
-    const fileExtension = resumeDetails.resumeName.split('.').pop()?.toLowerCase() as keyof typeof mimeTypes;
+    const fileExtension = resumeDetails.resumeName.split('.').pop() as keyof typeof mimeTypes;
     const mimeType = mimeTypes[`${fileExtension}`] || 'application/octet-stream';
     //Convert the encoded base64 string to a data URL
     const resumeDataUri = `data:${mimeType};base64,${resumeDetails.resume}`;
