@@ -1,12 +1,12 @@
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    TextInput,
-    StyleSheet,
-    TouchableWithoutFeedback,
+    ActivityIndicator,
     Keyboard,
-    ActivityIndicator
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
 import {useState} from "react";
 import login from "@/app/fetchRequests/login";
@@ -74,9 +74,7 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
         } catch (exp) {
             throw exp
         } finally {
-            setTimeout(()=> {
-                setLoading(false)
-            }, 6000)
+            setLoading(false)
         }
     }
     return (
