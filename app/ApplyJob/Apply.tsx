@@ -117,7 +117,7 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                     onShow: () => setDisabled(true),
                     onHide: () => {
                         setDisabled(false)
-                        response.ok ? navigation.navigate('AvailableJobs') : handleButtons('clear')
+                        response.ok ? navigation.replace('AvailableJobs') : handleButtons('clear')
                     }
                 })
             } catch (err) {
@@ -128,12 +128,12 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
         }
     }
 
-    const handleFileUpload = async (type: string) => {
+    const handleFileUpload = async (fileType: string) => {
         const result = await DocumentPicker.getDocumentAsync({type: "application/pdf"});
         if (!result.canceled) {
+            // @ts-ignore
             const {name, uri, type, size} = result.assets.values().next().value;
-
-            if (type === "resume") {
+            if (fileType === "resume") {
                 setJobApplication(prevState => ({
                     ...prevState,
                     resume: {
