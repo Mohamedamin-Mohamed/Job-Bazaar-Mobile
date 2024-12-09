@@ -14,8 +14,8 @@ import Toast from "react-native-toast-message";
 import {useDispatch, useSelector} from "react-redux";
 import {RootStackParamList, RootState} from "../Types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {setUserInfo} from "../Redux/userSlice";
+import {StackNavigationProp} from "@react-navigation/stack";
 
 type LoginPanelNavigationProp = StackNavigationProp<RootStackParamList, 'LoginPanel'>
 
@@ -64,7 +64,9 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
                     onHide: () => {
                         setDisabled(false)
                         dispatch(setUserInfo(user))
-                        navigation.replace('CareerHub')
+                        /*debug the below line becoz when I try to use NavigationProp, i cannot use replace method of navigation but when I use StackNavigationProp,
+                        I can use but the screen refreshes */
+                        navigation.navigate('CareerHub')
                     }
                 })
             } else {
@@ -96,7 +98,7 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
                     </TouchableOpacity>
                     <View>
                         <Text style={styles.labelText}>Password</Text>
-                        <TextInput editable={!disabled} secureTextEntry={true} keyboardType="default"
+                        <TextInput editable={!disabled} secureTextEntry={true}
                                    style={styles.passwordInput}
                                    onChangeText={setPassword}/>
                         {err && <Text style={styles.errorMessage}>{err}</Text>}
