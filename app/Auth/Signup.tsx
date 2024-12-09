@@ -1,16 +1,7 @@
-import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from "react-native"
+import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native"
 import {useState} from "react";
-import {useNavigation} from "@react-navigation/native";
+import {usePreventRemove} from "@react-navigation/native";
 import {Picker} from "@react-native-picker/picker";
-import usePreventRemove from "@react-navigation/core/src/usePreventRemove";
 import emailValidation from "../Regex/emailValidation";
 import signup from "../fetchRequests/signup";
 import Toast from "react-native-toast-message";
