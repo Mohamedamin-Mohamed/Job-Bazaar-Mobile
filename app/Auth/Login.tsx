@@ -1,14 +1,14 @@
 import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {useState} from "react";
-import usePreventRemove from "@react-navigation/core/src/usePreventRemove";
+import {usePreventRemove} from "@react-navigation/native";
 import emailValidation from "../Regex/emailValidation";
 import login from "../fetchRequests/login";
 import Toast from 'react-native-toast-message'
 import {useDispatch} from "react-redux";
 import {setUserInfo} from "../Redux/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParamList} from "../Types/types";
+import {StackNavigationProp} from "@react-navigation/stack";
 
 interface Error {
     email: string,
@@ -47,6 +47,7 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
             }
         ])
     })
+
     const storeToken = async (token: string) => {
         try {
             await AsyncStorage.setItem('token', token)
