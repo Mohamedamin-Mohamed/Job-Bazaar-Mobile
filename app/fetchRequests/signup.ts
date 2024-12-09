@@ -6,7 +6,7 @@ interface Signup {
     role: string
 }
 const signup = async (signupRequest: Signup)=>{
-    return await fetch('http://192.168.1.252:8080/accounts/signup/', {
+    return await fetch('http:localhost:8080/accounts/signup/', {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
