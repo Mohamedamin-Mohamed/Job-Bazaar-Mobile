@@ -33,6 +33,13 @@ const Activity = ({navigation, records, referrals, count, loading}: ActivityProp
         }
     }
 
+    const handleFeedbacks = ()=> {
+        navigation.navigate('Feedbacks')
+    }
+
+    const uploadJob = ()=> {
+        navigation.navigate('UploadJob')
+    }
     return (
         loading ? <ActivityIndicator size="large" color="#367c2b"/> :
             records && referrals && (
@@ -44,19 +51,34 @@ const Activity = ({navigation, records, referrals, count, loading}: ActivityProp
                                               onPress={() => handleNavigation()}>
                                 <Text style={[styles.text, {flex: 1, marginTop: 20}]}>
                                     {role === 'Applicant' ? "Job Applications" : "Jobs Uploaded"}</Text>
-                                <Text style={styles.countText}>{count}</Text>
+                                <Text style={[styles.countText]}>{count}</Text>
                             </TouchableOpacity>
                             {role === 'Applicant' &&
                                 <>
                                     <TouchableOpacity
-                                        style={{flexDirection: "row", alignItems: "center", paddingBottom: 20}}
+                                        style={styles.buttons}
                                         onPress={() => handleReferrals()}>
                                         <Text style={[styles.text, {flex: 1, marginTop: 20}]}>Referrals</Text>
+                                        <Text style={styles.countText}>{referrals.length}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.buttons}
+                                        onPress={() => handleFeedbacks()}>
+                                        <Text style={[styles.text, {flex: 1}]}>Feedbacks</Text>
                                         <Text style={styles.countText}>{referrals.length}</Text>
                                     </TouchableOpacity>
                                     <View style={styles.referView}>
                                         <TouchableOpacity onPress={() => referNavigation()}>
                                             <Text style={styles.referButton}>Refer a friend</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </>
+                            }
+                            {role === 'Employer' &&
+                                <>
+                                    <View style={[styles.referView, {marginTop: 24}]}>
+                                        <TouchableOpacity style={styles.uploadJobButton} onPress={() => uploadJob()}>
+                                            <Text style={styles.referButton}>Upload a Job</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </>
@@ -118,6 +140,12 @@ const styles = StyleSheet.create({
         color: "#367c2b",
         fontWeight: "bold",
         fontSize: 18
-    }
+    },
+    buttons: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingBottom: 20
+    },
+    uploadJobButton: {}
 })
 export default Activity
