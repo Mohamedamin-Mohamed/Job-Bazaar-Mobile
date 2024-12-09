@@ -1,11 +1,19 @@
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {RootStackParamList} from "@/app/Types/types";
-import {Text, View} from "react-native";
+import {Job, RootStackParamList} from "@/app/Types/types";
+import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {useEffect, useState} from "react";
+import getJobById from "@/app/fetchRequests/getJobById";
+import Location from "@/app/Applications/ViewJobDescription/Location";
+import Info from "@/app/Applications/ViewJobDescription/Info";
+import JobDescription from "@/app/Applications/ViewJobDescription/JobDescription";
+import Qualifications from "@/app/Applications/ViewJobDescription/Qualifications";
+import CompanyInfo from "@/app/Applications/ViewJobDescription/CompanyInfo";
 
-type ViewApplicationProps = NativeStackScreenProps<RootStackParamList, 'ViewApplication'>
+type ViewApplicationProps = NativeStackScreenProps<RootStackParamList, 'ViewDescription'>
 
-const ViewApplication = ({route, navigation}: ViewApplicationProps) => {
+const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
     const {application} = route.params
+    const [job, setJob] = useState<Job | undefined>(undefined)
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -18,15 +26,114 @@ const ViewApplication = ({route, navigation}: ViewApplicationProps) => {
         return monthName ? `${monthName} ${day}, ${year}` : ''
 
     }
+
+    const fetchJobById = async (controller: AbortController) => {
+        if (!application) {
+            return; // Don't fetch if application is not present
+        }
+
+        try {
+            const response = await getJobById(application.employerEmail, application.jobId, controller);
+            if (response.ok) {
+                const data: Job = await response.json();
+                setJob(data);
+            }
+        } catch (err) {
+            console.error("Couldn't fetch job by id:", err);
+        }
+    }
+
+    useEffect(() => {
+        const controller = new AbortController()
+        fetchJobById(controller).catch(err => console.error(err))
+
+        return () => {
+            controller.abort()
+        }
+    }, [application]);
+
+    const viewApplication = () => {
+        navigation.navigate('ViewApplication', {application})
+    }
+
     return (
-        <View>
-            <View>
-                <Text>{application.position}</Text>
-                <View>
-                    <Text>You applied for this job on {handleDateParsing(application.applicationDate)}</Text>
+        job ?
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.container}>
+                    <View style={styles.childContainer}>
+                        <Text style={styles.position}>{application.position}</Text>
+                        <View>
+                            <Text>You applied for this job on {handleDateParsing(application.applicationDate)}</Text>
+                            <TouchableOpacity style={styles.applicationButton} onPress={() => viewApplication()}>
+                                <Text style={styles.applicationButtonText}>View Application</Text>
+                            </TouchableOpacity>
+                            {application.isActive === "false" &&
+                                <TouchableOpacity style={styles.inActiveApp}>
+                                    <Text style={styles.inActiveAppText}>{application.applicationStatus}</Text>
+                                </TouchableOpacity>
+                            }
+                            <Location job={job} postedDate={job.postedDate}/>
+                            <Info/>
+                            <JobDescription description={job.description}/>
+                            <Qualifications qualification={job.requirements}/>
+                        </View>
+                    </View>
                 </View>
-            </View>
-        </View>
+            </ScrollView> : <ActivityIndicator style={styles.scrollContent} size="large" color="#367c2b"/>
     )
 }
-export default ViewApplication
+const styles = StyleSheet.create({
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    container: {
+        width: "90%",
+        alignItems: "center",
+    },
+    childContainer: {
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderRadius: 4,
+        borderColor: "white",
+        padding: 30,
+        marginVertical: 20
+    },
+    position: {
+        fontSize: 18,
+        marginBottom: 20,
+        fontWeight: "bold",
+    },
+    applicationButton: {
+        backgroundColor: "#e6f0e1",
+        width: 150,
+        height: 40,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 4,
+        marginVertical: 10,
+    },
+    applicationButtonText: {
+        color: "#367c2b",
+        fontWeight: "bold",
+        fontSize: 16,
+    },
+    /*
+    className={`p-2 bg-[#ffefee] text-[#a31b12] w-[240px] h-[40px] rounded-md ml-2 hover:cursor-not-allowed ${!mediaQuery && "mt-4"}
+     */
+    inActiveApp: {
+        backgroundColor: "#ffefee",
+        alignSelf: "flex-start",
+        height: 40,
+        borderRadius: 4,
+        justifyContent: "center",
+        padding: 10
+    },
+    inActiveAppText: {
+        color: "#a31b12",
+        fontSize: 16
+    }
+});
+
+export default ViewDescription
