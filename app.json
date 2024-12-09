@@ -35,7 +35,8 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "turboModules": false,
+      "fabric": false
     }
   }
 }

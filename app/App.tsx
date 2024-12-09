@@ -21,6 +21,9 @@ import Edit from "./EditJob/Edit";
 import MyReferrals from "./Referrals/MyReferrals";
 import Refer from "./Referrals/Refer";
 import AppliedJobs from "./Applications/AppliedJobs";
+import ViewDescription from "@/app/Applications/ViewJobDescription/ViewDescription";
+import ViewApplication from "@/app/Applications/ViewJobDescription/ViewApplication";
+import Feedback from "@/app/CareerHub/Feedbacks/Feedback";
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const App = () => {
@@ -45,7 +48,12 @@ const App = () => {
                     <Stack.Screen name="Edit" component={Edit}/>
                     <Stack.Screen name="MyReferrals" component={MyReferrals} options={{title: 'Referrals'}}/>
                     <Stack.Screen name="Refer" component={Refer}/>
-                    <Stack.Screen name="AppliedJobs" component={AppliedJobs}/>
+                    <Stack.Screen name="AppliedJobs" component={AppliedJobs} options={{title: ''}}/>
+                    <Stack.Screen name="ViewDescription" component={ViewDescription}
+                                  options={{title: 'Job Description'}}/>
+                    <Stack.Screen name="ViewApplication" component={ViewApplication}
+                                  options={{title: 'Application View'}}/>
+                    <Stack.Screen name="Feedbacks" component={Feedback} options={{title: ''}}/>
                 </Stack.Navigator>
             </PersistGate>
         </Provider>
