@@ -105,7 +105,7 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
                         <View>
                             {err && <Text style={styles.errorText}>{err}</Text>}
                         </View>
-                        <TouchableOpacity onPress={handleEmail}>
+                        <TouchableOpacity onPress={()=> handleEmail()}>
                             {
                                 loading ?
                                     <ActivityIndicator size="small" color="#367c2b"
@@ -151,8 +151,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 25,
         paddingTop: 20,
-        borderStyle: "solid",
-        borderTopWidth: 2
     },
     parentButton: {
         flexDirection: "row",
