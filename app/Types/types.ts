@@ -1,4 +1,4 @@
-import {DocumentPickerResponse} from "react-native-document-picker";
+import exp from "node:constants";
 
 export type RootState = {
     userInfo: User,
@@ -77,7 +77,10 @@ export type RootStackParamList = {
     Edit: { job: Job },
     MyReferrals: { referrals: Referral[] },
     Refer: undefined,
-    AppliedJobs: {jobs: Application[]}
+    AppliedJobs: {jobs: Application[]},
+    ViewDescription: {application: Application},
+    ViewApplication: {application: Application},
+    Feedbacks: undefined
 }
 
 export type JobDetails = {
@@ -125,27 +128,6 @@ export type JobApplication = {
     employerEmail: string
 }
 
-export type JobApplicationFormData = {
-    applicantEmail: string,
-    employerEmail: string
-    jobId: string,
-    position: string,
-    resumeName: string,
-    resumeFile: DocumentPickerResponse,
-    country: string,
-    city: string,
-    postalCode: string,
-    gender: string,
-    nationality: string,
-    additionalDocName: string,
-    additionalDocFile: DocumentPickerResponse,
-    employerContact: string,
-    firstName: string,
-    applicationStatus: string,
-    isActive: string,
-    lastName: string
-}
-
 export type Referral = {
     referrerEmail: string,
     fileName: string,
@@ -158,4 +140,31 @@ export type Resume = {
     uri: string,
     type: string,
     name: string
+}
+export type WorkExperience = {
+    email: string,
+    company: string,
+    description: string,
+    startDate: string,
+    endDate: string,
+    location: string,
+    title: string,
+}
+
+export type Education = {
+    email: string,
+    school: string,
+    degree: string,
+    major: string,
+    description: string,
+    startDate: string,
+    endDate: string,
+}
+
+export type Feedback = {
+    applicantEmail: string,
+    jobId: string,
+    feedback: string,
+    feedbackDate: string,
+    status: string
 }
