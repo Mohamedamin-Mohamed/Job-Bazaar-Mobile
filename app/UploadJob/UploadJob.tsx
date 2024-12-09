@@ -50,7 +50,6 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
     }
     const handleSave = async () => {
         const hasNoMissingValues = Object.values(jobDetails).every(value => value !== '')
-        console.log('Missing value is ', hasNoMissingValues)
         if (!hasNoMissingValues) {
             Toast.show({
                 type: 'error',
@@ -74,7 +73,7 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
                 onShow: () => setDisabled(true),
                 onHide: () => {
                     setDisabled(false)
-                    navigation.navigate('UploadedJobs')
+                    navigation.replace('UploadedJobs')
                 }
             })
         } else {
@@ -99,41 +98,36 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
                             <View style={styles.inputContainer}>
                                 <Text style={styles.labels}>Job Position*</Text>
                                 <TextInput editable={!disabled} style={styles.textInputs} value={jobDetails.position}
-                                           onChangeText={text => handleChange("position", text)}
-                                           keyboardType="default"/>
+                                           onChangeText={text => handleChange("position", text)} />
                             </View>
                             <View style={styles.inputContainer}>
                                 <Text style={styles.labels}>Company*</Text>
                                 <TextInput editable={!disabled} style={styles.textInputs} value={jobDetails.company}
-                                           onChangeText={text => handleChange("company", text)} keyboardType="default"/>
+                                           onChangeText={text => handleChange("company", text)} />
                             </View>
                         </View>
                         <View style={styles.row}>
                             <View style={styles.inputContainer}>
                                 <Text style={styles.labels}>Job Location*</Text>
                                 <TextInput editable={!disabled} style={styles.textInputs} value={jobDetails.location}
-                                           onChangeText={text => handleChange("location", text)}
-                                           keyboardType="default"/>
+                                           onChangeText={text => handleChange("location", text)} />
                             </View>
                             <View style={styles.inputContainer}>
                                 <Text style={styles.labels}>Workplace Type*</Text>
                                 <WorkPlaceTypeDropDown handleChange={handleChange} workPlace={jobDetails.workPlace}
                                                        disabled={disabled}/>
-                                {/*<TextInput style={styles.textInputs} value={jobDetails.workPlace} onChangeText={text => handleChange("workPlace", text)} keyboardType="default"/>*/}
                             </View>
                         </View>
                         <View style={styles.row}>
                             <View style={styles.inputContainer}>
                                 <Text style={styles.labels}>Job Function*</Text>
                                 <TextInput editable={!disabled} style={styles.textInputs} value={jobDetails.jobFunction}
-                                           onChangeText={text => handleChange("jobFunction", text)}
-                                           keyboardType="default"/>
+                                           onChangeText={text => handleChange("jobFunction", text)} />
                             </View>
                             <View style={[styles.inputContainer, {zIndex: 10, position: "relative"}]}>
                                 <Text style={styles.labels}>Job Type*</Text>
                                 <JobTypeDropDown handleChange={handleChange} jobType={jobDetails.jobType}
                                                  disabled={disabled}/>
-                                {/*<TextInput style={styles.textInputs} value={jobDetails.jobType} onChangeText={text => handleChange("jobType", text)} keyboardType="default"/>*/}
                             </View>
                         </View>
                         <View style={styles.row}>
