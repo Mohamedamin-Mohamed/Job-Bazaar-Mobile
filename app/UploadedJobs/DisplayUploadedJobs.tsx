@@ -15,10 +15,6 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
     navigation: UploadedJobsNavigationProp
 }) => {
 
-    /*
-    idea here is to display the jobs by simply using job id the name of the job, the job poster then when a user clicks on the job, then display a modal
-    presentation that gives description of the job such as location, requirements, job type, work-place type and so on.
-     */
     const initialJobDetails: Job = {
         position: '',
         company: '',
@@ -144,7 +140,7 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
 const styles = StyleSheet.create({
     containerParent: {
         padding: 24,
-        gap: 12
+        gap: 12,
     },
     containers: {
         padding: 16,
@@ -157,7 +153,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "red",
+        borderBottomColor: "gray",
         paddingBottom: 10,
     }
 })
