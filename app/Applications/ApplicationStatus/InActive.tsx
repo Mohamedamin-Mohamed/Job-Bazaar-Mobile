@@ -34,6 +34,15 @@ const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps
         }
         setClicked({[jobId]: true})
     }
+
+    const handleClickClose = (jobId: string) => {
+        setClicked({[jobId]: false})
+    }
+
+    const viewDescription = (application: Application) => {
+        navigation.navigate('ViewDescription', {application: application})
+    }
+
     return (
         <View>
             {inActiveApplications > 0 ?
@@ -42,21 +51,18 @@ const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps
                     {sortedAppliedJobs.map((application) => (
                         application.isActive === 'false' && (
                             <View key={application.jobId} style={styles.childViews}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => viewDescription(application)}>
                                     <Text style={styles.positionText}>{application.position}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handleClick(application.jobId)}>
                                     <Text style={{fontSize: 20}}>...</Text>
                                 </TouchableOpacity>
                                 {clicked[application.jobId] && (
-                                    <ApplicationOptions/>
+                                    <ApplicationOptions navigation={navigation} application={application} handleClickClose={handleClickClose} />
                                 )}
                             </View>
                         )
                     ))}
-                    {applicationOptions && (
-                        <ApplicationOptions/>
-                    )}
                 </>
                 : <NoApplications navigation={navigation}/>}
         </View>
@@ -72,8 +78,9 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     positionText: {
-        fontSize: 16,
+        fontSize: 18,
         color: "#0875e1",
+        marginTop: 4
     },
 })
 export default InActive
