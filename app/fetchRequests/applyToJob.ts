@@ -5,7 +5,7 @@ const applyToJob = async (formData: FormData) => {
     if (!token) {
         throw new Error('No token available')
     }
-    return await fetch('http://192.168.1.252:8080/api/applications/add', {
+    return await fetch('http:localhost:8080/api/applications/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
