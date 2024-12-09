@@ -1,8 +1,6 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import mimeTypes from "../Types/mimeTypes";
-import WebView from "react-native-webview";
-
-
+//import PdfViewer from "rn-pdf-reader-js"
 interface ResumeViewerProps {
     handleDisplayModel: () => void;
     showModal: boolean;
@@ -10,9 +8,9 @@ interface ResumeViewerProps {
 }
 
 const ResumeViewer = ({handleDisplayModel, showModal, resumeDetails}: ResumeViewerProps) => {
-    // Ensure the file extension is lowercase for consistency
     const fileExtension = resumeDetails.resumeName.split('.').pop() as keyof typeof mimeTypes;
     const mimeType = mimeTypes[`${fileExtension}`] || 'application/octet-stream';
+
     //Convert the encoded base64 string to a data URL
     const resumeDataUri = `data:${mimeType};base64,${resumeDetails.resume}`;
     return (
@@ -26,7 +24,7 @@ const ResumeViewer = ({handleDisplayModel, showModal, resumeDetails}: ResumeView
                     <TouchableOpacity onPress={handleDisplayModel} style={styles.closeButton}>
                         <Text style={styles.closeButtonText}>Close</Text>
                     </TouchableOpacity>
-                    <WebView source={{uri: resumeDataUri}}/>
+                    {/*<PdfViewer source={{uri: resumeDataUri}}/>*/}
                 </View>
             </View>
         </Modal>
