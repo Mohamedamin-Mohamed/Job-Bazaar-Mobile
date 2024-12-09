@@ -1,12 +1,13 @@
-import {Text, View} from "react-native";
+import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {useEffect, useState} from "react";
-import {Feedback, RootState} from "@/app/Types/types";
+import {Feedback as FeedbackType, RootState} from "@/app/Types/types";
 import getFeedbacks from "@/app/fetchRequests/getFeedbacks";
 import {useSelector} from "react-redux";
+import FeedbackRequests from "@/app/CareerHub/Feedbacks/FeedbackRequests";
 
 const Feedback = () => {
     const [loading, setLoading] = useState(false)
-    const [feedbacks, setFeedbacks] = useState<Feedback | null>(null)
+    const [feedbacks, setFeedbacks] = useState<FeedbackType[] | null>(null)
 
     const applicantEmail = useSelector((state: RootState) => state.userInfo.email)
 
@@ -33,8 +34,28 @@ const Feedback = () => {
 
     return (
         <View>
-            <Text>Under Construction</Text>
+            {feedbacks ? (
+                    <View>
+                        <FeedbackRequests feedbacks={feedbacks} />
+                    </View>
+                ) :
+                <ActivityIndicator size="large" color="#367c2cb"/>
+            }
+
         </View>
     )
 }
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    childContainer: {
+        backgroundColor: "white",
+        padding: 24,
+        borderColor: "gray",
+        borderRadius: 4,
+        borderWidth: 1
+    }
+})
 export default Feedback
