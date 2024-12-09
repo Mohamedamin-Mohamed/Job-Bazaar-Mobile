@@ -7,3 +7,4 @@ const Location = ()=>{
         </View>
     )
 }
+export default Location
