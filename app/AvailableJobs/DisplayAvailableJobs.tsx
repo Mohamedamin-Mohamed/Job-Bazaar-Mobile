@@ -32,7 +32,9 @@ const DisplayAvailableJobs = ({availableJobs, navigation}: {
         jobStatus: '',
         postedDate: '',
     }
-    const numberOfActiveJobs = availableJobs.map(job => job.jobStatus === 'active').length
+
+    const numberOfActiveJobs = availableJobs.filter(job => job.jobStatus === 'active').length
+
     const [jobById, setJobById] = useState<Job>(initialJobDetails)
     const [clicked, setClicked] = useState<Record<string, boolean>>({})
     const [loading, setLoading] = useState(false)
@@ -150,8 +152,7 @@ const styles = StyleSheet.create({
         marginLeft: 2,
         fontSize: 18,
         marginBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "red",
+        borderBottomWidth: 0.4,
         paddingBottom: 10,
     }
 })
