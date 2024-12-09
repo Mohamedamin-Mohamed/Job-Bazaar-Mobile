@@ -8,9 +8,10 @@ import {useEffect, useState} from "react";
 import getAppliedJobs from "../fetchRequests/getAppliedJobs";
 import getUploadedJobs from "../fetchRequests/getUploadedJobs";
 import getReferrals from "../fetchRequests/getReferrals";
-import countActiveApplications from "../countJobsOrApplications/countActiveApplications";
+import countActiveApplications from "../countJobsOrApplications/countApplications";
 import countJobs from "../countJobsOrApplications/countJobs";
 import {NavigationProp} from "@react-navigation/core";
+import countApplications from "../countJobsOrApplications/countApplications";
 
 type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
 
@@ -51,7 +52,8 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
 
     useEffect(() => {
         if (role === 'Applicant') {
-            setCount(countActiveApplications(records as Application[]));
+            const{active, } = countApplications(records as Application[])
+            setCount(active);
         } else {
             setCount(countJobs(records as Job[]));
         }
