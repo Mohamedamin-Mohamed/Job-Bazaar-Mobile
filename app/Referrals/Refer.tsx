@@ -38,8 +38,6 @@ const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
             // Prepare form data based on updated resume details
             const formData = referralFormData({name, uri, type}, userInfo);
 
-            console.log('Form data is', formData);
-
             addReferral(formData)
                 .then(async (response) => {
                     const text = await response.text();
