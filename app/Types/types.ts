@@ -70,7 +70,7 @@ export type RootStackParamList = {
     ResetPassword: undefined,
     CareerHub: undefined,
     UploadedJobs: undefined,
-    CareerInterests: undefined,
+    Profile: undefined,
     UploadJob: undefined,
     AvailableJobs: undefined,
     Apply: { job: Job },
