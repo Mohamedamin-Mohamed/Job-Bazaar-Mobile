@@ -5,6 +5,7 @@ import getUserInfo from "../fetchRequests/getUserInfo";
 import {StackNavigationProp} from "@react-navigation/stack";
 import applicationChecker from "../fetchRequests/applicationChecker";
 import {useSelector} from "react-redux";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 type UploadedJobsNavigationProp = StackNavigationProp<RootStackParamList, 'UploadedJobs'>
 type AvailableJobsNavigationProp = StackNavigationProp<RootStackParamList, 'AvailableJobs'>
@@ -69,50 +70,49 @@ const JobsModal = ({job, handleDisplayModel, role, navigation}: {
         else navigation.navigate('Edit', {job: job})
     }
 
+    const renderButtonLabel = () => {
+        if (role === 'Employer') return 'Edit Job';
+        return applied ? 'Already Applied' : 'Apply Now';
+    };
+
     return (
         <View>
             {names && (
                 <Modal
                     transparent={true}
                     animationType="slide"
-                    visible={true}
-                >
-                    <TouchableOpacity
-                        style={styles.modalOverlay}
-                        onPress={handleDisplayModel} // Close modal when pressing outside
-                    >
+                    visible={!!names}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableOpacity
+                            style={StyleSheet.absoluteFillObject}
+                            onPress={handleDisplayModel}/>
                         <View style={styles.modalContent}>
-                            <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-                                {/* Prevent closing when clicking inside the modal */}
-                                {job && (
-                                    <>
-                                        <View style={{flexDirection: "row"}}>
-                                            <Text style={styles.title}>{job.position}</Text>
-                                            <TouchableOpacity
-                                                style={[!applied && {marginLeft: "auto"}]}
-                                                onPress={() => handleNavigation()}
-                                                disabled={applied}
-                                            >
-                                                <Text
-                                                    style={[styles.buttonText, applied && {width: 140}]}>{role === 'Employer' ? 'Edit Job' : applied ? 'Already Applied' : 'Apply Now'}</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <Text style={styles.location}>Location: {job.location}</Text>
-                                        <Text style={styles.function}>Function: {job.jobFunction}</Text>
-                                        <Text style={styles.company}>Company: {job.company}</Text>
-                                        <Text style={styles.jobUploader}>Hiring
-                                            Manager: {names?.firstName} {names?.lastName}</Text>
-                                        <Text style={styles.jobType}>Job Type: {job.jobType}</Text>
-                                        <Text style={styles.jobId}>Job ID: {job.jobId}</Text>
-                                    </>
-                                )}
-                                <TouchableOpacity onPress={handleDisplayModel} style={styles.closeButton}>
-                                    <Text style={styles.closeButtonText}>Close</Text>
+                            <View style={{flexDirection: "row"}}>
+                                <Text style={styles.title}>{job.position}</Text>
+                                <TouchableOpacity onPress={handleDisplayModel} style={{marginLeft: "auto"}}>
+                                    <Icon name="close" size={30}/>
                                 </TouchableOpacity>
+                            </View>
+                            <Text style={styles.location}>Location: {job.location}</Text>
+                            <Text style={styles.function}>Function: {job.jobFunction}</Text>
+                            <Text style={styles.company}>Company: {job.company}</Text>
+                            <Text style={styles.jobUploader}>
+                                Hiring Manager: {names.firstName} {names.lastName}
+                            </Text>
+                            <Text style={styles.jobType}>Job Type: {job.jobType}</Text>
+                            <Text style={styles.jobId}>Job ID: {job.jobId}</Text>
+
+                            <TouchableOpacity
+                                style={[styles.applyButton, applied && styles.disabledButton]}
+                                onPress={handleNavigation}
+                                disabled={applied}>
+                                <Text style={styles.applyButtonText}>{renderButtonLabel()}</Text>
                             </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 </Modal>
+
+
             )}
         </View>
     )
@@ -169,25 +169,32 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         marginTop: 20,
+        backgroundColor: '#ffed00',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        fontSize: 20
+    },
+    closeButtonText: {
+        fontWeight: 'bold',
+        fontSize: 18
+    },
+    applyButton: {
         backgroundColor: '#367c2b',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
+        marginTop: 20,
     },
-    closeButtonText: {
+    disabledButton: {
+        backgroundColor: '#cccccc',
+    },
+    applyButtonText: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 18
-    },
-    buttonText: {
-        backgroundColor: "#ffed00",
-        fontWeight: "bold",
-        width: 104,
-        height: 36,
-        textAlign: "center",
-        padding: 8,
         fontSize: 16,
     },
+
 });
 
 export default JobsModal;

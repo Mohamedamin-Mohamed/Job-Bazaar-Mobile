@@ -6,7 +6,7 @@ type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
 
 const Interests = ({navigation}: { navigation: CareerHubProp }) => {
     const handleNavigation = () => {
-        navigation.navigate('CareerInterests')
+        navigation.navigate('Profile')
     }
     return (
         <View style={styles.container}>
@@ -14,10 +14,10 @@ const Interests = ({navigation}: { navigation: CareerHubProp }) => {
                 <View>
                     <Text style={styles.headerText}>Set your career interests</Text>
                     <View>
-                        <Text style={{fontSize: 15, marginTop: 16, textAlign: "center"}}>Share your career goals, and
-                            we'll create a plan for you.</Text>
+                        <Text style={{fontSize: 15, marginTop: 16, textAlign: "center"}}>Tell us what you want to achieve in your career,
+                            and we'll put a plan together for you..</Text>
                         <View style={{justifyContent: "center", alignItems: "center"}}>
-                            <TouchableOpacity onPress={() => handleNavigation} style={styles.interestsButton}>
+                            <TouchableOpacity onPress={() => handleNavigation()} style={styles.interestsButton}>
                                 <Text style={{fontSize: 18}}>Set Your Career Interests</Text>
                             </TouchableOpacity>
                         </View>
