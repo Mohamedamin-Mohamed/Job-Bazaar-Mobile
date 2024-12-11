@@ -43,7 +43,7 @@ const AvailableJobs = ({navigation}: { navigation: AvailableJobsNavigationProp }
     }, []);
 
     const hasActiveJobs = availableJobs.some(job => job.jobStatus === "active");
-
+    
     return (
         <View style={{justifyContent: "center", alignItems: "center", flex: 2.5}}>
             {loading ? <ActivityIndicator size="large" /> : <>
