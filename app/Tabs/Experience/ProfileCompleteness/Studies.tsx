@@ -2,43 +2,61 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useState} from "react";
 import AddRoleSkillModal from "@/app/Modals/AddRoleSkillModal";
 
-const Education = () => {
+const Studies = () => {
     const [showModal, setShowModal] = useState(false)
-    const image = require('../../../Images/resume.png')
+    const image = require('../../../Images/education.png')
 
     const handleModalDisplay = () => {
         setShowModal(prevState => !prevState)
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             <View style={styles.headerView}>
-                <Text>Showcase your skills</Text>
+                <Text style={styles.headerText}>Show what you’ve learned</Text>
                 <Image source={image} style={styles.image}/>
             </View>
-            <Text>Show what you know to your teammates and managers. Get recommendations to grow.</Text>
+            <Text style={styles.normalText}>Enter your school, major and degree so your teammates get to know more about you.</Text>
             <TouchableOpacity style={styles.uploadView}>
-                <Text style={styles.uploadButton}>Add Skills</Text>
+                <Text style={styles.uploadButton}>Add Education</Text>
             </TouchableOpacity>
             {showModal && <AddRoleSkillModal type="skills" handleModalDisplay={handleModalDisplay}/>}
         </View>
     )
 }
 const styles = StyleSheet.create({
-    image: {
-        width: 90,
-        height: 90,
-        marginLeft: "auto"
+    container: {
+        backgroundColor: "white",
+        borderWidth: 0.2,
+        borderRadius: 4,
+        borderColor: "gray",
+        padding: 10,
     },
     headerView: {
         flexDirection: "row"
     },
+    headerText: {
+        fontSize: 18,
+        fontWeight: "500",
+        width: "60%"
+    },
+    image: {
+        width: 64,
+        height: 64,
+        marginLeft: "auto"
+    },
+    normalText: {
+        fontSize: 16,
+        marginVertical: 20
+    },
     uploadView: {
         width: 140,
-        height: 36
+        height: 36,
+        borderRadius: 3,
+        backgroundColor: "#ffde00",
+        justifyContent: "center",
+        alignItems: "center",
+        marginVertical: 20
     },
-    uploadButton: {
-        color: "#ffde00"
-    }
 })
-export default Education
+export default Studies
