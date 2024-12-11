@@ -13,7 +13,6 @@ import {persistor, store} from "./Redux/store";
 import {PersistGate} from "redux-persist/integration/react";
 import UploadedJobs from "./UploadedJobs/UploadedJobs";
 import {RootStackParamList} from "./Types/types";
-import CareerInterests from "./CareerHub/CareerInterests";
 import UploadJob from "./UploadJob/UploadJob";
 import AvailableJobs from "./AvailableJobs/AvailableJobs";
 import Apply from "./ApplyJob/Apply";
@@ -24,6 +23,7 @@ import AppliedJobs from "./Applications/AppliedJobs";
 import ViewDescription from "@/app/Applications/ViewJobDescription/ViewDescription";
 import ViewApplication from "@/app/Applications/ViewJobDescription/ViewApplication";
 import Feedback from "@/app/CareerHub/Feedbacks/Feedback";
+import ProfileTabNavigator from "@/app/Tabs/ProfileTabNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const App = () => {
@@ -41,7 +41,7 @@ const App = () => {
                     <Stack.Screen options={{title: ''}} name="ResetPassword" component={ResetPassword}/>
                     <Stack.Screen name="CareerHub" component={CareerHub}/>
                     <Stack.Screen name="UploadedJobs" component={UploadedJobs}/>
-                    <Stack.Screen name="CareerInterests" component={CareerInterests}/>
+                    <Stack.Screen name="Profile" component={ProfileTabNavigator} options={{title: ''}}/>
                     <Stack.Screen name="UploadJob" component={UploadJob}/>
                     <Stack.Screen name="AvailableJobs" component={AvailableJobs}/>
                     <Stack.Screen name="Apply" component={Apply}/>
