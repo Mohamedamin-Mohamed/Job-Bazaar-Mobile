@@ -64,9 +64,9 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
                     onHide: () => {
                         setDisabled(false)
                         dispatch(setUserInfo(user))
-                        /*debug the below line becoz when I try to use NavigationProp, i cannot use replace method of navigation but when I use StackNavigationProp,
+                        /*debug the below line becoz when I try to use NavigationProp, I cannot use replace method of navigation but when I use StackNavigationProp,
                         I can use but the screen refreshes */
-                        navigation.navigate('CareerHub')
+                        navigation.replace('CareerHub')
                     }
                 })
             } else {
