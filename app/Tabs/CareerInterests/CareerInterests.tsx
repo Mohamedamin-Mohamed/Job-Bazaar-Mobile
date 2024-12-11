@@ -1,7 +1,8 @@
 import {ScrollView, StyleSheet, View} from "react-native"
-import Skills from "@/app/CareerHub/CareerInterests/Skill/Skills";
-import Roles from "@/app/CareerHub/CareerInterests/Role/Roles";
-import RoleBased from "@/app/CareerHub/CareerInterests/Role/RoleBased";
+import Skills from "@/app/Tabs/CareerInterests/Skill/Skills";
+import Roles from "@/app/Tabs/CareerInterests/Role/Roles";
+import RoleBased from "@/app/Tabs/CareerInterests/Role/RoleBased";
+
 
 const CareerInterests = () => {
     return (
