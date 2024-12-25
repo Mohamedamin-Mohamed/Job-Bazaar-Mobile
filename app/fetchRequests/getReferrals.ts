@@ -5,7 +5,7 @@ const getReferrals = async (referrerEmail: string, controller: AbortController) 
     if (!token) {
         throw new Error('No token available')
     }
-    return await fetch(`http:localhost:8080/api/referrals/get-referrals/${referrerEmail}`, {
+    return await fetch(`http://192.168.1.252:8080/api/referrals/get-referrals/${referrerEmail}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`

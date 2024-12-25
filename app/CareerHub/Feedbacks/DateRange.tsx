@@ -60,10 +60,7 @@ const DateRange = ({setStartDate, setEndDate, dates}: DateRangeProps) => {
                         handleCalendarsHide()
                     }}>
                         <Text style={styles.headerText}>Date Range</Text>
-                        <Text style={[{
-                            fontSize: 24,
-                            color: "gray",
-                        }, isVisible && styles.rotateButton]}>{'>'}</Text>
+                        <Icon name={!isVisible ? "chevron-right" : "expand-more"} size={30} color="gray"/>
 
                     </TouchableOpacity>
 
@@ -78,7 +75,7 @@ const DateRange = ({setStartDate, setEndDate, dates}: DateRangeProps) => {
                             <Text style={styles.buttonText}>{getFormattedDate(dates.startDate)}</Text>
                         </TouchableOpacity>
 
-                        <Icon name="arrow-right-alt" size={24} />
+                        <Icon name="arrow-right-alt" size={24}/>
                         <TouchableOpacity activeOpacity={0.8}
                                           style={styles.button}
                                           onPress={() => handleToggle('end')}>
@@ -143,9 +140,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: "#007AFF",
     },
-    rotateButton: {
-        transform: [{rotate: "90deg"}]
-    },
     headerView: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -163,7 +157,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         top: 100,
-        zIndex: 1,
+        zIndex: 100,
         marginTop: 20,
     }
 })

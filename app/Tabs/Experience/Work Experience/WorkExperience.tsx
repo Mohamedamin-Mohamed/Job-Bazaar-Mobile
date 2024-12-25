@@ -1,92 +1,163 @@
-import {ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
+import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {RootState, WorkExperience as WorkExperienceType} from "@/app/Types/types";
+import {RootState, RootTabParamList, WorkExperience as WorkExperienceType} from "@/app/Types/types";
 import getWorkExperience from "@/app/fetchRequests/getWorkExperience";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import imageSearch from "@/app/fetchRequests/imageSearch";
+import {format} from "date-fns";
+import Toast from "react-native-toast-message";
+import deleteWorkExperience from "@/app/fetchRequests/deleteWorkExperience";
+import AddWorkExperience from "@/app/Modals/AddWorkExperience";
+import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 
-const WorkExperience = () => {
-    const [workExperience, setWorkExperience] = useState<WorkExperienceType | null>(null)
-    const [imgUrl, setImgUrl] = useState()
-    const [err, setErr] = useState('')
-    const [loading, setLoading] = useState(false)
-    const applicantEmail = useSelector((state: RootState) => state.userInfo).email
+type NavigationProp = BottomTabScreenProps<RootTabParamList, 'Experience'>;
 
-    const fetchEducationWorkExp = async (controller: AbortController) => {
-        setLoading(true)
+const WorkExperience = ({navigation}: NavigationProp) => {
+    const [workExperience, setWorkExperience] = useState<WorkExperienceType | null>(null);
+    const [imgUrl, setImgUrl] = useState<string | null>(null);
+    const fallBackImageUrl = require('../../../Images/COLOURBOX50538417.webp')
+    const [loading, setLoading] = useState(false);
+    const [displayModal, setDisplayModal] = useState(false)
+    const applicantEmail = useSelector((state: RootState) => state.userInfo).email;
+
+    const fetchWorkExp = async (controller: AbortController) => {
+        setLoading(true);
         try {
             const workExperienceResponse = await getWorkExperience(applicantEmail, controller);
             if (workExperienceResponse.ok) {
-                const workExperienceData = await workExperienceResponse.json()
-                setWorkExperience(workExperienceData)
-            } else {
-                console.error("Failed to fetch work experience:", workExperienceResponse.statusText)
+                const workExperienceData = await workExperienceResponse.json();
+                setWorkExperience(workExperienceData);
             }
         } catch (err) {
-            console.error("Couldn't fetch work experience, ", err)
+            console.error("Couldn't fetch work experience,", err);
+
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     const fetchImageUrl = async (controller: AbortController) => {
-        setLoading(true)
+        setLoading(true);
         try {
-            const response = await imageSearch('', controller)
-            const dataJson = await response.json()
-            const data = dataJson.data
-            if (data.items && data.items.length > 0) {
-                setImgUrl(data.items[7].link)
+            const response = await imageSearch(`${workExperience?.company} company logo`, controller);
+            if (response.ok) {
+                const dataJson = await response.json();
+                const data = dataJson.data;
+                if (data?.items && data.items.length > 0) {
+                    setImgUrl(data.items[0].link); // Use the first item image url
+                } else {
+                    setImgUrl(null);
+                }
             } else {
-                setErr('No images found')
+                setImgUrl(null);
             }
+        } catch (err) {
+            console.error(err);
+            setImgUrl(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!displayModal) {
+            const controller = new AbortController();
+            fetchWorkExp(controller).catch(err => console.error(err))
+            return () => controller.abort();
+        }
+    }, [displayModal]);
+
+    useEffect(() => {
+        if (workExperience?.company) {
+            const controller = new AbortController();
+            fetchImageUrl(controller).catch(console.error);
+            return () => controller.abort();
+        }
+    }, [workExperience]);
+
+
+    const formatDate = () => {
+        const currDate = new Date();
+        return format(currDate, 'MM-yyyy');
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await deleteWorkExperience(applicantEmail)
+            const message = await response.text();
+            const success = response.ok
+            if (success) {
+                setWorkExperience(null)
+            }
+            Toast.show({
+                type: success ? "success" : "error",
+                text1: message,
+                onHide: () => navigation.navigate('Experience')
+            })
         } catch (err) {
             console.error(err)
         } finally {
             setLoading(false)
         }
-
     }
-    useEffect(() => {
-        const controller = new AbortController()
-        fetchEducationWorkExp(controller).catch(err => console.error(err))
-        return () => {
-            controller.abort()
-        }
-    }, []);
 
+    const handleModalDisplay = () => {
+        setDisplayModal(prevState => !prevState)
+    }
+    const handleWorkExperience = () => {
+        setWorkExperience(null)
+    }
     return (
-        !loading ?
+        !loading ? (
             <View style={styles.container}>
+                <Toast position="top"/>
                 <View>
-                    <View style={[workExperience && styles.educationPresent]}>
+                    <View style={styles.iconsView}>
                         <Text style={styles.heading}>Work Experience</Text>
-                        {workExperience && (
+                        {workExperience ? (
                             <View style={styles.icon}>
-                                <Icon name="delete" size={24} color="gray"/>
-                                <Icon name="edit" size={24} color="gray"/>
+                                <Icon name="delete" size={24} color="gray" onPress={() => handleDelete()}/>
+                                <Icon name="edit" size={24} color="gray" onPress={() => handleModalDisplay()}/>
                             </View>
-                        )}
+                        ) : <Icon name="add" size={24} color="gray" onPress={() => handleModalDisplay()}/>}
                     </View>
-                    {!workExperience &&
-                        < View style={styles.childContainer}>
+                    {!workExperience && (
+                        <View style={styles.childContainer}>
                             <Text>
-                                The education on the resume that you upload to Career Hub is imported into this
-                                section of
-                                your profile. You can manually edit information in this section.
+                                The work experience data is presented in the Profile Assistant for you
+                                to insert into your profile. Additionally, this contains data on the resume that you
+                                upload to Career Hub.
                             </Text>
                         </View>
-                    }
+                    )}
                 </View>
-                <View style={styles.details}>
-                    <Image source={imgUrl} style={styles.image}/>
-                    <Text>{workExperience?.title}</Text>
-                </View>
+                {workExperience &&
+                    <View style={styles.details}>
+                        {imgUrl ? (
+                            <Image source={{uri: imgUrl}} style={styles.image}/>
+                        ) : (
+                            <Image source={fallBackImageUrl} style={styles.image}/>
+                        )}
+
+                        <View style={styles.workDetails}>
+                            <Text style={styles.detailsHeader}>{workExperience?.title}</Text>
+                            <Text style={styles.text}>{workExperience?.company}</Text>
+                            <Text style={styles.text}>
+                                {workExperience?.startDate} {'->'} {workExperience?.endDate === formatDate() ? "Current" : workExperience?.endDate}
+                            </Text>
+                        </View>
+                    </View>
+                }
+                {displayModal &&
+                    <AddWorkExperience handleModalDisplay={handleModalDisplay} workExperience={workExperience}
+                                       handleWorkExperience={handleWorkExperience}/>}
             </View>
-            : <ActivityIndicator size="large" color="#367c2b"/>
-    )
-}
+        ) : (
+            <ActivityIndicator size="large" color="#367c2b"/>
+        )
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -97,7 +168,7 @@ const styles = StyleSheet.create({
         marginVertical: 16,
         width: "92%",
         padding: 16,
-        paddingHorizontal: 30, // Add some padding for better layout
+        paddingHorizontal: 30,
     },
     childContainer: {
         borderWidth: 0.4,
@@ -111,7 +182,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         marginBottom: 20,
     },
-    educationPresent: {
+    iconsView: {
         flexDirection: "row",
         justifyContent: "space-between"
     },
@@ -120,12 +191,27 @@ const styles = StyleSheet.create({
         gap: 16
     },
     details: {
-        flexDirection: "row"
+        flexDirection: "row",
+        gap: 20
     },
     image: {
-        width: 100,
-        height: 100
-    }
+        width: "40%",
+        height: "38%"
+    },
+    workDetails: {
+        justifyContent: "center",
+        gap: 8
+    },
+    detailsHeader: {
+        fontWeight: "500",
+        fontSize: 20,
+        width: "60%"
+    },
+    text: {
+        color: "#8A8A8A",
+        fontSize: 18,
+    },
+
 });
 
 export default WorkExperience;

@@ -7,7 +7,7 @@ type PasswordReset = {
     createdAt: string
 }
 const passwordReset = async (requestBody: PasswordReset)=>{
-    return await fetch('http:localhost:8080/accounts/login/password-reset/', {
+    return await fetch('http://192.168.1.252:8080/accounts/login/password-reset/', {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'

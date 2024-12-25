@@ -6,15 +6,13 @@ import DisplayAppliedJobs from "./DisplayAppliedJobs";
 import getAppliedJobs from "@/app/fetchRequests/getAppliedJobs";
 import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import CompanyInfo from "@/app/Applications/ViewJobDescription/CompanyInfo";
 
 type AppliedJobsNavigationProp = NativeStackScreenProps<RootStackParamList, 'AppliedJobs'>
 
-const AppliedJobs = ({navigation, route}: AppliedJobsNavigationProp) => {
-    let {jobs} = route.params
+const AppliedJobs = ({navigation}: AppliedJobsNavigationProp) => {
     const applicantEmail = useSelector((state: RootState) => state.userInfo).email
     const [loading, setLoading] = useState(false)
-    const [appliedJobs, setAppliedJobs] = useState<Application[]>(jobs)
+    const [appliedJobs, setAppliedJobs] = useState<Application[]>([])
 
     const fetchAppliedJobs = async () => {
         setLoading(true);

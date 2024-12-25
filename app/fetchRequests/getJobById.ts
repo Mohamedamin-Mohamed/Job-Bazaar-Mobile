@@ -5,7 +5,7 @@ const getJobById = async (employerEmail: string, jobId: string, controller: Abor
     if (!token) {
         throw new Error('No token wa found')
     }
-    return await fetch(`http:localhost:8080/api/jobs/${employerEmail}/${jobId}`, {
+    return await fetch(`http://192.168.1.252:8080/api/jobs/${employerEmail}/${jobId}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`

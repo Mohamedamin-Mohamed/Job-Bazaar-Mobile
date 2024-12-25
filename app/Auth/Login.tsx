@@ -139,7 +139,7 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
                     </TouchableOpacity>
                     <View style={styles.noAccount}>
                         <Text style={{fontSize: 16, marginTop: 2}}>Don't have an account?</Text>
-                        <TouchableOpacity disabled={disabled} onPress={() => navigation.navigate('Signup')}>
+                        <TouchableOpacity disabled={disabled} onPress={() => navigation.replace('Signup')}>
                             <Text style={{marginLeft: 8, color: "#367c2b", fontWeight: "bold", fontSize: 18}}
                             >Signup</Text>
                         </TouchableOpacity>

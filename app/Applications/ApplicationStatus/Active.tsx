@@ -1,9 +1,9 @@
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
-import {Application, Job, RootStackParamList, RootState} from "../../Types/types";
+import {Application, RootStackParamList, RootState} from "../../Types/types";
 import Header from "./Header";
 import {useState} from "react";
 import ApplicationOptions from "./ApplicationOptions";
-import NoApplications from "./NoApplications";
+import NoApplications from "./NoApplicationsOrJobs";
 import {NavigationProp} from "@react-navigation/core";
 import updateApplication from "@/app/fetchRequests/updateApplication";
 import {useSelector} from "react-redux";
@@ -12,20 +12,22 @@ type ActiveProps = {
     navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>,
     appliedJobs: Application[],
     activeApplications: number,
-    refreshJobs: () => void
+    refreshJobs: () => void,
+    jobStatuses: Record<string, string>
 }
-const Active = ({navigation, appliedJobs, activeApplications, refreshJobs}: ActiveProps) => {
+
+const Active = ({navigation, appliedJobs, activeApplications, refreshJobs, jobStatuses}: ActiveProps) => {
     const [clicked, setClicked] = useState<Record<string, boolean>>({})
     const [loading, setLoading] = useState(false)
-    const [jobs, setJobs] = useState<Job[]>([])
-    const applicantEmail = useSelector((state: RootState) => state.userInfo).email
+
+    const role = useSelector((state: RootState) => state.userInfo).role
 
     const parseDate = (dateString: string) => {
         const [month, day, year] = dateString.split('-').map(Number);
         return new Date(year, month - 1, day);
     };
 
-    // sorting appliedJobs by applicationDate
+    // sort appliedJobs by applicationDate
     const sortedAppliedJobs = [...appliedJobs].sort((a, b) => {
         const dateA = parseDate(a.applicationDate).getTime()
         const dateB = parseDate(b.applicationDate).getTime()
@@ -47,7 +49,7 @@ const Active = ({navigation, appliedJobs, activeApplications, refreshJobs}: Acti
     }
 
     const viewDescription = (application: Application) => {
-        navigation.navigate('ViewDescription', {application})
+        navigation.navigate('ViewApplicationDescription', {application})
     }
 
     const handleClickClose = (jobId: string) => {
@@ -79,7 +81,7 @@ const Active = ({navigation, appliedJobs, activeApplications, refreshJobs}: Acti
                         <>
                             <Header/>
                             {sortedAppliedJobs.map((application) => (
-                                application.isActive === 'true' && (
+                                application.isActive === 'true' && jobStatuses[application.jobId] === 'active' && (
                                     <View key={application.jobId} style={styles.childViews}>
                                         <TouchableOpacity onPress={() => viewDescription(application)}>
                                             <Text style={styles.positionText}>{application.position}</Text>
@@ -97,7 +99,7 @@ const Active = ({navigation, appliedJobs, activeApplications, refreshJobs}: Acti
                             ))}
 
                         </>
-                        : <NoApplications navigation={navigation}/>}
+                        : <NoApplications navigation={navigation} role={role}/>}
                 </View>
             }
         </TouchableWithoutFeedback>

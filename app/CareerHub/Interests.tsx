@@ -1,8 +1,8 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {RootStackParamList} from "../Types/types";
-import {NavigationProp} from "@react-navigation/core";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
+type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
 
 const Interests = ({navigation}: { navigation: CareerHubProp }) => {
     const handleNavigation = () => {
@@ -14,7 +14,8 @@ const Interests = ({navigation}: { navigation: CareerHubProp }) => {
                 <View>
                     <Text style={styles.headerText}>Set your career interests</Text>
                     <View>
-                        <Text style={{fontSize: 15, marginTop: 16, textAlign: "center"}}>Tell us what you want to achieve in your career,
+                        <Text style={{fontSize: 15, marginTop: 16, textAlign: "center"}}>Tell us what you want to
+                            achieve in your career,
                             and we'll put a plan together for you..</Text>
                         <View style={{justifyContent: "center", alignItems: "center"}}>
                             <TouchableOpacity onPress={() => handleNavigation()} style={styles.interestsButton}>

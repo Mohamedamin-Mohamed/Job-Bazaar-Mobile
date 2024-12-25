@@ -3,6 +3,7 @@ import NoFeedback from "@/app/CareerHub/Feedbacks/NoFeedback";
 import {Feedback} from "@/app/Types/types";
 import {useState} from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FeedbackDetailsModal from "@/app/Modals/FeedbackDetailsModal";
 
 interface FeedbackDetailsProps {
     dates: {
@@ -15,6 +16,8 @@ interface FeedbackDetailsProps {
 const FeedbackDetails = ({dates, feedbacks}: FeedbackDetailsProps) => {
     //state to be used to toggle display of feedbacks based on pressing of feedback date, by default its descending
     const [isDescendingFilterDate, setDescendingFilterDate] = useState(true)
+    const [showModal, setShowModal] = useState(false)
+    const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null)
 
     const parseDate = (date: string) => {
         const [month, year, day] = date.split('-').map(Number)
@@ -32,10 +35,15 @@ const FeedbackDetails = ({dates, feedbacks}: FeedbackDetailsProps) => {
 
         return isDescendingFilterDate ? dateB - dateA : dateA - dateB
     })
+
+    const handleDisplayModal = () => {
+        setShowModal(prevState => !prevState)
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.childContainer}>
-                <Text style={styles.headerText}>Feedback Details</Text>
+                <Text style={styles.headerText}>Feedbacks</Text>
                 <View style={styles.feedbackHeaderView}>
                     <Text style={styles.feedbackHeaderText}>Job Id</Text>
                     <TouchableOpacity style={{flexDirection: "row"}} activeOpacity={0.8}
@@ -57,27 +65,33 @@ const FeedbackDetails = ({dates, feedbacks}: FeedbackDetailsProps) => {
                     <View style={styles.parentFeedbackViews}>
                         {sortedFeedbacks.map((feedback) => (
                             <View key={feedback.jobId} style={styles.feedbacksDisplayView}>
-                                <Text style={styles.feedbackText}>{feedback.jobId}</Text>
+                                <TouchableOpacity onPress={() => {
+                                    setSelectedFeedback(feedback)
+                                    handleDisplayModal()
+                                }}>
+                                    <Text style={[styles.feedbackText, {color: "#007AFF", textDecorationLine: "underline"}]}>{feedback.jobId}</Text>
+                                </TouchableOpacity>
                                 <Text style={styles.feedbackText}>{feedback.feedbackDate}</Text>
-                                <Text style={styles.feedbackText}>{feedback.status}</Text>
+                                <Text style={[styles.feedbackText, {maxWidth: "30%"}]}>{feedback.status}</Text>
                             </View>
                         ))}
                     </View>
                     : <NoFeedback/>
                 }
             </View>
+            {selectedFeedback && showModal &&
+                <FeedbackDetailsModal feedback={selectedFeedback} handleDisplayModal={handleDisplayModal}/>}
         </View>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "white",
         marginTop: 20,
         marginHorizontal: "4%",
     },
     childContainer: {
         padding: 10,
-        backgroundColor: "white",
         borderRadius: 4,
         borderWidth: 1,
         borderColor: "white",
@@ -113,7 +127,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     feedbackText: {
-        fontSize: 18
+        fontSize: 18,
     },
     rotateButton90: {
         transform: [{rotate: "90deg"}]

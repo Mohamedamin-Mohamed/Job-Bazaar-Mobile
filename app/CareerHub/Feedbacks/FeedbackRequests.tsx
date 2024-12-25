@@ -16,9 +16,10 @@ const FeedbackRequests = ({feedbacks}: { feedbacks: Feedback[] }) => {
     }
     return (
         <View>
-            {Object.keys(feedbacks).length > 0 ? (
+            {feedbacks.length > 0 ? (
                 <ScrollView>
-                    <DateRange setStartDate={(date: Date)=> setStartDate(date)} setEndDate={(date: Date)=> setEndDate(date)} dates={dates}/>
+                    <DateRange setStartDate={(date: Date) => setStartDate(date)}
+                               setEndDate={(date: Date) => setEndDate(date)} dates={dates}/>
                     <FeedbackDetails dates={dates} feedbacks={feedbacks}/>
                 </ScrollView>
             ) : <NoFeedback/>}

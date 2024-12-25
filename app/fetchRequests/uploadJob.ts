@@ -20,8 +20,7 @@ const uploadJob = async (jobRequest: JobDetails, controller: AbortController) =>
     if (!token) {
         throw new Error('No token available')
     }
-    console.log('Job request is ', jobRequest)
-    return await fetch('http:localhost:8080/api/jobs/upload', {
+    return await fetch('http://192.168.1.252:8080/api/jobs/upload', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,

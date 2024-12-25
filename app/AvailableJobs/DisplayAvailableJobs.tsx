@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Job, RootStackParamList, RootState} from "../Types/types";
 import {useEffect, useState} from "react";
 import {StackNavigationProp} from "@react-navigation/stack";
@@ -14,10 +14,6 @@ const DisplayAvailableJobs = ({availableJobs, navigation}: {
     navigation: AvailableJobsNavigationProp
 }) => {
 
-    /*
-    idea here is to display the jobs by simply using job id the name of the job, the job poster then when a user clicks on the job, then display a modal
-    presentation that gives description of the job such as location, requirements, job type, work-place type and so on.
-     */
     const initialJobDetails: Job = {
         position: '',
         company: '',
@@ -57,19 +53,20 @@ const DisplayAvailableJobs = ({availableJobs, navigation}: {
     })
 
     const handleFetchJobById = async (employerEmail: string, jobId: string) => {
+        setLoading(true)
         try {
             const controller = new AbortController()
             const response = await getJobById(employerEmail, jobId, controller)
-            if (!response.ok) {
-                throw new Error('Failed fetch the job')
+            if (response.ok) {
+                const data = await response.json()
+                setJobById(data)
             }
-            const data = await response.json()
-            setJobById(data)
-
             if (clicked[jobId]) return
             setClicked({[jobId]: true})
         } catch (err) {
-            throw err
+            console.error(err)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -96,8 +93,8 @@ const DisplayAvailableJobs = ({availableJobs, navigation}: {
         setDisplayModal(!displayModal)
     }
     return (
-        <ScrollView>
-            <View>
+        !loading ?
+            <ScrollView>
                 <View style={styles.containerParent}>
                     <Text
                         style={styles.numberOfJobsHeader}>{numberOfActiveJobs} {numberOfActiveJobs > 1 ? "jobs" : "job"} found</Text>
@@ -133,14 +130,16 @@ const DisplayAvailableJobs = ({availableJobs, navigation}: {
                     {displayModal && <JobsModal job={jobById} handleDisplayModel={handleDisplayModel} role={role}
                                                 navigation={navigation}/>}
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+            :
+            <ActivityIndicator size="large" color="#367c2b"/>
     )
 }
 const styles = StyleSheet.create({
     containerParent: {
         padding: 24,
-        gap: 12
+        gap: 12,
+        backgroundColor: "white"
     },
     containers: {
         padding: 16,

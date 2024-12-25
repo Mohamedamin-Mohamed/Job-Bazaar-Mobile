@@ -14,7 +14,7 @@ const Roles = () => {
         <View style={styles.childContainer}>
             <View style={styles.headerView}>
                 <Text style={styles.headerText}>Roles I want</Text>
-                <Icon name="add" size={30} color="gray"/>
+                <Icon name="add" size={30} color="gray" onPress={()=> handleModalDisplay()}/>
             </View>
             <View style={styles.middleView}>
                 <Icon name="bolt" size={36} color="#367c2b"/>

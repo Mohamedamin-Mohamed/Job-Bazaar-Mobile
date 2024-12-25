@@ -8,9 +8,10 @@ const Resume = () => {
                 <Text style={styles.headerText}>Complete profile with resume</Text>
                 <Image source={image} style={styles.image}/>
             </View>
-            <Text style={styles.normalText}>Quickly and easily add your career information in just one simple step to enhance your profile.</Text>
-            <TouchableOpacity style={styles.uploadView}>
-                <Text style={styles.uploadButton}>Upload Resume</Text>
+            <Text style={styles.normalText}>Quickly and easily add your career information in just one simple step to
+                enhance your profile.</Text>
+            <TouchableOpacity style={styles.uploadView} disabled={true}>
+                <Text>Upload Resume</Text>
             </TouchableOpacity>
         </View>
     )
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     headerText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "500",
         width: "64%"
     },
@@ -37,14 +38,14 @@ const styles = StyleSheet.create({
         marginLeft: "auto"
     },
     normalText: {
-        fontSize: 16,
+        fontSize: 14,
         marginVertical: 20
     },
     uploadView: {
         width: 140,
         height: 36,
         borderRadius: 3,
-       backgroundColor: "#ffde00",
+        backgroundColor: "#ffde00",
         justifyContent: "center",
         alignItems: "center",
         marginVertical: 20

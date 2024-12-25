@@ -1,20 +1,26 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParamList} from "../../Types/types";
 import {NavigationProp} from "@react-navigation/core";
 
-type NoApplicationProp = NavigationProp<RootStackParamList, 'AppliedJobs'>
-const NoApplications = ({navigation}: { navigation: NoApplicationProp }) => {
+type NoApplicationsOrJobsNavigationProp = NavigationProp<RootStackParamList, 'AppliedJobs'> |
+    NavigationProp<RootStackParamList, 'ManagementHub'>
+
+type NoApplicationsOrJobsProps = {
+    navigation: NoApplicationsOrJobsNavigationProp,
+    role: string
+}
+
+const NoApplicationsOrJobs = ({navigation, role}: NoApplicationsOrJobsProps) => {
     const handleNavigation = () => {
-        navigation.navigate('AvailableJobs')
+        role === 'Applicant' ? navigation.navigate('AvailableJobs') : navigation.navigate('UploadJob')
     }
 
     return (
         <View style={styles.container}>
             <Image source={require('../../Images/no_application_banner.png')}/>
-            <Text style={{fontSize: 16}}>You have no applications</Text>
+            <Text style={{fontSize: 16}}>{role === 'Applicant' ? "You have no applications" : "You have no jobs"}</Text>
             <TouchableOpacity style={styles.button} onPress={() => handleNavigation()}>
-                <Text style={styles.buttonText}>Search For Jobs</Text>
+                <Text style={styles.buttonText}>{role === 'Applicant' ? "Search For Jobs" : "Upload a Job"}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -41,5 +47,4 @@ const styles = StyleSheet.create({
     }
 })
 
-
-export default NoApplications
+export default NoApplicationsOrJobs

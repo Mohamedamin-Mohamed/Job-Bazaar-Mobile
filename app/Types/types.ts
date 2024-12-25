@@ -1,4 +1,4 @@
-import exp from "node:constants";
+import ViewJob from "@/app/Management/ViewJob/ViewJobDescription";
 
 export type RootState = {
     userInfo: User,
@@ -59,8 +59,27 @@ export type Application = {
     resumeDetails: Record<string, string> | null,
     resumeName: string
 }
-
+export type JobApplicationData = {
+    resume: string;
+    lastName: string;
+    country: string;
+    gender: string;
+    city: string;
+    postalCode: string;
+    isActive: boolean;
+    applicantEmail: string;
+    resumeName: string;
+    jobId: string;
+    firstName: string;
+    applicationStatus: string;
+    nationality: string;
+    employerEmail: string;
+    position: string;
+    employerContact: string;
+    applicationDate: string;
+};
 export type RootStackParamList = {
+    RootStack: undefined
     HomePanel: undefined,
     Signup: undefined,
     Login: undefined,
@@ -75,12 +94,23 @@ export type RootStackParamList = {
     AvailableJobs: undefined,
     Apply: { job: Job },
     Edit: { job: Job },
-    MyReferrals: { referrals: Referral[] },
+    MyReferrals: undefined,
     Refer: undefined,
-    AppliedJobs: {jobs: Application[]},
-    ViewDescription: {application: Application},
-    ViewApplication: {application: Application},
-    Feedbacks: undefined
+    AppliedJobs: undefined,
+    ViewApplicationDescription: { application: Application },
+    ViewApplication: { application: Application },
+    Feedbacks: undefined,
+    ApplicationConfirmation: undefined,
+    Logout: undefined
+    ManagementHub: undefined,
+    ViewJobDescription: { job: Job },
+    ViewJob: {job: Job},
+    ViewApplicants: {job: Job}
+}
+
+export type RootTabParamList = {
+    Experience: undefined,
+    CareerInterests: undefined,
 }
 
 export type JobDetails = {
@@ -151,6 +181,14 @@ export type WorkExperience = {
     title: string,
 }
 
+export type WorkExpCreation = {
+    email: string,
+    title: string
+    company: string,
+    location: string,
+    startDate: Date,
+    endDate: Date,
+}
 export type Education = {
     email: string,
     school: string,
@@ -161,6 +199,15 @@ export type Education = {
     endDate: string,
 }
 
+export type EducationCreation = {
+    email: string
+    school: string,
+    degree: string,
+    major: string,
+    startDate: Date,
+    endDate: Date,
+}
+
 export type Feedback = {
     applicantEmail: string,
     jobId: string,
@@ -168,3 +215,8 @@ export type Feedback = {
     feedbackDate: string,
     status: string
 }
+export type Address = {
+    city: string;
+    state: string;
+    country: string;
+};

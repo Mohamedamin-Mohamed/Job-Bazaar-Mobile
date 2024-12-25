@@ -16,9 +16,10 @@ const Goals = () => {
                 <Text style={styles.headerText}>Establish your goals</Text>
                 <Image source={image} style={styles.image}/>
             </View>
-            <Text style={styles.normalText}>Get recommendations based on what you want to learn and which jobs you want in the future.</Text>
-            <TouchableOpacity style={styles.uploadView}>
-                <Text style={styles.uploadButton}>Add Goals</Text>
+            <Text style={styles.normalText}>Get recommendations based on what you want to learn and which jobs you want
+                in the future.</Text>
+            <TouchableOpacity style={styles.uploadView} disabled={true}>
+                <Text>Add Goals</Text>
             </TouchableOpacity>
             {showModal && <AddRoleSkillModal type="skills" handleModalDisplay={handleModalDisplay}/>}
         </View>
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     headerText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "500",
         width: "60%"
     },
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto"
     },
     normalText: {
-        fontSize: 16,
+        fontSize: 14,
         marginVertical: 20
     },
     uploadView: {

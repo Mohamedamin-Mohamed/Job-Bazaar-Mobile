@@ -6,7 +6,7 @@ interface ApplicationOptionsProps {
     navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>,
     application: Application,
     handleClickClose: (jobId: string) => void,
-    withdrawApp?: (application: Application) => void
+    withdrawApp: (application: Application) => void
 }
 
 const ApplicationOptions = ({navigation, application, handleClickClose, withdrawApp}: ApplicationOptionsProps) => {
@@ -14,7 +14,7 @@ const ApplicationOptions = ({navigation, application, handleClickClose, withdraw
     const viewDescription = () => {
         //what the below line does is it closes the application options component
         handleClickClose(application.jobId)
-        navigation.navigate('ViewDescription', {application})
+        navigation.navigate('ViewApplicationDescription', {application})
     }
     return (
         <View style={[styles.container, application.isActive !== 'true' && {left: 180}]}>

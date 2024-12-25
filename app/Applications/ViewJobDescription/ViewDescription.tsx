@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {Job, RootStackParamList} from "@/app/Types/types";
+import {Job, RootStackParamList, RootState} from "@/app/Types/types";
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
 import getJobById from "@/app/fetchRequests/getJobById";
@@ -7,13 +7,15 @@ import Location from "@/app/Applications/ViewJobDescription/Location";
 import Info from "@/app/Applications/ViewJobDescription/Info";
 import JobDescription from "@/app/Applications/ViewJobDescription/JobDescription";
 import Qualifications from "@/app/Applications/ViewJobDescription/Qualifications";
-import CompanyInfo from "@/app/Applications/ViewJobDescription/CompanyInfo";
+import {useSelector} from "react-redux";
 
-type ViewApplicationProps = NativeStackScreenProps<RootStackParamList, 'ViewDescription'>
+type ViewApplicationProps = NativeStackScreenProps<RootStackParamList, 'ViewApplicationDescription'>
 
 const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
     const {application} = route.params
     const [job, setJob] = useState<Job | undefined>(undefined)
+    const role = useSelector((state: RootState) => state.userInfo).role
+
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -65,14 +67,14 @@ const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
                         <View>
                             <Text>You applied for this job on {handleDateParsing(application.applicationDate)}</Text>
                             <TouchableOpacity style={styles.applicationButton} onPress={() => viewApplication()}>
-                                <Text style={styles.applicationButtonText}>View Application</Text>
+                                <Text style={styles.applicationButtonText}>View Application Desc.</Text>
                             </TouchableOpacity>
                             {application.isActive === "false" &&
                                 <TouchableOpacity style={styles.inActiveApp}>
                                     <Text style={styles.inActiveAppText}>{application.applicationStatus}</Text>
                                 </TouchableOpacity>
                             }
-                            <Location job={job} postedDate={job.postedDate}/>
+                            <Location job={job} postedDate={job.postedDate} role={role}/>
                             <Info/>
                             <JobDescription description={job.description}/>
                             <Qualifications qualification={job.requirements}/>
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     },
     applicationButton: {
         backgroundColor: "#e6f0e1",
-        width: 150,
+        width: 190,
         height: 40,
         justifyContent: "center",
         alignItems: "center",
@@ -116,12 +118,8 @@ const styles = StyleSheet.create({
     },
     applicationButtonText: {
         color: "#367c2b",
-        fontWeight: "bold",
         fontSize: 16,
     },
-    /*
-    className={`p-2 bg-[#ffefee] text-[#a31b12] w-[240px] h-[40px] rounded-md ml-2 hover:cursor-not-allowed ${!mediaQuery && "mt-4"}
-     */
     inActiveApp: {
         backgroundColor: "#ffefee",
         alignSelf: "flex-start",

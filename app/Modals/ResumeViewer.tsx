@@ -1,30 +1,30 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import mimeTypes from "../Types/mimeTypes";
-//import PdfViewer from "rn-pdf-reader-js"
+import {Modal, StyleSheet, TouchableOpacity, View} from "react-native";
+import WebView from "react-native-webview";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 interface ResumeViewerProps {
     handleDisplayModel: () => void;
-    showModal: boolean;
     resumeDetails: { resumeName: string; resume: string };
 }
 
-const ResumeViewer = ({handleDisplayModel, showModal, resumeDetails}: ResumeViewerProps) => {
-    const fileExtension = resumeDetails.resumeName.split('.').pop() as keyof typeof mimeTypes;
-    const mimeType = mimeTypes[`${fileExtension}`] || 'application/octet-stream';
-
-    //Convert the encoded base64 string to a data URL
-    const resumeDataUri = `data:${mimeType};base64,${resumeDetails.resume}`;
+const ResumeViewer = ({handleDisplayModel, resumeDetails}: ResumeViewerProps) => {
+    const html = `<embed width="100%" height="100%" src="data:application/pdf;base64,${resumeDetails.resume}">`;
     return (
         <Modal
-            visible={showModal}
+            visible={true}
             transparent={true}
-            animationType="slide"
-        >
+            animationType="slide">
             <View style={styles.overlay}>
+                <TouchableOpacity
+                    style={styles.outsideTouchable}
+                    onPress={handleDisplayModel}
+                    activeOpacity={1}
+                />
                 <View style={styles.modalContent}>
                     <TouchableOpacity onPress={handleDisplayModel} style={styles.closeButton}>
-                        <Text style={styles.closeButtonText}>Close</Text>
+                        <Icon name="close" size={28} color="gray"/>
                     </TouchableOpacity>
-                    {/*<PdfViewer source={{uri: resumeDataUri}}/>*/}
+                    <WebView source={{html: html}}/>
                 </View>
             </View>
         </Modal>
@@ -33,14 +33,21 @@ const ResumeViewer = ({handleDisplayModel, showModal, resumeDetails}: ResumeView
 
 const styles = StyleSheet.create({
     overlay: {
-        flex: 0.95,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent background
     },
+    outsideTouchable: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
     modalContent: {
-        width: '100%',
-        height: '64%',
+        width: '90%',
+        height: '62%',
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 10,

@@ -6,7 +6,7 @@ const addReferral = async (formData: FormData) => {
         throw new Error('No token available')
     }
 
-    return await fetch('http:localhost:8080/api/referrals/add', {
+    return await fetch('http://192.168.1.252:8080/api/referrals/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`

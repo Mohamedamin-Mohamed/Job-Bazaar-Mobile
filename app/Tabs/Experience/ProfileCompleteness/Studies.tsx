@@ -1,27 +1,62 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {useState} from "react";
-import AddRoleSkillModal from "@/app/Modals/AddRoleSkillModal";
+import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {useEffect, useState} from "react";
+import AddEducation from "@/app/Modals/AddEducation";
+import {Education as EducationType, RootState} from "@/app/Types/types";
+import getEducation from "@/app/fetchRequests/getEducation";
+import {useSelector} from "react-redux";
 
 const Studies = () => {
     const [showModal, setShowModal] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [education, setEducation] = useState<EducationType | null>(null)
+    const applicantEmail = useSelector((state: RootState) => state.userInfo).email
     const image = require('../../../Images/education.png')
 
     const handleModalDisplay = () => {
         setShowModal(prevState => !prevState)
     }
 
+    const fetchEducation = async (controller: AbortController) => {
+        setLoading(true)
+        try {
+            const educationResponse = await getEducation(applicantEmail, controller)
+            if (educationResponse.ok) {
+                const educationData = await educationResponse.json()
+                setEducation(educationData)
+            }
+        } catch (err) {
+            console.error("Couldn't fetch education, ", err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchEducation(controller).catch(err => console.error(err));
+        return () => controller.abort();
+    }, []);
+
+    const handleEducation = ()=> {
+        setEducation(null)
+    }
     return (
-        <View style={styles.container}>
-            <View style={styles.headerView}>
-                <Text style={styles.headerText}>Show what you’ve learned</Text>
-                <Image source={image} style={styles.image}/>
+        !loading ?
+            <View style={styles.container}>
+                <View style={styles.headerView}>
+                    <Text style={styles.headerText}>Show what you’ve learned</Text>
+                    <Image source={image} style={styles.image}/>
+                </View>
+                <Text style={styles.normalText}>Enter your school, major and degree so your teammates get to know more
+                    about
+                    you.</Text>
+                <TouchableOpacity style={styles.uploadView} disabled={education !== null}
+                                  onPress={() => handleModalDisplay()}>
+                    <Text>Add Education</Text>
+                </TouchableOpacity>
+                {showModal && !education && <AddEducation handleModalDisplay={handleModalDisplay} education={null} handleEducation={handleEducation}/>}
             </View>
-            <Text style={styles.normalText}>Enter your school, major and degree so your teammates get to know more about you.</Text>
-            <TouchableOpacity style={styles.uploadView}>
-                <Text style={styles.uploadButton}>Add Education</Text>
-            </TouchableOpacity>
-            {showModal && <AddRoleSkillModal type="skills" handleModalDisplay={handleModalDisplay}/>}
-        </View>
+            : <ActivityIndicator size="large" color="##67c2b"/>
     )
 }
 const styles = StyleSheet.create({
@@ -36,7 +71,7 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     headerText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "500",
         width: "60%"
     },
@@ -46,7 +81,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto"
     },
     normalText: {
-        fontSize: 16,
+        fontSize: 14,
         marginVertical: 20
     },
     uploadView: {

@@ -29,7 +29,7 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
         jobStatus: '',
         postedDate: '',
     }
-    const numberOfActiveJobs = uploadedJobs.map(job => job.jobStatus === 'active').length
+    const numberOfActiveJobs = uploadedJobs.filter(job => job.jobStatus === 'active').length
     const [jobById, setJobById] = useState<Job>(initialJobDetails)
     const [clicked, setClicked] = useState<Record<string, boolean>>({})
 
@@ -139,6 +139,7 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
 }
 const styles = StyleSheet.create({
     containerParent: {
+        backgroundColor: "white",
         padding: 24,
         gap: 12,
     },

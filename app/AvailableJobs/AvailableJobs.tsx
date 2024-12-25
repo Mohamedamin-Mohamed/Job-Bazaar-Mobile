@@ -48,7 +48,7 @@ const AvailableJobs = ({navigation}: { navigation: AvailableJobsNavigationProp }
         <View style={{justifyContent: "center", alignItems: "center", flex: 2.5}}>
             {loading ? <ActivityIndicator size="large" /> : <>
                 {
-                    hasActiveJobs ?
+                    !hasActiveJobs ?
                         <DisplayAvailableJobs availableJobs={availableJobs} navigation={navigation}/> :
                         <NoJobs role={role} navigation={navigation}/>
                 }

@@ -1,7 +1,7 @@
 import {Text, TextInput, View, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from "react-native";
 import {useState} from "react";
 import WorkPlaceTypeDropDown from "./DropDowns/WorkPlaceTypeDropDown";
-import {JobDetails, RootStackParamList, RootState} from "../Types/types";
+import {EditJobDetails, JobDetails, RootStackParamList, RootState} from "../Types/types";
 import JobTypeDropDown from "./DropDowns/JobTypeDropDown";
 import {StackNavigationProp} from "@react-navigation/stack";
 import Toast from "react-native-toast-message";
@@ -34,7 +34,7 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
     const handleButtons = (type: string) => {
         switch (type) {
             case 'clear': {
-                setJobDetails(initialJobDetails)
+                handleClear()
                 break
             }
             case 'cancel': {
@@ -42,10 +42,32 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
                 break
             }
             case 'save': {
-                handleSave()
+                handleSave().catch(err => console.error(err))
                 break
             }
 
+        }
+    }
+    const checkIfAllFieldsUpdated = () => {
+        const keys = Object.keys(initialJobDetails) as (keyof JobDetails)[]
+        for (const key of keys) {
+            if (initialJobDetails[key] !== jobDetails[key]) {
+                return true
+            }
+        }
+        return false
+    }
+    const handleClear = ()=> {
+        const updated = checkIfAllFieldsUpdated()
+        if (!updated) {
+            Toast.show({
+                type: "info",
+                text1: 'No fields to be cleared',
+                onShow: () => setDisabled(true),
+                onHide: () => setDisabled(false)
+            })
+        } else {
+            setJobDetails(initialJobDetails)
         }
     }
     const handleSave = async () => {
@@ -132,13 +154,13 @@ const UploadJob = ({navigation}: { navigation: UploadJobNavigationProp }) => {
                         </View>
                         <View style={styles.row}>
                             <View>
-                                <TextInput editable={!disabled}
+                                <TextInput value={jobDetails.description} editable={!disabled}
                                            style={[styles.textInputs, {width: 160, height: 150, color: "black"}]}
                                            placeholder="Job Descriptions ..." multiline={true}
                                            onChangeText={text => handleChange("description", text)}/>
                             </View>
                             <View>
-                                <TextInput editable={!disabled}
+                                <TextInput value={jobDetails.requirements} editable={!disabled}
                                            style={[styles.textInputs, {
                                                width: 160,
                                                height: 150,

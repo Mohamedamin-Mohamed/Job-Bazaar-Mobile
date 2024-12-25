@@ -117,7 +117,7 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                     onShow: () => setDisabled(true),
                     onHide: () => {
                         setDisabled(false)
-                        response.ok ? navigation.replace('AvailableJobs') : handleButtons('clear')
+                        response.ok ? navigation.replace('ApplicationConfirmation') : handleButtons('clear')
                     }
                 })
             } catch (err) {
@@ -162,14 +162,15 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                             <Text style={{fontSize: 24, fontWeight: "bold"}}>Submit Application</Text>
                             <View style={{flexDirection: "row", gap: 24, marginTop: 4, marginBottom: 24}}>
                                 <Text style={styles.headerText}>{job.jobId}</Text>
-                                <Text style={styles.headerText}>{job.position}</Text>
+                                <Text style={[styles.headerText, {width: '60%'}]}>{job.position}</Text>
                             </View>
                         </View>
                         <View style={{flexDirection: "row"}}>
                             <Text style={styles.labels}>Resume*</Text>
                             <View style={{flexDirection: "column", marginLeft: "auto"}}>
                                 <Text
-                                    style={[styles.resumeText, jobApplication.resume.name ? {width: "44%"} : {}]}>{jobApplication.resume.name ? jobApplication.resume.name : "No Resume Available"}</Text>
+                                    style={[styles.resumeText, jobApplication.resume.name ? {width: "44%"} : {}]}>
+                                    {jobApplication.resume.name ? jobApplication.resume.name : "No Resume Available"}</Text>
                                 <TouchableOpacity onPress={() => handleFileUpload('resume')} disabled={disabled}>
                                     <Text style={styles.uploadResumeButton}>Upload Resume...</Text>
                                 </TouchableOpacity>

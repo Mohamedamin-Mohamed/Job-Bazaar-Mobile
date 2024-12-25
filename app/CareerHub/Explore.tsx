@@ -3,9 +3,9 @@ import {useEffect, useState} from "react";
 import getAvailableJobs from "../fetchRequests/getAvailableJobs";
 import {Job, RootStackParamList, RootState} from "../Types/types";
 import {useSelector} from "react-redux";
-import {NavigationProp} from "@react-navigation/core";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
+type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
 
 const Explore = ({navigation}: { navigation: CareerHubProp }) => {
     const [loading, setLoading] = useState(false)
@@ -30,7 +30,8 @@ const Explore = ({navigation}: { navigation: CareerHubProp }) => {
             const response = await getAvailableJobs(controller)
             if (response.ok) {
                 const jobs: Job[] = await response.json()
-                const sortedAvailableJobs = sortAvailableJobs(jobs as Job[])
+                const filteredAvailableJobs = jobs.filter(job => job.jobStatus === 'active')
+                const sortedAvailableJobs = sortAvailableJobs(filteredAvailableJobs as Job[])
                 setRecentJob(sortedAvailableJobs[0])
             }
         } catch (err) {

@@ -7,7 +7,7 @@ import FeedbackRequests from "@/app/CareerHub/Feedbacks/FeedbackRequests";
 
 const Feedback = () => {
     const [loading, setLoading] = useState(false)
-    const [feedbacks, setFeedbacks] = useState<FeedbackType[] | null>(null)
+    const [feedbacks, setFeedbacks] = useState<FeedbackType[]>([])
 
     const applicantEmail = useSelector((state: RootState) => state.userInfo.email)
 
@@ -33,13 +33,11 @@ const Feedback = () => {
     }, []);
 
     return (
-        <View>
-            {feedbacks ? (
-                    <View>
-                        <FeedbackRequests feedbacks={feedbacks} />
-                    </View>
-                ) :
-                <ActivityIndicator size="large" color="#367c2cb"/>
+        <View style={styles.container}>
+            {loading ? <ActivityIndicator size="large" color="#367c2cb"/> :
+                <View>
+                    <FeedbackRequests feedbacks={feedbacks}/>
+                </View>
             }
 
         </View>
@@ -47,6 +45,7 @@ const Feedback = () => {
 }
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "center"
     },

@@ -1,10 +1,12 @@
-import {Image, Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParamList} from "../Types/types";
 
 type UploadedJobsNavigationProp = StackNavigationProp<RootStackParamList, 'UploadedJobs'>
 type AvailableJobsNavigationProp = StackNavigationProp<RootStackParamList, 'AvailableJobs'>
-type NavigationPropUnion = UploadedJobsNavigationProp | AvailableJobsNavigationProp
+type ManagementHubNavigationProp = StackNavigationProp<RootStackParamList, 'ManagementHub'>
+
+type NavigationPropUnion = UploadedJobsNavigationProp | AvailableJobsNavigationProp | ManagementHubNavigationProp
 
 const NoJobs = ({role, navigation}: { role: string, navigation: NavigationPropUnion }) => {
     const handleNavigation = () => {
@@ -15,22 +17,6 @@ const NoJobs = ({role, navigation}: { role: string, navigation: NavigationPropUn
         }
     }
 
-    const handleSupport = async () => {
-        const subject = encodeURIComponent('Assistance Needed Regarding Job Uploads');
-        const mailtoUrl = `mailto:mohaa204080@gmail.com?subject=${subject}`;
-
-        try {
-            const supported = await Linking.canOpenURL(mailtoUrl);
-            if (supported) {
-                await Linking.openURL(mailtoUrl);
-            } else {
-                console.error('Failed to open URL: ', mailtoUrl);
-            }
-        } catch (err) {
-            console.error('Error opening email client: ', err);
-        }
-    };
-
     return (
         <View style={styles.container}>
             <View style={styles.childContainer}>
@@ -40,12 +26,9 @@ const NoJobs = ({role, navigation}: { role: string, navigation: NavigationPropUn
                     style={styles.texts}>{role === 'Applicant' ? "Sorry, there are no available jobs yet" : "Sorry, No jobs uploaded or active."}</Text>
             </View>
             <View style={styles.parentButtons}>
-                <TouchableOpacity onPress={() => handleSupport()}>
-                    <Text style={styles.supportButton}>Contact Support</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleNavigation()}>
+                <TouchableOpacity style={{width: "64%"}} onPress={() => handleNavigation()}>
                     <Text
-                        style={role === 'Employer' ? styles.uploadJob : {}}>{role === 'Applicant' ? "Home" : "Upload Job"}</Text>
+                        style={styles.uploadJob}>{role === 'Applicant' ? "Home" : "Upload Job"}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -74,6 +57,8 @@ const styles = StyleSheet.create({
         padding: 4
     },
     parentButtons: {
+        justifyContent: "center",
+        alignItems: "center",
         flexDirection: "row",
         gap: 20,
     },
@@ -92,7 +77,6 @@ const styles = StyleSheet.create({
     },
     uploadJob: {
         backgroundColor: "#2575a7",
-        width: 150,
         height: 36,
         color: "white",
         textAlign: "center",

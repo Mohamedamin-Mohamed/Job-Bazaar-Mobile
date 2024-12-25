@@ -16,9 +16,10 @@ const Skills = () => {
                 <Text style={styles.headerText}>Showcase your skills</Text>
                 <Image source={image} style={styles.image}/>
             </View>
-            <Text style={styles.normalText}>Show what you know and get recommendations to grow.</Text>
-            <TouchableOpacity style={styles.uploadView} onPress={()=> setShowModal(prevState => !prevState)}>
-                <Text style={styles.uploadButton}>Add Skills</Text>
+            <Text style={styles.normalText}>Demonstrate your expertise and gain valuable insights to propel your
+                professional development.</Text>
+            <TouchableOpacity style={styles.uploadView} onPress={() => setShowModal(prevState => !prevState)}>
+                <Text>Add Skills</Text>
             </TouchableOpacity>
             {showModal && <AddRoleSkillModal type="skills" handleModalDisplay={handleModalDisplay}/>}
         </View>
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     headerText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "500",
         width: "60%"
     },
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto"
     },
     normalText: {
-        fontSize: 16,
+        fontSize: 14,
         marginVertical: 20
     },
     uploadView: {

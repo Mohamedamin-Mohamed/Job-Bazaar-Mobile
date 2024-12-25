@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
             fontSize: 18,
             textAlign: "left",
             borderWidth: 1,
-            borderRadius: 16,
+            borderRadius: 4,
             borderColor: "#ffebe8",
             backgroundColor: "#ffebe8",
             marginTop: 8,

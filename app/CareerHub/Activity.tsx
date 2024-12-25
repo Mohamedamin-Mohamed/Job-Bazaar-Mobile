@@ -3,10 +3,10 @@ import {useSelector} from "react-redux";
 import {Application, Job, Referral, RootStackParamList, RootState} from "../Types/types";
 import {NavigationProp} from "@react-navigation/core";
 
-type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
+type ActivityNavigationProp = NavigationProp<any>
 
 interface ActivityProps {
-    navigation: CareerHubProp,
+    navigation: ActivityNavigationProp,
     records: Application[] | Job[],
     referrals: Referral[],
     count: number,
@@ -18,7 +18,7 @@ const Activity = ({navigation, records, referrals, count, loading}: ActivityProp
     const role = user.role
 
     const handleReferrals = () => {
-        navigation.navigate('MyReferrals', {referrals: referrals})
+        navigation.navigate('MyReferrals')
     }
 
     const referNavigation = () => {
@@ -29,15 +29,15 @@ const Activity = ({navigation, records, referrals, count, loading}: ActivityProp
         if (role === 'Employer') {
             navigation.navigate('UploadedJobs')
         } else {
-            navigation.navigate('AppliedJobs', {jobs: records as Application[]})
+            navigation.navigate('AppliedJobs')
         }
     }
 
-    const handleFeedbacks = ()=> {
+    const handleFeedbacks = () => {
         navigation.navigate('Feedbacks')
     }
 
-    const uploadJob = ()=> {
+    const uploadJob = () => {
         navigation.navigate('UploadJob')
     }
     return (

@@ -17,11 +17,15 @@ import {setUserInfo} from "../Redux/userSlice";
 import {RootStackParamList, RootState} from "../Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import validateToken from "@/app/fetchRequests/validateToken";
 
 type HomePanelNavigationProp = StackNavigationProp<RootStackParamList, 'HomePanel'>
 
+
 const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
     const [loading, setLoading] = useState(false)
+    const [disabled, setDisabled] = useState(false)
     const userInfo = useSelector((state: RootState) => state.userInfo)
     const dispatch = useDispatch()
 
@@ -58,16 +62,47 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
         }
     }
 
-    const fetchToken = async () => {
-        const token = await AsyncStorage.getItem('token');
-        if (token) {
-            navigation.navigate("CareerHub");
+    const showErrorToast = (message: string) => {
+        Toast.show({
+            type: 'error',
+            text1: message,
+            onShow: () => setDisabled(true),
+            onHide: () => setDisabled(false)
+        });
+    };
+
+    const isUserInfoComplete = (userInfo: Record<string, string>): boolean => {
+        return Object.values(userInfo).every(value => value !== '');
+    };
+
+    const fetchAndValidateToken = async (): Promise<void> => {
+        try {
+            // Step 1: Fetch token
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                return;
+            }
+
+            // Step 2: Validate token
+            const response = await validateToken(token);
+            if (!response.ok) {
+                showErrorToast('Token expired, please login again');
+                return;
+            }
+
+            // Step 3: Check user info and navigate if complete
+            if (isUserInfoComplete(userInfo)) {
+                navigation.navigate("CareerHub");
+            }
+        } catch (error) {
+            showErrorToast(
+                error instanceof Error ? error.message : 'An unexpected error occurred');
         }
-    }
+    };
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-            fetchToken().catch(err => {
+            fetchAndValidateToken().catch(err => {
                 console.error(err);
             });
         });
@@ -100,12 +135,13 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
                         </View>
                         <Text style={{fontWeight: "bold", paddingVertical: 10, marginLeft: 6}}>Enter
                             Email</Text>
-                        <TextInput autoCapitalize="none" style={styles.inputEmail} keyboardType="email-address"
+                        <TextInput editable={!disabled} autoCapitalize="none" style={styles.inputEmail}
+                                   keyboardType="email-address"
                                    onChangeText={text => setEmail(text)} value={email}/>
                         <View>
                             {err && <Text style={styles.errorText}>{err}</Text>}
                         </View>
-                        <TouchableOpacity onPress={()=> handleEmail()}>
+                        <TouchableOpacity onPress={() => handleEmail()}>
                             {
                                 loading ?
                                     <ActivityIndicator size="small" color="#367c2b"
@@ -123,6 +159,7 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
                         <Text style={styles.underlinedButton}>Sign in</Text>
                     </TouchableOpacity>
                 </View>
+                <Toast/>
             </View>
         </TouchableWithoutFeedback>
     )

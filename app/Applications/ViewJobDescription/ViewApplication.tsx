@@ -12,45 +12,49 @@ const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackPa
     const {application} = route.params
     const [education, setEducation] = useState<Education | null>(null)
     const [workExperience, setWorkExperience] = useState<WorkExperience | null>(null)
+    const [loading, setLoading] = useState(false)
     const applicantEmail = useSelector((state: RootState) => state.userInfo.email)
 
-    const fetchEducation = async (controller: AbortController) => {
+    const fetchEducationWorkExp = async (controller: AbortController) => {
+        setLoading(true)
         try {
-            const educationResponse = await getEducation(applicantEmail, controller)
-            if (educationResponse.ok) {
-                const educationData = await educationResponse.json()
-                setEducation(educationData)
-            } else {
-                console.error("Failed to fetch education:", educationResponse.statusText)
+            try {
+                const educationResponse = await getEducation(applicantEmail, controller)
+                if (educationResponse.ok) {
+                    const educationData = await educationResponse.json()
+                    setEducation(educationData)
+                }
+            } catch (err) {
+                console.error("Couldn't fetch education, ", err)
             }
-        } catch (err) {
-            console.error("Couldn't fetch education, ", err)
-        }
 
-        try {
-            const workExperienceResponse = await getWorkExperience(applicantEmail, controller);
-            if (workExperienceResponse.ok) {
-                const workExperienceData = await workExperienceResponse.json()
-                setWorkExperience(workExperienceData)
-            } else {
-                console.error("Failed to fetch work experience:", workExperienceResponse.statusText)
+            try {
+                const workExperienceResponse = await getWorkExperience(applicantEmail, controller);
+                if (workExperienceResponse.ok) {
+                    const workExperienceData = await workExperienceResponse.json()
+                    setWorkExperience(workExperienceData)
+                }
+            } catch (err) {
+                console.error("Couldn't fetch work experience, ", err)
             }
         } catch (err) {
-            console.error("Couldn't fetch work experience, ", err)
+            console.error(err)
+        } finally {
+            setLoading(false)
         }
     };
 
     useEffect(() => {
         const controller = new AbortController()
-        fetchEducation(controller).catch(err => console.error(err))
+        fetchEducationWorkExp(controller).catch(err => console.error(err))
         return () => {
             controller.abort()
         };
     }, []);
 
     return (
-        education && workExperience ?
-            <ScrollView>
+        !loading ?
+            <ScrollView contentContainerStyle={{flexGrow: 1}}>
                 <View style={styles.container}>
                     <View style={styles.childContainer}>
                         <Text style={styles.headerText}>{application.jobId} {application.position} - Submitted
@@ -82,8 +86,6 @@ const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackPa
                                     <Text style={styles.subText}>{workExperience.startDate}</Text>
                                     <Text style={styles.verticalSpacing}>To</Text>
                                     <Text style={styles.subText}>{workExperience.endDate}</Text>
-                                    <Text style={styles.verticalSpacing}>Role Description</Text>
-                                    <Text style={styles.subText}>{workExperience.description}</Text>
                                 </View>
                             </View>
                         )}
@@ -109,7 +111,7 @@ const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackPa
                     </View>
                 </View>
             </ScrollView>
-            : <ActivityIndicator style={styles.childContainer} size="large" color="#367c2b"/>
+            : <ActivityIndicator style={styles.container} size="large" color="#367c2b"/>
     )
 }
 const styles = StyleSheet.create({

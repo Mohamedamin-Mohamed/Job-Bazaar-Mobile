@@ -2,29 +2,29 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Experience from "@/app/Tabs/Experience/Experience";
 import CareerInterests from "@/app/Tabs/CareerInterests/CareerInterests";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import {RootTabParamList} from "@/app/Types/types";
 
-const Tab = createBottomTabNavigator()
+const Tab = createBottomTabNavigator<RootTabParamList>()
 
-const ProfileTabNavigator = ()=> {
+const ProfileTabNavigator = () => {
 
-    return(
-        <Tab.Navigator screenOptions={({route}) => ({
+    return (
+        <Tab.Navigator initialRouteName={'CareerInterests'} screenOptions={({route}) => ({
             headerShown: false,
-            tabBarLabelStyle: {fontSize: 20},
+            tabBarLabelStyle: {fontSize: 16},
             tabBarIcon: ({color, size}) => {
                 let iconName
-                if(route.name === 'Experience'){
+                if (route.name === 'Experience') {
                     iconName = 'work'
-                }
-                else{
+                } else {
                     iconName = 'interests'
                 }
-                return <Icon name={iconName} size={size} color={color} />
-        },
+                return <Icon name={iconName} size={size} color={color}/>
+            },
 
         })}>
-            <Tab.Screen name="Experience" component={Experience} />
-            <Tab.Screen name="Career Interests" component={CareerInterests} />
+            <Tab.Screen name="Experience" component={Experience}/>
+            <Tab.Screen name="CareerInterests" component={CareerInterests}/>
         </Tab.Navigator>
     )
 }

@@ -5,7 +5,7 @@ const getWorkExperience = async (applicantEmail: string, abortController: AbortC
     if (!token) {
         throw new Error('No token available')
     }
-    return await fetch(`http:localhost:8080/api/work-experience/get/${applicantEmail}`, {
+    return await fetch(`http://192.168.1.252:8080/api/work-experience/get/${applicantEmail}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`

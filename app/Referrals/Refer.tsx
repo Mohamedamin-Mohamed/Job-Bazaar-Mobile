@@ -11,6 +11,7 @@ import Toast from "react-native-toast-message";
 type ReferNavigationProp = StackNavigationProp<RootStackParamList, 'Refer'>
 
 const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
+    const img = require('../Images/refer_illustration_cloud.png')
     const [disabled, setDisabled] = useState(false)
     const userInfo = useSelector((state: RootState) => state.userInfo)
     const [resumeDetails, setResumeDetails] = useState<Resume>({
@@ -66,7 +67,7 @@ const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
         <View style={styles.container}>
             <View style={styles.childContainer}>
                 <View style={styles.imageView}>
-                    <Image source={require('../Images/refer_illustration_cloud.png')} style={styles.image}/>
+                    <Image source={img} style={styles.image}/>
                 </View>
                 <Text style={[styles.text, styles.button, {fontSize: 24}]}>Drop your friend's resume here</Text>
                 <Text style={[styles.text]}>

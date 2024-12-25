@@ -1,20 +1,25 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Application, RootStackParamList} from "../../Types/types";
+import {Application, RootStackParamList, RootState} from "../../Types/types";
 import Header from "./Header";
 import {useState} from "react";
 import ApplicationOptions from "./ApplicationOptions";
-import NoApplications from "./NoApplications";
+import NoApplications from "./NoApplicationsOrJobs";
 import {NavigationProp} from "@react-navigation/core";
+import {useSelector} from "react-redux";
+import updateApplication from "@/app/fetchRequests/updateApplication";
 
 type InActiveProps = {
     navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>,
     appliedJobs: Application[],
-    inActiveApplications: number
+    inActiveApplications: number,
+    jobStatuses: Record<string, string>,
+    refreshJobs: () => void
 }
-const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps) => {
+const InActive = ({navigation, appliedJobs, inActiveApplications, jobStatuses, refreshJobs}: InActiveProps) => {
+    const [loading, setLoading] = useState(false)
     const [clicked, setClicked] = useState<Record<string, boolean>>({})
+    const role = useSelector((state: RootState) => state.userInfo).role
 
-    const [applicationOptions, setApplicationOptions] = useState(false)
     const parseDate = (dateString: string) => {
         const [month, day, year] = dateString.split('-').map(Number);
         return new Date(year, month - 1, day);
@@ -40,7 +45,23 @@ const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps
     }
 
     const viewDescription = (application: Application) => {
-        navigation.navigate('ViewDescription', {application: application})
+        navigation.navigate('ViewApplicationDescription', {application: application})
+    }
+
+    const withdrawApplication = async (application: Application) => {
+        try {
+            setLoading(true)
+            const applicationStatus = 'Candidate Withdrew Interest'
+            const updateResponse = await updateApplication(application.applicantEmail, application.jobId, applicationStatus, new AbortController())
+            handleClick(application.jobId)
+            if (updateResponse.ok) {
+                refreshJobs()
+            }
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -49,7 +70,7 @@ const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps
                 <>
                     <Header/>
                     {sortedAppliedJobs.map((application) => (
-                        application.isActive === 'false' && (
+                        (application.isActive === 'false' || jobStatuses[application.jobId] === 'inActive') && (
                             <View key={application.jobId} style={styles.childViews}>
                                 <TouchableOpacity onPress={() => viewDescription(application)}>
                                     <Text style={styles.positionText}>{application.position}</Text>
@@ -58,13 +79,14 @@ const InActive = ({navigation, appliedJobs, inActiveApplications}: InActiveProps
                                     <Text style={{fontSize: 20}}>...</Text>
                                 </TouchableOpacity>
                                 {clicked[application.jobId] && (
-                                    <ApplicationOptions navigation={navigation} application={application} handleClickClose={handleClickClose} />
+                                    <ApplicationOptions navigation={navigation} application={application}
+                                                        handleClickClose={handleClickClose} withdrawApp={withdrawApplication}/>
                                 )}
                             </View>
                         )
                     ))}
                 </>
-                : <NoApplications navigation={navigation}/>}
+                : <NoApplications navigation={navigation} role={role}/>}
         </View>
     )
 }
