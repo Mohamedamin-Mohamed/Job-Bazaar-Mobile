@@ -1,6 +1,6 @@
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
-import getAvailableJobs from "../fetchRequests/getAvailableJobs";
+import getAvailableJobs from "@/app/FetchRequests/getAvailableJobs";
 import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {useSelector} from "react-redux";
 import {StackNavigationProp} from "@react-navigation/stack";
