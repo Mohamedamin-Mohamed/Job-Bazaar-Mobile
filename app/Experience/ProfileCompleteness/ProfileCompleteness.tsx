@@ -1,10 +1,10 @@
 import {NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {useRef, useState} from "react";
-import Resume from "@/app/Tabs/Experience/ProfileCompleteness/Resume";
-import Skills from "@/app/Tabs/Experience/ProfileCompleteness/Skills";
-import Studies from "@/app/Tabs/Experience/ProfileCompleteness/Studies";
-import Goals from "@/app/Tabs/Experience/ProfileCompleteness/Goals";
+import Resume from "@/app/Experience/ProfileCompleteness/Resume";
+import Skills from "@/app/Experience/ProfileCompleteness/Skills";
+import Studies from "@/app/Experience/ProfileCompleteness/Studies";
+import Goals from "@/app/Experience/ProfileCompleteness/Goals";
 
 const ProfileCompleteness = () => {
     const [expandLess, setExpandLess] = useState(false);

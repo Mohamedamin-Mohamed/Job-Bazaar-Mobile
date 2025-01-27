@@ -1,7 +1,7 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 
 const Resume = () => {
-    const image = require('../../../Images/resume.png')
+    const image = require('../../Images/resume.png')
     return (
         <View style={styles.container}>
             <View style={styles.headerView}>

@@ -10,7 +10,7 @@ const Studies = () => {
     const [loading, setLoading] = useState(false)
     const [education, setEducation] = useState<EducationType | null>(null)
     const applicantEmail = useSelector((state: RootState) => state.userInfo).email
-    const image = require('../../../Images/education.png')
+    const image = require('../../Images/education.png')
 
     const handleModalDisplay = () => {
         setShowModal(prevState => !prevState)
@@ -25,7 +25,7 @@ const Studies = () => {
                 setEducation(educationData)
             }
         } catch (err) {
-            console.error("Couldn't fetch education, ", err)
+
         } finally {
             setLoading(false)
         }
@@ -37,7 +37,7 @@ const Studies = () => {
         return () => controller.abort();
     }, []);
 
-    const handleEducation = ()=> {
+    const handleEducation = () => {
         setEducation(null)
     }
     return (
@@ -54,7 +54,8 @@ const Studies = () => {
                                   onPress={() => handleModalDisplay()}>
                     <Text>Add Education</Text>
                 </TouchableOpacity>
-                {showModal && !education && <AddEducation handleModalDisplay={handleModalDisplay} education={null} handleEducation={handleEducation}/>}
+                {showModal && !education && <AddEducation handleModalDisplay={handleModalDisplay} education={null}
+                                                          handleEducation={handleEducation}/>}
             </View>
             : <ActivityIndicator size="large" color="##67c2b"/>
     )

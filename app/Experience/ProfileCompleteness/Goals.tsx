@@ -4,7 +4,7 @@ import AddRoleSkillModal from "@/app/Modals/AddRoleSkillModal";
 
 const Goals = () => {
     const [showModal, setShowModal] = useState(false)
-    const image = require('../../../Images/goals.png')
+    const image = require('../../Images/goals.png')
 
     const handleModalDisplay = () => {
         setShowModal(prevState => !prevState)
