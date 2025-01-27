@@ -1,8 +1,8 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import Experience from "@/app/Tabs/Experience/Experience";
-import CareerInterests from "@/app/Tabs/CareerInterests/CareerInterests";
+import Experience from "@/app/Experience/Experience";
+import CareerInterests from "@/app/CareerInterests/CareerInterests";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {RootTabParamList} from "@/app/Types/types";
+import {RootTabParamList} from "@/Types/types";
 
 const Tab = createBottomTabNavigator<RootTabParamList>()
 
