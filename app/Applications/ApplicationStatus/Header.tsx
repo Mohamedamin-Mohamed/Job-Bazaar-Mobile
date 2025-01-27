@@ -1,11 +1,15 @@
 import {StyleSheet, Text, View} from "react-native";
+import {useSelector} from "react-redux";
+import {RootState} from "@/Types/types";
 
 const Header = () => {
+    const userInfo = useSelector((state: RootState) => state.userInfo)
+    const role = userInfo.role
     return (
         <View>
             <View style={styles.container}>
                 <Text style={styles.text}>Job Title</Text>
-                <Text style={styles.text}>Action</Text>
+                {role === 'Employer' && <Text style={styles.text}>Applicants</Text>}
             </View>
         </View>
     )
