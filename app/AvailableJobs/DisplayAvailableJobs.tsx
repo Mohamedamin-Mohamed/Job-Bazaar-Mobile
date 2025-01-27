@@ -2,7 +2,7 @@ import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View}
 import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {useEffect, useState} from "react";
 import {StackNavigationProp} from "@react-navigation/stack";
-import getJobById from "../fetchRequests/getJobById";
+import getJobById from "@/app/FetchRequests/getJobById";
 import {useSelector} from "react-redux";
 import JobsModal from "../Modals/JobsModal";
 import daysFromUploadedDate from "../Utilities/daysFromUploadedDate";

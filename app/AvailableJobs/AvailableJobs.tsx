@@ -5,7 +5,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import NoJobs from "../404s/NoJobs";
 import { StackNavigationProp } from "@react-navigation/stack";
-import getAvailableJobs from "../fetchRequests/getAvailableJobs";
+import getAvailableJobs from "@/app/FetchRequests/getAvailableJobs";
 import DisplayAvailableJobs from "./DisplayAvailableJobs";
 
 type AvailableJobsNavigationProp = StackNavigationProp<RootStackParamList, 'AvailableJobs'>
