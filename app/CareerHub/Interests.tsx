@@ -1,12 +1,13 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
 
 type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
 
+
 const Interests = ({navigation}: { navigation: CareerHubProp }) => {
     const handleNavigation = () => {
-        navigation.navigate('Profile')
+        navigation.navigate('CareerInterests')
     }
     return (
         <View style={styles.container}>
