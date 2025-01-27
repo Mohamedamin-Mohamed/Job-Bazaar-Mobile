@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {RootStackParamList} from '@/app/Types/types';
+import {RootStackParamList} from '@/Types/types';
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
 type NoApplicantsRouteProp = NativeStackScreenProps<RootStackParamList, 'ViewApplicants'>;
