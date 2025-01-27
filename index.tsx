@@ -1,5 +1,8 @@
-import {registerRootComponent} from "expo";
-import App from "./App";
+import App from "@/app/App";
 
-// Register the root component
-registerRootComponent(App);
+const Homepage = () => {
+    return (
+        <App/>
+    )
+}
+export default Homepage
