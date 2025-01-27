@@ -1,7 +1,8 @@
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native"
 import {useSelector} from "react-redux";
-import {Application, Job, Referral, RootStackParamList, RootState} from "../Types/types";
+import {Application, Feedback, Job, Referral, RootState} from "@/Types/types";
 import {NavigationProp} from "@react-navigation/core";
+import React from "react";
 
 type ActivityNavigationProp = NavigationProp<any>
 
@@ -9,11 +10,12 @@ interface ActivityProps {
     navigation: ActivityNavigationProp,
     records: Application[] | Job[],
     referrals: Referral[],
+    feedbacks: Feedback[]
     count: number,
     loading: boolean
 }
 
-const Activity = ({navigation, records, referrals, count, loading}: ActivityProps) => {
+const Activity = ({navigation, records, referrals, feedbacks, count, loading}: ActivityProps) => {
     const user = useSelector((state: RootState) => state.userInfo)
     const role = user.role
 
@@ -65,7 +67,7 @@ const Activity = ({navigation, records, referrals, count, loading}: ActivityProp
                                         style={styles.buttons}
                                         onPress={() => handleFeedbacks()}>
                                         <Text style={[styles.text, {flex: 1}]}>Feedbacks</Text>
-                                        <Text style={styles.countText}>{referrals.length}</Text>
+                                        <Text style={styles.countText}>{feedbacks.length}</Text>
                                     </TouchableOpacity>
                                     <View style={styles.referView}>
                                         <TouchableOpacity onPress={() => referNavigation()}>
