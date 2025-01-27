@@ -1,5 +1,15 @@
-import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {useState} from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
+import {useRef, useState} from "react";
 import {usePreventRemove} from "@react-navigation/native";
 import emailValidation from "../Regex/emailValidation";
 import login from "../fetchRequests/login";
@@ -7,7 +17,7 @@ import Toast from 'react-native-toast-message'
 import {useDispatch} from "react-redux";
 import {setUserInfo} from "../Redux/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
 
 interface Error {
@@ -18,6 +28,7 @@ interface Error {
 type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>
 
 const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
+    const loginCompletedRef = useRef(false)
     const dispatch = useDispatch()
     const [loginDetails, setLoginDetails] = useState({
         email: '', password: ''
@@ -32,9 +43,7 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
         }))
     }
 
-    const hasNonEmptyValue = Object.values(loginDetails).some(some => some)
-
-    usePreventRemove(Boolean(hasNonEmptyValue), ({data}) => {
+    usePreventRemove(!loginCompletedRef.current && Boolean(Object.values(loginDetails).some(some => some)) && !loading, ({data}) => {
         Alert.alert('Discard Login?', 'Are you sure you want to leave this page? Any information you’ve entered will be lost.', [
             {
                 text: 'Cancel',
@@ -97,6 +106,8 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
 
                 const message = data.message
 
+                // Set the ref before showing toast by marking login as completed
+                loginCompletedRef.current = true;
                 Toast.show({
                     type: 'success',
                     text1: message,
@@ -115,53 +126,47 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
 
     }
     return (
-        <View style={styles.container}>
-            <View style={styles.childContainer}>
-                <Text style={styles.headerText}>Login</Text>
-                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
-                           keyboardType="email-address"
-                           placeholder="Email" onChangeText={text => handleLoginDetailsChange('email', text)}/>
-                {err.email && <Text style={styles.errorMessage}>{err.email}</Text>}
-                <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs} keyboardType="default"
-                           secureTextEntry={true}
-                           placeholder="Password" onChangeText={text => handleLoginDetailsChange('password', text)}/>
-                {err.password && <Text style={styles.errorMessage}>{err.password}</Text>}
-                <TouchableOpacity disabled={disabled} onPress={handleLogin}>
-                    {
-                        loading ? <ActivityIndicator size="small" color="#367c2b" style={styles.loginButton}/> :
-                            <Text style={styles.loginButton}>Login</Text>
-                    }
-                </TouchableOpacity>
-                <View style={styles.forgotPasswordContainer}>
-                    <TouchableOpacity disabled={disabled} onPress={() => navigation.navigate('ForgotPassword')}>
-                        <Text style={{fontSize: 17, margin: 6, color: "#367c2b", fontWeight: "bold"}}>Forgot
-                            Password</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <Toast/>
+                <View style={styles.childContainer}>
+                    <Text style={styles.headerText}>Login</Text>
+                    <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
+                               keyboardType="email-address"
+                               placeholder="Email" onChangeText={text => handleLoginDetailsChange('email', text)}/>
+                    {err.email && <Text style={styles.errorMessage}>{err.email}</Text>}
+                    <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
+                               keyboardType="visible-password"
+                               secureTextEntry={true}
+                               placeholder="Password"
+                               onChangeText={text => handleLoginDetailsChange('password', text)}/>
+                    {err.password && <Text style={styles.errorMessage}>{err.password}</Text>}
+                    <TouchableOpacity disabled={disabled} onPress={handleLogin}>
+                        {
+                            loading ? <ActivityIndicator size="small" color="#367c2b" style={styles.loginButton}/> :
+                                <Text style={styles.loginButton}>Login</Text>
+                        }
                     </TouchableOpacity>
-                    <View style={styles.noAccount}>
-                        <Text style={{fontSize: 16, marginTop: 2}}>Don't have an account?</Text>
-                        <TouchableOpacity disabled={disabled} onPress={() => navigation.replace('Signup')}>
-                            <Text style={{marginLeft: 8, color: "#367c2b", fontWeight: "bold", fontSize: 18}}
-                            >Signup</Text>
+                    <View style={styles.forgotPasswordContainer}>
+                        <TouchableOpacity disabled={disabled} onPress={() => navigation.replace('ForgotPassword')}>
+                            <Text style={styles.forgotPassword}>Forgot
+                                Password</Text>
                         </TouchableOpacity>
-                    </View>
-                    <Text style={{margin: 6, fontSize: 18}}>Or</Text>
-                    <View style={styles.socialsLogin}>
-                        <TouchableOpacity>
-                            <Text style={styles.socialButton}>Sign in with GitHub</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text style={styles.socialButton}>Sign in with Google</Text>
-                        </TouchableOpacity>
+                        <View style={styles.noAccount}>
+                            <Text style={{fontSize: 16, marginTop: 2}}>Don't have an account?</Text>
+                            <TouchableOpacity disabled={disabled} onPress={() => navigation.replace('Signup')}>
+                                <Text style={styles.signupButton}>Signup</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 0.91,
+        flex: 0.9,
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
@@ -172,8 +177,6 @@ const styles = StyleSheet.create({
         padding: 24,
         borderColor: "white",
         backgroundColor: "white",
-        height: 480,
-        width: 300,
     },
     headerText: {
         textAlign: "center",
@@ -208,6 +211,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    forgotPassword: {
+        fontSize: 17,
+        margin: 6,
+        color: "#367c2b",
+        fontWeight: "bold",
+        textDecorationLine: "underline"
+    },
     noAccount: {
         flexDirection: "row",
         padding: 4,
@@ -237,6 +247,13 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         width: 250,
         padding: 5
+    },
+    signupButton: {
+        marginLeft: 8,
+        color: "#367c2b",
+        fontWeight: "bold",
+        fontSize: 18,
+        textDecorationLine: "underline"
     }
 })
 export default Login
