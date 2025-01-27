@@ -1,12 +1,12 @@
 import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
-import getEducation from "@/app/fetchRequests/getEducation";
+import getEducation from "@/app/FetchRequests/getEducation";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {Education as EducationType, RootStackParamList, RootState} from "@/Types/types";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import imageSearch from "@/app/fetchRequests/imageSearch";
+import imageSearch from "@/app/FetchRequests/imageSearch";
 import {format} from "date-fns";
-import deleteEducation from "@/app/fetchRequests/deleteEducation";
+import deleteEducation from "@/app/FetchRequests/deleteEducation";
 import Toast from "react-native-toast-message";
 import AddEducation from "@/app/Modals/AddEducation";
 import {StackNavigationProp} from "@react-navigation/stack";
