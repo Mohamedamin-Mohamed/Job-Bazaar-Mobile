@@ -83,7 +83,8 @@ export type SignupRequest = {
 }
 
 export type RootStackParamList = {
-    RootStack: undefined
+    RootStack: undefined,
+    Landing: undefined,
     HomePanel: undefined,
     Signup: undefined,
     Login: undefined,
@@ -93,7 +94,8 @@ export type RootStackParamList = {
     ResetPassword: undefined,
     CareerHub: undefined,
     UploadedJobs: undefined,
-    Profile: undefined,
+    CareerInterests: undefined,
+    Experience: undefined,
     UploadJob: undefined,
     AvailableJobs: undefined,
     Apply: { job: Job },
@@ -107,9 +109,10 @@ export type RootStackParamList = {
     ApplicationConfirmation: undefined,
     Logout: undefined
     ManagementHub: undefined,
-    ViewJobDescription: { job: Job },
+    ViewJobDescription: { job: Job, applicantsPerJob: Record<string, number> },
     ViewJob: { job: Job },
-    ViewApplicants: { job: Job }
+    ViewApplicants: { job: Job },
+    Settings: undefined
 }
 
 export type RootTabParamList = {
