@@ -1,11 +1,11 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {Resume, RootStackParamList, RootState} from "../Types/types";
+import {Resume, RootStackParamList, RootState} from "@/Types/types";
 import * as DocumentPicker from "expo-document-picker"
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import referralFormData from "./referralFormData";
-import addReferral from "../fetchRequests/addReferral";
+import addReferral from "@/app/FetchRequests/addReferral";
 import Toast from "react-native-toast-message";
 
 type ReferNavigationProp = StackNavigationProp<RootStackParamList, 'Refer'>
@@ -27,6 +27,7 @@ const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
         const result = await DocumentPicker.getDocumentAsync({type: "application/pdf"});
 
         if (!result.canceled) {
+            //@ts-ignore
             const {name, uri, type} = result.assets.values().next().value;
 
             setResumeDetails(prevState => ({

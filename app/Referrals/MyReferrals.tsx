@@ -1,9 +1,9 @@
 import {ActivityIndicator, ScrollView, StyleSheet, View} from "react-native";
-import {Referral, RootStackParamList, RootState} from "../Types/types";
+import {Referral, RootStackParamList, RootState} from "@/Types/types";
 import NoAvailableReferrals from "./NoAvailableReferrals";
 import ReferralItem from "./ReferralItem";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import getReferrals from "@/app/fetchRequests/getReferrals";
+import getReferrals from "@/app/FetchRequests/getReferrals";
 import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 
@@ -22,8 +22,7 @@ const MyReferrals = ({navigation}: MyReferralsNavigationProp) => {
                 const data = await response.json()
                 setReferrals(data)
             }
-        } catch (error) {
-            console.error('Error fetching jobs:', error);
+        } catch (err) {
         } finally {
             setLoading(false);
         }
@@ -31,7 +30,11 @@ const MyReferrals = ({navigation}: MyReferralsNavigationProp) => {
 
     useEffect(() => {
         const controller = new AbortController()
-        fetchReferrals(controller).catch(err => console.error(err))
+        fetchReferrals(controller).catch(err => {
+            if (!(err instanceof DOMException && err.name === 'AbortError')) {
+                console.error(err)
+            }
+        })
         return () => {
             controller.abort()
         }
@@ -49,12 +52,13 @@ const MyReferrals = ({navigation}: MyReferralsNavigationProp) => {
 
     return (
         loading ? <ActivityIndicator size="large" color="#367c2b" style={styles.activityBar}/> :
-            <View style={{flex: 1, flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                {referrals.length === 0 ? (
+            <View style={{flex: 1, flexDirection: "column", marginHorizontal: 36}}>
+
+            {referrals.length === 0 ? (
                     <NoAvailableReferrals navigation={navigation}/>
                 ) : (
                     <ScrollView>
-                        <View style={{justifyContent: "center", alignItems: "center", marginTop: 24}}>
+                        <View style={{marginTop: 24}}>
                             {sortByCreatedDate.map((referral,) => (
                                 <View key={referral.fileName} style={{width: "100%"}}>
                                     <ReferralItem referral={referral}/>

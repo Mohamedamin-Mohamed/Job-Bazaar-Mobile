@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Referral} from "../Types/types";
+import {Referral} from "@/Types/types";
 import {useState} from "react";
 import ResumeViewer from "../Modals/ResumeViewer";
 
@@ -32,9 +32,6 @@ const ReferralItem = ({referral}: { referral: Referral }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#f5f5f5', // Optional background color for the screen
-    },
     card: {
         padding: 16,
         borderRadius: 8,
