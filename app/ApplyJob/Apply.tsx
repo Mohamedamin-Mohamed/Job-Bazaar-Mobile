@@ -18,7 +18,7 @@ import {useSelector} from "react-redux";
 import applyToJobFormData from "./applyToJobFormData";
 import * as DocumentPicker from 'expo-document-picker';
 import Buttons from "../FixedButtons/Buttons";
-import applyToJob from "../fetchRequests/applyToJob";
+import applyToJob from "@/app/FetchRequests/applyToJob";
 import {usePreventRemove} from "@react-navigation/native";
 
 type ApplyNavigationProps = NativeStackScreenProps<RootStackParamList, 'Apply'>
