@@ -1,7 +1,6 @@
-import {Application} from "../Types/types";
+import {Application} from "@/Types/types";
 
 const countApplications = (applications: Application[], jobStatuses: Record<string, string> | undefined) => {
-    // Ensure jobStatuses is an object and provide a fallback
     const safeJobStatuses = jobStatuses || {};
 
     const active = applications.filter(
