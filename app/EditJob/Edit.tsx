@@ -7,7 +7,7 @@ import {useRef, useState} from "react";
 import JobTypeDropDown from "@/app/Modals/DropDowns/JobTypeDropDown";
 import Buttons from "../FixedButtons/Buttons";
 import Toast from "react-native-toast-message";
-import uploadJob from "../fetchRequests/uploadJob";
+import uploadJob from "@/app/FetchRequests/uploadJob";
 import {usePreventRemove} from "@react-navigation/native";
 
 type EditNavigationProps = NativeStackScreenProps<RootStackParamList, 'Edit'>
