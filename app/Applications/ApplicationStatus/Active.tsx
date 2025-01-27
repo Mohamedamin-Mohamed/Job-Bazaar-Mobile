@@ -3,7 +3,7 @@ import Header from "./Header";
 import React, {useState} from "react";
 import NoApplications from "./NoApplicationsOrJobs";
 import {NavigationProp} from "@react-navigation/core";
-import updateApplication from "@/app/fetchRequests/updateApplication";
+import updateApplication from "@/app/FetchRequests/updateApplication";
 import {useSelector} from "react-redux";
 import {Application, RootStackParamList, RootState} from "@/Types/types";
 
