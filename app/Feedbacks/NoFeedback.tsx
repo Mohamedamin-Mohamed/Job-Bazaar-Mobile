@@ -1,7 +1,7 @@
 import {Image, StyleSheet, Text, View} from "react-native";
 
 const NoFeedback = () => {
-    const img = require('../../Images/empty_self_chat.png')
+    const img = require('../Images/empty_self_chat.png')
     return (
         <View style={styles.container}>
             <Image source={img} style={styles.image}/>
