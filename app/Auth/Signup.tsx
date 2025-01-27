@@ -13,7 +13,7 @@ import {useRef, useState} from "react";
 import {usePreventRemove} from "@react-navigation/native";
 import {Picker} from "@react-native-picker/picker";
 import emailValidation from "../Regex/emailValidation";
-import signup from "../fetchRequests/signup";
+import signup from "@/app/FetchRequests/signup";
 import Toast from "react-native-toast-message";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParamList} from "@/Types/types";

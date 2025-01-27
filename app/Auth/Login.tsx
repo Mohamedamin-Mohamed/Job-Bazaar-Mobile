@@ -12,7 +12,7 @@ import {
 import {useRef, useState} from "react";
 import {usePreventRemove} from "@react-navigation/native";
 import emailValidation from "../Regex/emailValidation";
-import login from "../fetchRequests/login";
+import login from "@/app/FetchRequests/login";
 import Toast from 'react-native-toast-message'
 import {useDispatch} from "react-redux";
 import {setUserInfo} from "../Redux/userSlice";
