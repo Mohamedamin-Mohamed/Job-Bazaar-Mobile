@@ -1,5 +1,5 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Feedback } from "@/app/Types/types";
+import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Feedback} from "@/Types/types";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface FeedbackDetailsModalProps {
@@ -7,15 +7,15 @@ interface FeedbackDetailsModalProps {
     handleDisplayModal: () => void;
 }
 
-const FeedbackDetailsModal = ({ feedback, handleDisplayModal }: FeedbackDetailsModalProps) => {
+const FeedbackDetailsModal = ({feedback, handleDisplayModal}: FeedbackDetailsModalProps) => {
     return (
         <Modal visible={true} transparent={true} animationType="slide">
             <View style={styles.modalOverlay}>
-                <TouchableOpacity style={StyleSheet.absoluteFillObject} onPress={handleDisplayModal} />
+                <TouchableOpacity style={StyleSheet.absoluteFillObject} onPress={handleDisplayModal}/>
                 <View style={styles.modalContent}>
                     <View style={styles.headerView}>
                         <Text style={styles.headerText}>Feedback Details</Text>
-                        <Icon name="close" size={30} color="gray" onPress={handleDisplayModal} />
+                        <Icon name="close" size={30} color="gray" onPress={handleDisplayModal}/>
                     </View>
                     <View style={styles.detailsContainer}>
                         <Text style={styles.detailItem}>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         padding: 20,
         width: "85%",
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,

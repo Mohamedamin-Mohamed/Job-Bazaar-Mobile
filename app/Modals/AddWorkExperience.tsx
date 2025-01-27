@@ -3,14 +3,14 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import {CheckBox} from "@rneui/themed";
 import Buttons from "@/app/FixedButtons/Buttons";
 import {useState} from "react";
-import {RootState, WorkExpCreation, WorkExperience} from "@/app/Types/types";
+import {RootState, WorkExpCreation, WorkExperience} from "@/Types/types";
 import {useSelector} from "react-redux";
 import {DateTimePickerEvent} from "@react-native-community/datetimepicker";
 import {addMonths, format} from "date-fns";
 import EndDatePicker from "@/app/Modals/DatePickers/EndDatePicker";
 import StartDatePicker from "@/app/Modals/DatePickers/StartDatePicker";
 import Toast from "react-native-toast-message";
-import saveWorkExperience from "@/app/fetchRequests/saveWorkExperience";
+import saveWorkExperience from "@/app/FetchRequests/saveWorkExperience";
 
 interface AddWorkExperienceProps {
     handleModalDisplay: () => void,
@@ -226,6 +226,7 @@ const AddWorkExperience = ({handleModalDisplay, workExperience, handleWorkExperi
                             <View style={styles.subHeadView}>
                                 <Text style={styles.headerText}>Start Date*</Text>
                                 <TouchableOpacity
+                                    activeOpacity={1}
                                     style={[styles.inputsView, {flexDirection: "row", justifyContent: "space-between"}]}
                                     onPress={() => setShowStartPicker(true)}>
                                     <Text
@@ -249,6 +250,7 @@ const AddWorkExperience = ({handleModalDisplay, workExperience, handleWorkExperi
                             <View style={styles.subHeadView}>
                                 <Text style={styles.headerText}>End Date*</Text>
                                 <TouchableOpacity
+                                    activeOpacity={0.8}
                                     style={[styles.inputsView, {flexDirection: "row", justifyContent: "space-between"}]}
                                     onPress={() => setShowEndPicker(true)}>
                                     <Text

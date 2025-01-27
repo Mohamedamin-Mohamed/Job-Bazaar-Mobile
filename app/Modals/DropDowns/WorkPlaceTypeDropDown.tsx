@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
     },
     headerText: {
         textAlign: "center",
-        fontSize: 16,
+        fontSize: 14,
+        padding: 1,
         fontWeight: "600",
     },
     optionButton: {

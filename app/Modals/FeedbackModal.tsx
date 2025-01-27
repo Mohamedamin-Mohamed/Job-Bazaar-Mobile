@@ -1,11 +1,11 @@
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {JobApplicationData, RootStackParamList} from "@/app/Types/types";
+import {JobApplicationData, RootStackParamList} from "@/Types/types";
 import {useState} from "react";
 import {CheckBox} from "@rneui/themed";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {format} from "date-fns";
-import updateApplication from "@/app/fetchRequests/updateApplication";
-import uploadFeedback from "@/app/fetchRequests/uploadFeedback";
+import updateApplication from "@/app/FetchRequests/updateApplication";
+import uploadFeedback from "@/app/FetchRequests/uploadFeedback";
 import Toast from "react-native-toast-message";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
@@ -43,7 +43,7 @@ const FeedbackModal = ({jobApplicant, handleDisplayModal, navigation}: FeedbackM
 
             const success = updateResponse.ok && feedbackResponse.ok;
             const text = await feedbackResponse.text();
-            console.log(text)
+
             Toast.show({
                 type: success ? 'success' : 'error',
                 text1: text,
@@ -75,6 +75,7 @@ const FeedbackModal = ({jobApplicant, handleDisplayModal, navigation}: FeedbackM
                         onChangeText={setFeedback}
                         style={styles.textInput}
                         editable={!disabled}
+                        multiline={true}
                         placeholder="Enter your feedback"
                     />
                     <Text style={styles.feedbackText}>Status</Text>
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
         marginTop: 6,
         padding: 6,
         fontSize: 16,
-        borderWidth: 0.4,
+        borderWidth: 1,
         borderColor: "gray",
         marginVertical: 24,
     },

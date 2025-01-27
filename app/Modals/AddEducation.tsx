@@ -1,16 +1,17 @@
-import {Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {CheckBox} from "@rneui/themed";
 import Buttons from "@/app/FixedButtons/Buttons";
 import {useState} from "react";
-import {Education, EducationCreation, RootState} from "@/app/Types/types";
+import {Education, EducationCreation, RootState} from "@/Types/types";
 import {useSelector} from "react-redux";
 import {DateTimePickerEvent} from "@react-native-community/datetimepicker";
 import {addMonths, format} from "date-fns";
 import EndDatePicker from "@/app/Modals/DatePickers/EndDatePicker";
 import StartDatePicker from "@/app/Modals/DatePickers/StartDatePicker";
 import Toast from "react-native-toast-message";
-import saveEducation from "@/app/fetchRequests/saveEducation";
+import saveEducation from "@/app/FetchRequests/saveEducation";
+import {usePreventRemove} from "@react-navigation/native";
 
 interface AddEducationProps {
     handleModalDisplay: () => void,
@@ -73,6 +74,7 @@ const AddEducation = ({handleModalDisplay, education, handleEducation}: AddEduca
                 return true
             }
         }
+        return false
     }
 
     const handleClear = () => {
@@ -161,7 +163,7 @@ const AddEducation = ({handleModalDisplay, education, handleEducation}: AddEduca
                 ...prevState, ["endDate"]: selectedDate
             }))
         }
-    };
+    }
 
     return (
         <Modal visible={true} transparent={true} animationType="slide">
@@ -224,6 +226,7 @@ const AddEducation = ({handleModalDisplay, education, handleEducation}: AddEduca
                             <View style={styles.subHeadView}>
                                 <Text style={styles.headerText}>Start Date*</Text>
                                 <TouchableOpacity
+                                    activeOpacity={1}
                                     style={[styles.inputsView, {
                                         flexDirection: "row",
                                         justifyContent: "space-between"
@@ -251,6 +254,7 @@ const AddEducation = ({handleModalDisplay, education, handleEducation}: AddEduca
                             <View style={styles.subHeadView}>
                                 <Text style={styles.headerText}>End Date*</Text>
                                 <TouchableOpacity
+                                    activeOpacity={1}
                                     style={[styles.inputsView, {
                                         flexDirection: "row",
                                         justifyContent: "space-between"
