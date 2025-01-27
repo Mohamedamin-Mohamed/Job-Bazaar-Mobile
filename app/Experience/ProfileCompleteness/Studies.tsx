@@ -2,7 +2,7 @@ import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from
 import {useEffect, useState} from "react";
 import AddEducation from "@/app/Modals/AddEducation";
 import {Education as EducationType, RootState} from "@/Types/types";
-import getEducation from "@/app/fetchRequests/getEducation";
+import getEducation from "@/app/FetchRequests/getEducation";
 import {useSelector} from "react-redux";
 
 const Studies = () => {
