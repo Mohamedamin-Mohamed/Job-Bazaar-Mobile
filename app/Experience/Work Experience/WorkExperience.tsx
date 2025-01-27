@@ -1,7 +1,7 @@
 import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {RootState, RootTabParamList, WorkExperience as WorkExperienceType} from "@/Types/types";
+import {RootStackParamList, RootState, WorkExperience as WorkExperienceType} from "@/Types/types";
 import getWorkExperience from "@/app/fetchRequests/getWorkExperience";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import imageSearch from "@/app/fetchRequests/imageSearch";
@@ -9,14 +9,12 @@ import {format} from "date-fns";
 import Toast from "react-native-toast-message";
 import deleteWorkExperience from "@/app/fetchRequests/deleteWorkExperience";
 import AddWorkExperience from "@/app/Modals/AddWorkExperience";
-import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-type NavigationProp = BottomTabScreenProps<RootTabParamList, 'Experience'>;
-
-const WorkExperience = ({navigation}: NavigationProp) => {
+const WorkExperience = ({navigation}: {navigation: StackNavigationProp<RootStackParamList, 'Experience'>}) => {
     const [workExperience, setWorkExperience] = useState<WorkExperienceType | null>(null);
     const [imgUrl, setImgUrl] = useState<string | null>(null);
-    const fallBackImageUrl = require('../../../Images/COLOURBOX50538417.webp')
+    const fallBackImageUrl = require('../../Images/COLOURBOX50538417.webp')
     const [loading, setLoading] = useState(false);
     const [displayModal, setDisplayModal] = useState(false)
     const applicantEmail = useSelector((state: RootState) => state.userInfo).email;
@@ -30,8 +28,6 @@ const WorkExperience = ({navigation}: NavigationProp) => {
                 setWorkExperience(workExperienceData);
             }
         } catch (err) {
-            console.error("Couldn't fetch work experience,", err);
-
         } finally {
             setLoading(false);
         }
@@ -45,7 +41,7 @@ const WorkExperience = ({navigation}: NavigationProp) => {
                 const dataJson = await response.json();
                 const data = dataJson.data;
                 if (data?.items && data.items.length > 0) {
-                    setImgUrl(data.items[0].link); // Use the first item image url
+                    setImgUrl(data.items[0].link);
                 } else {
                     setImgUrl(null);
                 }
