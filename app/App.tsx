@@ -1,30 +1,28 @@
-import './app/gesture-handler'
+import '../gesture-handler'
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {DrawerActions, useNavigation} from "@react-navigation/native"
-import HomePanel from "./app/Panels/HomePanel";
-import CreateAccountPanel from "./app/Panels/CreateAccountPanel";
-import LoginPanel from "./app/Panels/LoginPanel";
-import Signup from "./app/Auth/Signup";
-import Login from "./app/Auth/Login";
-import ForgotPassword from "./app/Panels/ForgotPassword";
-import ResetPassword from "./app/Panels/ResetPassword";
-import CareerHub from "./app/CareerHub/CareerHub";
+import CreateAccountPanel from "./Panels/CreateAccountPanel";
+import LoginPanel from "./Panels/LoginPanel";
+import Signup from "./Auth/Signup";
+import Login from "./Auth/Login";
+import ForgotPassword from "./Panels/ForgotPassword";
+import ResetPassword from "./Panels/ResetPassword";
+import CareerHub from "./CareerHub/CareerHub";
 import {Provider} from "react-redux";
-import {persistor, store} from "./app/Redux/store";
+import {persistor, store} from "./Redux/store";
 import {PersistGate} from "redux-persist/integration/react";
-import UploadedJobs from "./app/UploadedJobs/UploadedJobs";
-import {RootStackParamList} from "./app/Types/types";
-import UploadJob from "./app/UploadJob/UploadJob";
-import AvailableJobs from "./app/AvailableJobs/AvailableJobs";
-import Apply from "./app/ApplyJob/Apply";
-import Edit from "./app/EditJob/Edit";
-import MyReferrals from "./app/Referrals/MyReferrals";
-import Refer from "./app/Referrals/Refer";
-import AppliedJobs from "./app/Applications/AppliedJobs";
+import UploadedJobs from "./UploadedJobs/UploadedJobs";
+import {RootStackParamList} from "@/Types/types";
+import UploadJob from "./UploadJob/UploadJob";
+import AvailableJobs from "./AvailableJobs/AvailableJobs";
+import Apply from "./ApplyJob/Apply";
+import Edit from "./EditJob/Edit";
+import MyReferrals from "./Referrals/MyReferrals";
+import Refer from "./Referrals/Refer";
+import AppliedJobs from "./Applications/AppliedJobs";
 import ViewDescription from "@/app/Applications/ViewJobDescription/ViewDescription";
 import ViewApplication from "@/app/Applications/ViewJobDescription/ViewApplication";
-import Feedback from "@/app/CareerHub/Feedbacks/Feedback";
-import ProfileTabNavigator from "@/app/Tabs/ProfileTabNavigator";
+import Feedback from "@/app/Feedbacks/Feedback";
 import ApplicationConfirmation from "@/app/ApplyJob/ApplicationConfirmation";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -36,18 +34,17 @@ import ViewApplicant from "@/app/Management/ViewApplicants/ViewApplicant";
 import {AuthProvider} from "@/app/Contexts/AuthContext";
 import withAuth from "@/app/Contexts/withAuth";
 import Toast from "react-native-toast-message";
-import React from 'react';
-
+import LandingPanel from "@/app/Panels/LandingPanel";
+import CareerInterests from "@/app/CareerInterests/CareerInterests";
+import Experience from "@/app/Experience/Experience";
+import ViewSettings from "@/app/Settings/ViewSettings";
 
 const StackNav = () => {
     const Stack = createNativeStackNavigator<RootStackParamList>()
     const navigation = useNavigation()
-
     return (
-        <Stack.Navigator initialRouteName={"HomePanel"} screenOptions={{
-            headerTitleAlign: 'center'
-        }}>
-            <Stack.Screen options={{headerTitle: ''}} name="HomePanel" component={HomePanel}/>
+        <Stack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
+            <Stack.Screen options={{headerTitle: ''}} name="Landing" component={LandingPanel}/>
             <Stack.Screen options={{headerTitle: ''}} name="Signup" component={Signup}/>
             <Stack.Screen options={{headerTitle: ''}} name="Login" component={Login}/>
             <Stack.Screen options={{title: ''}} name="CreateAccount" component={CreateAccountPanel}/>
@@ -68,13 +65,14 @@ const StackNav = () => {
                 }
             }} name="CareerHub" component={withAuth(CareerHub)}/>
             <Stack.Screen name="UploadedJobs" component={withAuth(UploadedJobs)} options={{title: ''}}/>
-            <Stack.Screen name="Profile" component={withAuth(ProfileTabNavigator)} options={{title: ''}}/>
+            <Stack.Screen name="CareerInterests" component={withAuth(CareerInterests)} options={{title: ''}}/>
+            <Stack.Screen name="Experience" component={withAuth(Experience)} options={{title: ''}}/>
             <Stack.Screen name="UploadJob" component={withAuth(UploadJob)} options={{title: ''}}/>
             <Stack.Screen name="AvailableJobs" component={withAuth(AvailableJobs)} options={{title: ''}}/>
             <Stack.Screen name="Apply" component={Apply}/>
             <Stack.Screen name="ApplicationConfirmation" component={withAuth(ApplicationConfirmation)}
                           options={{title: ''}}/>
-            <Stack.Screen name="Edit" component={withAuth(Edit)}/>
+            <Stack.Screen name="Edit" component={withAuth(Edit)} options={{title: ''}}/>
             <Stack.Screen name="MyReferrals" component={withAuth(MyReferrals)} options={{title: ''}}/>
             <Stack.Screen name="Refer" component={withAuth(Refer)} options={{title: ''}}/>
             <Stack.Screen name="AppliedJobs" component={withAuth(AppliedJobs)} options={{title: ''}}/>
@@ -87,6 +85,7 @@ const StackNav = () => {
             <Stack.Screen name="ViewJobDescription" component={withAuth(ViewJobDescription)} options={{title: ''}}/>
             <Stack.Screen name="ViewJob" component={withAuth(ViewJob)} options={{title: ''}}/>
             <Stack.Screen name="ViewApplicants" component={withAuth(ViewApplicant)} options={{title: ''}}/>
+            <Stack.Screen name="Settings" component={withAuth(ViewSettings)} options={{title: ''}}/>
         </Stack.Navigator>
     )
 }
@@ -105,6 +104,7 @@ const DrawerNav = () => {
     )
 
 }
+
 const App = () => {
     return (
         <Provider store={store}>
@@ -115,7 +115,6 @@ const App = () => {
                 </AuthProvider>
             </PersistGate>
         </Provider>
-    );
-
+    )
 }
 export default App
