@@ -1,4 +1,4 @@
-import {Job} from "@/app/Types/types";
+import {Job} from "@/Types/types";
 import {StyleSheet, Text, View} from "react-native";
 import {differenceInDays, parse} from "date-fns";
 import Icon from "react-native-vector-icons/MaterialIcons";
