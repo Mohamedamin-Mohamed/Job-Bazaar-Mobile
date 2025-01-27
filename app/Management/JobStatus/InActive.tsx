@@ -1,21 +1,19 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Job, RootStackParamList, RootState} from "@/app/Types/types";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {NavigationProp} from "@react-navigation/core";
-import {useState} from "react";
+import React from "react";
 import Header from "@/app/Applications/ApplicationStatus/Header";
 import NoApplicationsOrJobs from "@/app/Applications/ApplicationStatus/NoApplicationsOrJobs";
 import {useSelector} from "react-redux";
-import JobOptions from "@/app/Management/JobStatus/JobOptions";
 
 interface InActiveProps {
     uploadedJobs: Job[],
     inActiveApplications: number,
     navigation: NavigationProp<RootStackParamList, 'ManagementHub'>,
+    applicantsPerJob: Record<string, number>
 }
 
-const InActive = ({uploadedJobs, inActiveApplications, navigation}: InActiveProps) => {
-    const [clicked, setClicked] = useState<Record<string, boolean>>({})
-    const [jobOptions, setJobOptions] = useState(false)
+const InActive = ({uploadedJobs, inActiveApplications, navigation, applicantsPerJob}: InActiveProps) => {
     const role = useSelector((state: RootState) => state.userInfo).role
 
     const parseDate = (dateString: string) => {
@@ -30,20 +28,8 @@ const InActive = ({uploadedJobs, inActiveApplications, navigation}: InActiveProp
         return dateB - dateA; // sort descending
     })
 
-    const handleClick = (jobId: string) => {
-        if (clicked[jobId]) {
-            setClicked({[jobId]: false})
-            return
-        }
-        setClicked({[jobId]: true})
-    }
-
-    const handleClickClose = (jobId: string) => {
-        setClicked({[jobId]: false})
-    }
-
     const viewDescription = (job: Job) => {
-        navigation.navigate('ViewJobDescription', {job: job})
+        navigation.navigate('ViewJobDescription', {job: job, applicantsPerJob})
     }
 
     return (
@@ -54,17 +40,11 @@ const InActive = ({uploadedJobs, inActiveApplications, navigation}: InActiveProp
                     {sortedUploadedJobs.map((job) => (
                         job.jobStatus === 'inActive' && (
                             <View key={job.jobId} style={styles.childViews}>
-                                <TouchableOpacity onPress={() => viewDescription(job)}>
+                                <TouchableOpacity style={{width: "86%"}} onPress={() => viewDescription(job)}>
                                     <Text style={styles.positionText}>{job.position}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleClick(job.jobId)}>
-                                    <Text style={{fontSize: 20}}>...</Text>
-                                </TouchableOpacity>
-                                {clicked[job.jobId] && (
-                                    <JobOptions navigation={navigation} job={job}
-                                                handleClickClose={handleClickClose}
-                                    />
-                                )}
+                                <Text style={styles.applicantsPerJob}>{applicantsPerJob[job.jobId] ?? 0}</Text>
+
                             </View>
                         )
                     ))}
@@ -87,5 +67,10 @@ const styles = StyleSheet.create({
         color: "#0875e1",
         marginTop: 4
     },
+    applicantsPerJob: {
+        color: "#a31b12",
+        paddingHorizontal: 1,
+        fontSize: 18
+    }
 })
 export default InActive
