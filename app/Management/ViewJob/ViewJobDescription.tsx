@@ -1,13 +1,10 @@
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {Job, RootStackParamList, RootState} from "@/app/Types/types";
+import {RootStackParamList, RootState} from "@/Types/types";
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Location from "@/app/Applications/ViewJobDescription/Location";
 import Info from "@/app/Applications/ViewJobDescription/Info";
 import JobDescription from "@/app/Applications/ViewJobDescription/JobDescription";
 import Qualifications from "@/app/Applications/ViewJobDescription/Qualifications";
-import {useEffect, useState} from "react";
-import getUploadedJobs from "@/app/fetchRequests/getUploadedJobs";
-import getApplicantsPerJob from "@/app/fetchRequests/getApplicantsPerJob";
 import {useSelector} from "react-redux";
 import Toast from "react-native-toast-message";
 
@@ -15,12 +12,8 @@ type ViewApplicationProps = NativeStackScreenProps<RootStackParamList, 'ViewJobD
 
 const ViewJobDescription = ({route, navigation}: ViewApplicationProps) => {
     const {job} = route.params
-    const [uploadedJobs, setUploadedJobs] = useState<Job[]>([]);
-    const [applicantsPerJob, setApplicantsPerJob] = useState<Record<string, number>>({});
-    const [jobIds, setJobIds] = useState<string[]>([]);
-    const [disabled, setDisabled] = useState(false)
+    const {applicantsPerJob} = route.params
     const userInfo = useSelector((state: RootState) => state.userInfo)
-    const employerEmail = userInfo.email
     const role = userInfo.role
 
     const monthNames = [
@@ -40,85 +33,26 @@ const ViewJobDescription = ({route, navigation}: ViewApplicationProps) => {
         navigation.navigate('ViewJob', {job})
     }
 
-    const fetchUploadedJobs = async (controller: AbortController) => {
-        try {
-            const response = await getUploadedJobs(employerEmail, controller);
-            if (response.ok) {
-                const jobs = await response.json();
-                setUploadedJobs(jobs);
-            }
-        } catch (err) {
-            console.error("Error fetching uploaded jobs:", err);
-        }
-    };
-
     const handleNavigation = () => {
         navigation.navigate('ViewApplicants', {job})
     }
 
-    const fetchApplicantsPerJob = async (controller: AbortController) => {
-        if (jobIds.length === 0) return;
-        try {
-            const response = await getApplicantsPerJob(jobIds, controller);
-            if (response.ok) {
-                const jobApplicationCounts = await response.json();
-                setApplicantsPerJob(jobApplicationCounts);
-            }
-        } catch (err) {
-            console.error("Error fetching applicants per job:", err);
-            Toast.show({
-                type: 'error',
-                text1: "Error, Unable to load applicant data. Please try again later.",
-                onShow: () => setDisabled(true),
-                onHide: () => setDisabled(false)
-            })
-        } finally {
-        }
-    };
-
-
-    useEffect(() => {
-        const controller = new AbortController()
-        fetchUploadedJobs(controller).catch((err) => console.error(err));
-        return () => {
-            controller.abort()
-        }
-    }, []);
-
-
-    useEffect(() => {
-        const ids = uploadedJobs.map((job) => job.jobId);
-        if (ids.length !== jobIds.length) {
-            setJobIds(ids);
-        }
-    }, [uploadedJobs]);
-
-
-    useEffect(() => {
-        const controller = new AbortController()
-        fetchApplicantsPerJob(controller).catch((err) => console.error(err));
-        return () => {
-            controller.abort()
-        }
-    }, [jobIds]);
-
     return (
         job ?
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.childContainer}>
                         <Text style={styles.position}>{job.position}</Text>
                         <View>
                             <Text>You uploaded this job on {handleDateParsing(job.postedDate)}</Text>
                             <View style={{flexDirection: "row", gap: 10}}>
-                                <TouchableOpacity disabled={disabled} style={styles.applicationButton}
+                                <TouchableOpacity style={styles.applicationButton}
                                                   onPress={() => viewJob()}>
                                     <Text style={styles.applicationButtonText}>View Job Desc.</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     onPress={() => handleNavigation()}
-                                    disabled={disabled}
                                     style={styles.viewApplicants}>
                                     <Text style={styles.viewApplicantsText}>View Applicants</Text>
                                 </TouchableOpacity>
@@ -150,10 +84,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     container: {
-        width: "90%",
+        flex: 1,
+        justifyContent: "center",
         alignItems: "center",
+        width: "100%"
     },
     childContainer: {
+        width: "92%",
         backgroundColor: "white",
         borderWidth: 1,
         borderRadius: 4,
