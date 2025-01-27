@@ -1,7 +1,7 @@
 import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {RootState, RootTabParamList, WorkExperience as WorkExperienceType} from "@/app/Types/types";
+import {RootState, RootTabParamList, WorkExperience as WorkExperienceType} from "@/Types/types";
 import getWorkExperience from "@/app/fetchRequests/getWorkExperience";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import imageSearch from "@/app/fetchRequests/imageSearch";

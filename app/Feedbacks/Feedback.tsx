@@ -1,6 +1,6 @@
 import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {useEffect, useState} from "react";
-import {Feedback as FeedbackType, RootState} from "@/app/Types/types";
+import {Feedback as FeedbackType, RootState} from "@/Types/types";
 import getFeedbacks from "@/app/fetchRequests/getFeedbacks";
 import {useSelector} from "react-redux";
 import FeedbackRequests from "@/app/CareerHub/Feedbacks/FeedbackRequests";

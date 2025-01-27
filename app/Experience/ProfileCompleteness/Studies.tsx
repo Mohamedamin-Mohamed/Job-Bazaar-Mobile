@@ -1,7 +1,7 @@
 import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
 import AddEducation from "@/app/Modals/AddEducation";
-import {Education as EducationType, RootState} from "@/app/Types/types";
+import {Education as EducationType, RootState} from "@/Types/types";
 import getEducation from "@/app/fetchRequests/getEducation";
 import {useSelector} from "react-redux";
 

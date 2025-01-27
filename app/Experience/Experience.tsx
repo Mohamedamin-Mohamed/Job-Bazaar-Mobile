@@ -2,7 +2,7 @@ import {ScrollView, StyleSheet, View} from "react-native";
 import ProfileCompleteness from "@/app/Tabs/Experience/ProfileCompleteness/ProfileCompleteness";
 import Education from "@/app/Tabs/Experience/Education/Education";
 import WorkExperience from "@/app/Tabs/Experience/Work Experience/WorkExperience";
-import {RootStackParamList, RootTabParamList} from "@/app/Types/types";
+import {RootTabParamList} from "@/Types/types";
 import Contact from "@/app/Tabs/Experience/Contact";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 

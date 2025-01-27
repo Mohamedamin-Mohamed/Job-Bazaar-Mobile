@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import NoFeedback from "@/app/CareerHub/Feedbacks/NoFeedback";
-import {Feedback} from "@/app/Types/types";
+import {Feedback} from "@/Types/types";
 import {useState} from "react";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FeedbackDetailsModal from "@/app/Modals/FeedbackDetailsModal";

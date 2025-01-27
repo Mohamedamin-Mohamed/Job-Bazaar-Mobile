@@ -1,5 +1,3 @@
-import ViewJob from "@/app/Management/ViewJob/ViewJobDescription";
-
 export type RootState = {
     userInfo: User,
     locationInfo: Location
@@ -77,7 +75,13 @@ export type JobApplicationData = {
     position: string;
     employerContact: string;
     applicationDate: string;
-};
+}
+export type SignupRequest = {
+    email: string,
+    firstName: string,
+    lastName: string
+}
+
 export type RootStackParamList = {
     RootStack: undefined
     HomePanel: undefined,
@@ -104,8 +108,8 @@ export type RootStackParamList = {
     Logout: undefined
     ManagementHub: undefined,
     ViewJobDescription: { job: Job },
-    ViewJob: {job: Job},
-    ViewApplicants: {job: Job}
+    ViewJob: { job: Job },
+    ViewApplicants: { job: Job }
 }
 
 export type RootTabParamList = {
@@ -220,3 +224,4 @@ export type Address = {
     state: string;
     country: string;
 };
+

@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 16,
         backgroundColor: "#f5f5f5",
-        marginTop: 20
+        marginTop: 20,
+        zIndex: 1
     },
     childContainer: {
         flexDirection: "row",

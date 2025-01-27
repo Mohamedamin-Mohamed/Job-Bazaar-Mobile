@@ -1,4 +1,4 @@
-import {WorkPlace} from "../../Types/types";
+import {WorkPlace} from "@/Types/types";
 
 const WorkPlaceType: WorkPlace[] = [
     {

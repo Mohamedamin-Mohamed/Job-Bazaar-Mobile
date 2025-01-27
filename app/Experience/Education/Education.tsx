@@ -2,7 +2,7 @@ import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import getEducation from "@/app/fetchRequests/getEducation";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {Education as EducationType, RootState, RootTabParamList} from "@/app/Types/types";
+import {Education as EducationType, RootState, RootTabParamList} from "@/Types/types";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import imageSearch from "@/app/fetchRequests/imageSearch";
 import {format} from "date-fns";

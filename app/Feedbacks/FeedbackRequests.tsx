@@ -1,5 +1,5 @@
 import {ScrollView, View} from "react-native";
-import {Feedback} from "@/app/Types/types";
+import {Feedback} from "@/Types/types";
 import NoFeedback from "@/app/CareerHub/Feedbacks/NoFeedback";
 import DateRange from "@/app/CareerHub/Feedbacks/DateRange";
 import FeedbackDetails from "@/app/CareerHub/Feedbacks/FeedbackDetails";
