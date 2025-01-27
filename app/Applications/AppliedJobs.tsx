@@ -4,7 +4,7 @@ import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {ActivityIndicator, ScrollView, StyleSheet, View} from "react-native";
 import NoTasks from "./NoTasks";
 import DisplayAppliedJobs from "./DisplayAppliedJobs";
-import getAppliedJobs from "@/app/fetchRequests/getAppliedJobs";
+import getAppliedJobs from "@/app/FetchRequests/getAppliedJobs";
 import {useSelector} from "react-redux";
 
 type AppliedJobsProps = NativeStackScreenProps<RootStackParamList, 'AppliedJobs'>

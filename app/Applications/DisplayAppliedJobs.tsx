@@ -4,7 +4,7 @@ import {Application, Job, RootStackParamList, RootState} from "@/Types/types";
 import {NavigationProp} from "@react-navigation/core";
 import {useSelector} from "react-redux";
 import countApplications from "../countJobsOrApplications/countApplications";
-import getJobById from "@/app/fetchRequests/getJobById";
+import getJobById from "@/app/FetchRequests/getJobById";
 import Active from "./ApplicationStatus/Active";
 import InActive from "./ApplicationStatus/InActive";
 import NoApplicationsOrJobs from "@/app/Applications/ApplicationStatus/NoApplicationsOrJobs";
