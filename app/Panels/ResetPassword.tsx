@@ -9,11 +9,11 @@ import {
     ActivityIndicator
 } from "react-native";
 import {useState} from "react";
-import getUserInfo from "../fetchRequests/getUserInfo";
+import getUserInfo from "@/app/FetchRequests/getUserInfo";
 import Toast from "react-native-toast-message";
-import passwordReset from "../fetchRequests/passwordReset";
+import passwordReset from "@/app/FetchRequests/passwordReset";
 import {useSelector} from "react-redux";
-import {RootStackParamList, RootState} from "../Types/types";
+import {RootStackParamList, RootState} from "@/Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
 
 type ResetPasswordProp = StackNavigationProp<RootStackParamList, 'ResetPassword'>
@@ -138,9 +138,8 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     headerText: {
-        color: "#367c2b",
         fontWeight: "bold",
-        fontSize: 24,
+        fontSize: 18,
         textAlign: "center"
     },
     childContainer: {
@@ -159,10 +158,11 @@ const styles = StyleSheet.create({
         marginVertical: 4
     },
     passwordInput: {
+        borderColor: "gray",
         width: 250,
         height: 40,
-        borderRadius: 6,
-        borderWidth: 1,
+        borderRadius: 4,
+        borderWidth: 0.8,
         padding: 8,
         fontSize: 18,
         paddingTop: 8,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: "left",
         borderWidth: 1,
-        borderRadius: 16,
+        borderRadius: 4,
         borderColor: "#ffebe8",
         backgroundColor: "#ffebe8",
         marginBottom: 10,

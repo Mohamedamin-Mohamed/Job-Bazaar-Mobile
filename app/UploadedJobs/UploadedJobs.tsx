@@ -1,8 +1,8 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Toast from "react-native-toast-message";
-import {Job, RootStackParamList, RootState} from "../Types/types";
-import {ActivityIndicator, View} from "react-native";
-import getUploadedJobs from "../fetchRequests/getUploadedJobs";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
+import {ActivityIndicator, StyleSheet, View} from "react-native";
+import getUploadedJobs from "@/app/FetchRequests/getUploadedJobs";
 import {useSelector} from "react-redux";
 import DisplayUploadedJobs from "./DisplayUploadedJobs";
 import NoJobs from "../404s/NoJobs";
@@ -34,11 +34,16 @@ const UploadedJobs = ({navigation}: { navigation: UploadedJobsProp }) => {
     }
     useEffect(() => {
         const controller = new AbortController()
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchUploadedJobs(controller).catch(err => console.error(err))
-        })
+        const fetchUploadedJobsWait = async ()=> {
+            try{
+                await fetchUploadedJobs(controller)
+            }
+            catch (err){
+                console.error(err)
+            }
+        }
+       fetchUploadedJobsWait().catch(err => console.error(err))
         return () => {
-            unsubscribe()
             controller.abort()
         }
     }, []);
@@ -46,8 +51,8 @@ const UploadedJobs = ({navigation}: { navigation: UploadedJobsProp }) => {
     const hasActiveJobs = uploadedJobs.some(job => job.jobStatus === "active");
 
     return (
-        <View style={{justifyContent: "center", alignItems: "center", flex: 2.5}}>
-            {loading ? <ActivityIndicator size="large" /> : <>
+        <View style={styles.container}>
+            {loading ? <ActivityIndicator size="large" color="#367c2b" /> : <>
                 {
                     hasActiveJobs ?
                         <DisplayUploadedJobs uploadedJobs={uploadedJobs} employerEmail={employerEmail}
@@ -60,4 +65,11 @@ const UploadedJobs = ({navigation}: { navigation: UploadedJobsProp }) => {
         </View>
     )
 }
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1
+    }
+})
 export default UploadedJobs

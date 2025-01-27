@@ -9,10 +9,10 @@ import {
     View
 } from "react-native";
 import {useState} from "react";
-import login from "../fetchRequests/login";
+import login from "@/app/FetchRequests/login";
 import Toast from "react-native-toast-message";
 import {useDispatch, useSelector} from "react-redux";
-import {RootStackParamList, RootState} from "../Types/types";
+import {RootStackParamList, RootState} from "@/Types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {setUserInfo} from "../Redux/userSlice";
 import {StackNavigationProp} from "@react-navigation/stack";
@@ -28,7 +28,12 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
     const [loading, setLoading] = useState(false)
 
     const handleHomePanel = () => {
-        navigation.navigate('HomePanel')
+        dispatch(setUserInfo({email: ''}))
+
+        navigation.reset({
+            index: 0,
+            routes: [{name: "HomePanel"}]
+        })
     }
 
     const storeToken = async (token: string) => {
@@ -64,8 +69,6 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
                     onHide: () => {
                         setDisabled(false)
                         dispatch(setUserInfo(user))
-                        /*debug the below line becoz when I try to use NavigationProp, I cannot use replace method of navigation but when I use StackNavigationProp,
-                        I can use but the screen refreshes */
                         navigation.replace('CareerHub')
                     }
                 })
@@ -111,7 +114,7 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity disabled={disabled}
-                                      onPress={() => navigation.navigate('ResetPassword')}>
+                                      onPress={() => navigation.replace('ResetPassword')}>
                         <Text style={[styles.differentEmail, styles.textCentered, {marginTop: 18}]}>Forgot
                             Password</Text>
                     </TouchableOpacity>
@@ -123,7 +126,7 @@ const LoginPanel = ({navigation}: { navigation: LoginPanelNavigationProp }) => {
 }
 const styles = StyleSheet.create({
         parentContainer: {
-            flex: 0.9,
+            flex: 1,
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center"
@@ -134,7 +137,6 @@ const styles = StyleSheet.create({
             textAlign: "center"
         },
         childContainer: {
-            flex: 0.68,
             borderWidth: 1,
             borderRadius: 12,
             padding: 24,
@@ -167,9 +169,10 @@ const styles = StyleSheet.create({
             textAlign: "center",
         },
         passwordInput: {
+            borderColor: "gray",
             width: 250,
             height: 40,
-            borderRadius: 6,
+            borderRadius: 4,
             borderWidth: 1,
             padding: 6,
             fontSize: 18,
@@ -179,13 +182,14 @@ const styles = StyleSheet.create({
         differentEmail: {
             color: "#367c2b",
             fontSize: 17,
-            fontWeight: "bold"
+            fontWeight: "bold",
+            textDecorationLine: "underline"
         },
         errorMessage: {
             fontSize: 18,
             textAlign: "left",
             borderWidth: 1,
-            borderRadius: 16,
+            borderRadius: 4,
             borderColor: "#ffebe8",
             backgroundColor: "#ffebe8",
             marginTop: 8,

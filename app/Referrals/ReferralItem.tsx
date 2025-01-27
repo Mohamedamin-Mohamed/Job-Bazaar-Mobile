@@ -1,12 +1,12 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Referral} from "../Types/types";
+import {Referral} from "@/Types/types";
 import {useState} from "react";
 import ResumeViewer from "../Modals/ResumeViewer";
 
 const ReferralItem = ({referral}: { referral: Referral }) => {
-    const[showModal, setShowModal] = useState(false)
+    const [showModal, setShowModal] = useState(false)
 
-    const handleDisplayModel = ()=> {
+    const handleDisplayModel = () => {
         setShowModal(prevState => !prevState)
     }
     const resumeDetails = {
@@ -15,33 +15,23 @@ const ReferralItem = ({referral}: { referral: Referral }) => {
     }
     return (
         <View style={styles.card}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.header}>{referral.referrerName}</Text>
-            </View>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity>
-                    <Text style={styles.email}>{referral.referrerEmail}</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.headerContainer}>
+            <View style={[styles.headerContainer, {flexDirection: 'row'}]}>
+                <Text style={[styles.header, {fontSize: 14, marginRight: 10}]}>Referral Date:</Text>
                 <Text style={styles.date}>{referral.createdAt}</Text>
             </View>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={()=> setShowModal(!showModal)}>
+                <TouchableOpacity onPress={() => setShowModal(!showModal)}>
                     <Text style={styles.resumeLink}>{referral.fileName}</Text>
                 </TouchableOpacity>
             </View>
             {showModal && (
-                <ResumeViewer handleDisplayModel={handleDisplayModel} showModal={showModal} resumeDetails={resumeDetails}/>
+                <ResumeViewer handleDisplayModel={handleDisplayModel} resumeDetails={resumeDetails}/>
             )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#f5f5f5', // Optional background color for the screen
-    },
     card: {
         padding: 16,
         borderRadius: 8,

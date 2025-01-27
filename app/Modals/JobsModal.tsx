@@ -1,9 +1,9 @@
-import {Job, RootStackParamList, RootState} from "../Types/types";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
-import getUserInfo from "../fetchRequests/getUserInfo";
+import getUserInfo from "@/app/FetchRequests/getUserInfo";
 import {StackNavigationProp} from "@react-navigation/stack";
-import applicationChecker from "../fetchRequests/applicationChecker";
+import applicationChecker from "@/app/FetchRequests/applicationChecker";
 import {useSelector} from "react-redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -66,7 +66,7 @@ const JobsModal = ({job, handleDisplayModel, role, navigation}: {
 
     const handleNavigation = () => {
         handleDisplayModel()
-        if (role === 'Applicant') navigation.navigate('Apply', {job: job})
+        if (role === 'Applicant') navigation.replace('Apply', {job: job})
         else navigation.navigate('Edit', {job: job})
     }
 

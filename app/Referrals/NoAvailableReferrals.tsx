@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
 type MyReferralsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MyReferrals'>
@@ -40,7 +40,9 @@ const NoAvailableReferrals = ({navigation}: { navigation: MyReferralsNavigationP
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 0.5,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
         flexDirection: "column"
     },
     childContainer: {

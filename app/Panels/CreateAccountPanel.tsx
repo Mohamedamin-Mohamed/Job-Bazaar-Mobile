@@ -2,9 +2,9 @@ import {Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithou
 import {useState} from "react";
 import {Picker} from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
-import signup from "../fetchRequests/signup";
+import signup from "@/app/FetchRequests/signup";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList, RootState} from "../Types/types";
+import {RootStackParamList, RootState} from "@/Types/types";
 import {useSelector} from "react-redux";
 
 type CreateAccountPanelProp = StackNavigationProp<RootStackParamList, 'CreateAccount'>
@@ -35,29 +35,34 @@ const CreateAccountPanel = ({navigation}: { navigation: CreateAccountPanelProp }
             })
             return
         }
-        const loginResponse = await signup(userDetails)
-        const data = await loginResponse.json()
-        const message = data.message
-        if (loginResponse.ok) {
-            Toast.show({
-                type: 'success',
-                text1: message,
-                onShow: () => setDisabled(true),
-                onHide: () => {
-                    setDisabled(false)
-                    navigation.replace('Login')
-                },
-            })
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: message,
-                onShow: () => setDisabled(true),
-                onHide: () => {
-                    setDisabled(false)
-                    navigation.replace('Login')
-                },
-            })
+
+        try {
+            const loginResponse = await signup(userDetails, new AbortController())
+            const data = await loginResponse.json()
+            const message = data.message
+            if (loginResponse.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: async () => {
+                        setDisabled(false)
+                        navigation.replace('Login')
+                    },
+                })
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: message,
+                    onShow: () => setDisabled(true),
+                    onHide: () => {
+                        setDisabled(false)
+                        navigation.replace('Login')
+                    },
+                })
+            }
+        } catch (err) {
+            console.error(err)
         }
     }
     return (
@@ -89,7 +94,7 @@ const CreateAccountPanel = ({navigation}: { navigation: CreateAccountPanelProp }
                     </View>
                     <View style={{height: 160}}>
                         <Picker enabled={!disabled} style={styles.pickerItems} selectedValue={userDetails.role}
-                                onValueChange={(itemValue, itemIndex) => handleUserDetails('role', itemValue)}>
+                                onValueChange={(itemValue) => handleUserDetails('role', itemValue)}>
                             <Picker.Item label="Select your role*" value=""/>
                             <Picker.Item label="Employer" value="Employer"/>
                             <Picker.Item label="Applicant" value="Applicant"/>
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     childContainer: {
-        flex: 0.96,
+        flex: 0.85,
         borderWidth: 1,
         borderRadius: 12,
         padding: 24,
@@ -137,7 +142,8 @@ const styles = StyleSheet.create({
     differentEmail: {
         color: "#367c2b",
         fontSize: 17,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        textDecorationLine: "underline"
     },
     pickerItems: {
         margin: 0

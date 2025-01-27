@@ -1,4 +1,4 @@
-import {Resume, User} from "../Types/types";
+import {Resume, User} from "@/Types/types";
 import {format} from "date-fns";
 
 const referralFormData = (resumeDetails: Resume, userInfo: User) => {

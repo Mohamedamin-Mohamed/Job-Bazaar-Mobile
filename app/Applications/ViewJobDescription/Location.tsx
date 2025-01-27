@@ -1,14 +1,16 @@
-import { Job } from "@/app/Types/types";
-import { StyleSheet, Text, View } from "react-native";
-import { differenceInDays, parse } from "date-fns";
+import {Job} from "@/Types/types";
+import {StyleSheet, Text, View} from "react-native";
+import {differenceInDays, parse} from "date-fns";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface LocationProps {
     job: Job;
     postedDate: string;
+    applicantsPerJob?: Record<string, number>,
+    role: string
 }
 
-const Location = ({ job, postedDate }: LocationProps) => {
+const Location = ({job, postedDate, applicantsPerJob, role}: LocationProps) => {
     const appliedDate = parse(postedDate, 'MM-dd-yyyy', new Date());
     const currDate = new Date();
 
@@ -19,21 +21,28 @@ const Location = ({ job, postedDate }: LocationProps) => {
         <View style={styles.container}>
             <View style={styles.column}>
                 <View style={[styles.iconView, {width: "70%"}]}>
-                    <Icon name="location-on" size={24} color="gray" style={{justifyContent: "flex-start"}} />
+                    <Icon name="location-on" size={24} color="gray" style={{justifyContent: "flex-start"}}/>
                     <Text style={styles.subText}>{job?.location}</Text>
                 </View>
             </View>
             <View style={[styles.column, {gap: 10}]}>
                 <View style={styles.iconView}>
-                    <Icon name="work" size={24} color="gray" />
+                    <Icon name="work" size={24} color="gray"/>
                     <Text style={styles.subText}>{job?.jobType}</Text>
                 </View>
                 <View style={styles.iconView}>
-                    <Icon name="access-time" size={24} color="gray" />
+                    <Icon name="access-time" size={24} color="gray"/>
                     <Text style={styles.subText}>{datePosted}</Text>
                 </View>
+                {role === 'Employer' &&
+                    <View style={styles.iconView}>
+                        <Icon name="groups" size={30} color="gray"/>
+                        <Text style={styles.subText}>
+                            {applicantsPerJob && applicantsPerJob[job.jobId] !== undefined ? applicantsPerJob[job.jobId] : 0}</Text>
+                    </View>
+                }
                 <View style={styles.iconView}>
-                    <Icon name="assignment" size={24} color="gray" />
+                    <Icon name="assignment" size={24} color="gray"/>
                     <Text style={styles.subText}>{job?.jobId}</Text>
                 </View>
             </View>
@@ -55,8 +64,8 @@ const styles = StyleSheet.create({
     },
     iconView: {
         flexDirection: "row",
-        gap: 10,
-        alignItems: 'center'
+        gap: 6,
+        alignItems: 'center',
     },
     column: {
         flex: 1,

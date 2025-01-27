@@ -1,15 +1,18 @@
 import {StyleSheet, Text, View} from "react-native";
 
-const CompanyInfo = () => {
+const CompanyInfo = ({role}: { role: string }) => {
     return (
         <View style={styles.container}>
             <View style={styles.childContainer}>
                 <Text style={styles.headerText}>Welcome</Text>
                 <Text style={styles.normalText}>Thank you for using Job Bazaar</Text>
-                <Text style={styles.normalText}>We appreciate your application. Track your progress and sign up for job
-                    alerts. Stay updated on
-                    new opportunities and continue
-                    exploring career options with us...</Text>
+                <Text style={styles.normalText}>
+                    We appreciate your {role === 'Applicant' ? 'application' : 'collaboration'}.{' '}
+                    {role === 'Applicant'
+                        ? 'Track your progress and sign up for job alerts. Stay updated on new opportunities and continue exploring career options with us.'
+                        : 'Stay updated on new applicants and job postings. Track application progress and discover potential candidates to build your team with us.'}
+                </Text>
+
                 <Text style={styles.headerText}>About Us</Text>
                 <Text style={styles.normalText}>Job Bazaar is an innovative job application platform designed to connect
                     employers with top talent

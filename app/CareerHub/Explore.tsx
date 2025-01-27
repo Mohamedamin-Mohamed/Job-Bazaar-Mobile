@@ -1,11 +1,11 @@
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
-import getAvailableJobs from "../fetchRequests/getAvailableJobs";
-import {Job, RootStackParamList, RootState} from "../Types/types";
+import getAvailableJobs from "@/app/FetchRequests/getAvailableJobs";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {useSelector} from "react-redux";
-import {NavigationProp} from "@react-navigation/core";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-type CareerHubProp = NavigationProp<RootStackParamList, 'CareerHub'>
+type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
 
 const Explore = ({navigation}: { navigation: CareerHubProp }) => {
     const [loading, setLoading] = useState(false)
@@ -16,6 +16,7 @@ const Explore = ({navigation}: { navigation: CareerHubProp }) => {
         const [month, day, year] = date.split('-').map(Number)
         return new Date(year, month - 1, day)
     }
+
     const sortAvailableJobs = (jobs: Job[]) => {
         return jobs.sort((a, b) => {
             const datePostedA = parseDate(a.postedDate).getTime()
@@ -24,13 +25,15 @@ const Explore = ({navigation}: { navigation: CareerHubProp }) => {
             return datePostedB - datePostedA
         })
     }
+
     const fetchRecentJob = async (controller: AbortController) => {
         setLoading(true)
         try {
             const response = await getAvailableJobs(controller)
             if (response.ok) {
                 const jobs: Job[] = await response.json()
-                const sortedAvailableJobs = sortAvailableJobs(jobs as Job[])
+                const filteredAvailableJobs = jobs.filter(job => job.jobStatus === 'active')
+                const sortedAvailableJobs = sortAvailableJobs(filteredAvailableJobs as Job[])
                 setRecentJob(sortedAvailableJobs[0])
             }
         } catch (err) {
@@ -39,24 +42,23 @@ const Explore = ({navigation}: { navigation: CareerHubProp }) => {
             setLoading(false)
         }
     }
+
     useEffect(() => {
         const controller = new AbortController()
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchRecentJob(controller).catch(err => console.error(err))
-        })
+        fetchRecentJob(controller).catch(err => console.error(err))
         return () => {
-            unsubscribe()
             controller.abort()
         }
     }, [])
 
     const handleExplore = (role: string) => {
-        if (role === 'Employer') {
-            navigation.navigate('UploadedJobs')
-        } else {
+        if (role === 'Applicant') {
             navigation.navigate('AvailableJobs')
+        } else {
+            navigation.navigate('UploadedJobs')
         }
     }
+
     return (
         loading ? <ActivityIndicator size="large" color="#367c2b"/> :
             <View style={styles.container}>

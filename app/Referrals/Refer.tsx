@@ -1,16 +1,17 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {Resume, RootStackParamList, RootState} from "../Types/types";
+import {Resume, RootStackParamList, RootState} from "@/Types/types";
 import * as DocumentPicker from "expo-document-picker"
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import referralFormData from "./referralFormData";
-import addReferral from "../fetchRequests/addReferral";
+import addReferral from "@/app/FetchRequests/addReferral";
 import Toast from "react-native-toast-message";
 
 type ReferNavigationProp = StackNavigationProp<RootStackParamList, 'Refer'>
 
 const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
+    const img = require('../Images/refer_illustration_cloud.png')
     const [disabled, setDisabled] = useState(false)
     const userInfo = useSelector((state: RootState) => state.userInfo)
     const [resumeDetails, setResumeDetails] = useState<Resume>({
@@ -26,6 +27,7 @@ const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
         const result = await DocumentPicker.getDocumentAsync({type: "application/pdf"});
 
         if (!result.canceled) {
+            //@ts-ignore
             const {name, uri, type} = result.assets.values().next().value;
 
             setResumeDetails(prevState => ({
@@ -66,7 +68,7 @@ const Refer = ({navigation}: { navigation: ReferNavigationProp }) => {
         <View style={styles.container}>
             <View style={styles.childContainer}>
                 <View style={styles.imageView}>
-                    <Image source={require('../Images/refer_illustration_cloud.png')} style={styles.image}/>
+                    <Image source={img} style={styles.image}/>
                 </View>
                 <Text style={[styles.text, styles.button, {fontSize: 24}]}>Drop your friend's resume here</Text>
                 <Text style={[styles.text]}>
