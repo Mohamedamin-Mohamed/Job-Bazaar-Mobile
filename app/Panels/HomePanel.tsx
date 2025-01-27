@@ -11,14 +11,14 @@ import {
 } from "react-native";
 import {useEffect, useState} from "react";
 import emailValidation from "../Regex/emailValidation";
-import emailLookup from "../fetchRequests/emailLookup";
+import emailLookup from "@/app/FetchRequests/emailLookup";
 import {useDispatch, useSelector} from "react-redux";
 import {setUserInfo} from "../Redux/userSlice";
-import {RootStackParamList, RootState} from "../Types/types";
+import {RootStackParamList, RootState} from "@/Types/types";
 import {StackNavigationProp} from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import validateToken from "@/app/fetchRequests/validateToken";
+import validateToken from "@/app/FetchRequests/validateToken";
 
 type HomePanelNavigationProp = StackNavigationProp<RootStackParamList, 'HomePanel'>
 
@@ -26,6 +26,7 @@ type HomePanelNavigationProp = StackNavigationProp<RootStackParamList, 'HomePane
 const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
     const [loading, setLoading] = useState(false)
     const [disabled, setDisabled] = useState(false)
+    const firstImage = require('../Images/b.png')
     const userInfo = useSelector((state: RootState) => state.userInfo)
     const dispatch = useDispatch()
 
@@ -117,22 +118,10 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
                 </View>
                 <Text style={styles.header}>Your work people are here</Text>
                 <View style={styles.imageView}>
-                    <Image source={require('../Images/b.png')} style={styles.firstImage}/>
+                    <Image source={firstImage} style={styles.image}/>
                 </View>
                 <View style={styles.childContainer}>
                     <View>
-                        <Text style={{fontSize: 17, padding: 10, fontWeight: "bold", textAlign: "center"}}>Create
-                            an
-                            account
-                            or sign in</Text>
-                        <View>
-                            <TouchableOpacity>
-                                <Text style={styles.sameButtons}>Continue with Google</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Text style={styles.sameButtons}>Continue with GitHub</Text>
-                            </TouchableOpacity>
-                        </View>
                         <Text style={{fontWeight: "bold", paddingVertical: 10, marginLeft: 6}}>Enter
                             Email</Text>
                         <TextInput editable={!disabled} autoCapitalize="none" style={styles.inputEmail}
@@ -151,14 +140,6 @@ const HomePanel = ({navigation}: { navigation: HomePanelNavigationProp }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.bottomParentButton}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                        <Text style={styles.underlinedButton}>Join now</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.underlinedButton}>Sign in</Text>
-                    </TouchableOpacity>
-                </View>
                 <Toast/>
             </View>
         </TouchableWithoutFeedback>
@@ -168,7 +149,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-start",
-        display: "flex"
     },
     parentView: {
         justifyContent: "space-between",
@@ -229,11 +209,7 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     childContainer: {
-        flex: 0.7,
-        display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        padding: 20
     },
     sameButtons: {
         width: 300,
@@ -280,11 +256,11 @@ const styles = StyleSheet.create({
     imageView: {
         justifyContent: "center",
         alignItems: "center",
-        marginVertical: 30
+        height: "50%"
     },
-    firstImage: {
-        width: 190,
-        height: 160,
+    image: {
+        width: "92%",
+        resizeMode: "contain"
     }
 })
 export default HomePanel

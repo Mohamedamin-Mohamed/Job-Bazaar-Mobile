@@ -9,11 +9,11 @@ import {
     ActivityIndicator
 } from "react-native";
 import {useState} from "react";
-import emailLookup from "../fetchRequests/emailLookup";
+import emailLookup from "@/app/FetchRequests/emailLookup";
 import Toast from "react-native-toast-message";
 import emailValidation from "../Regex/emailValidation";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 
 type ForgotPassword = StackNavigationProp<RootStackParamList, 'ForgotPassword'>
 
@@ -45,7 +45,7 @@ const ForgotPassword = ({navigation}: { navigation: ForgotPassword }) => {
                     onShow: () => setDisabled(true),
                     onHide: () => {
                         setDisabled(false)
-                        navigation.navigate('ResetPassword')
+                        navigation.replace('ResetPassword')
                     }
                 })
             } else {
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     childContainer: {
         flex: 0.32,
         borderWidth: 1,
-        borderRadius: 12,
+        borderRadius: 4,
         padding: 24,
         borderColor: "white",
         backgroundColor: "white",
