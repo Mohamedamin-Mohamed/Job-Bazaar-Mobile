@@ -132,13 +132,12 @@ const Login = ({navigation}: { navigation: LoginNavigationProp }) => {
                 <View style={styles.childContainer}>
                     <Text style={styles.headerText}>Login</Text>
                     <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
-                               keyboardType="email-address"
-                               placeholder="Email" onChangeText={text => handleLoginDetailsChange('email', text)}/>
+                               keyboardType="email-address" placeholderTextColor="#2b2b2b"
+                               placeholder="Email Address" onChangeText={text => handleLoginDetailsChange('email', text)}/>
                     {err.email && <Text style={styles.errorMessage}>{err.email}</Text>}
                     <TextInput editable={!disabled} autoCapitalize="none" style={styles.textInputs}
-                               keyboardType="visible-password"
-                               secureTextEntry={true}
-                               placeholder="Password"
+                               keyboardType="visible-password" secureTextEntry={true}
+                               placeholder="Password" placeholderTextColor="#2b2b2b"
                                onChangeText={text => handleLoginDetailsChange('password', text)}/>
                     {err.password && <Text style={styles.errorMessage}>{err.password}</Text>}
                     <TouchableOpacity disabled={disabled} onPress={handleLogin}>
@@ -186,7 +185,6 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     textInputs: {
-        width: 250,
         padding: 8,
         borderWidth: 1,
         borderRadius: 6,
@@ -195,7 +193,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     loginButton: {
-        width: 250,
         height: 40,
         borderColor: "#367c2b",
         borderRadius: 6,
@@ -222,20 +219,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         padding: 4,
         margin: 4
-    },
-    socialsLogin: {
-        marginVertical: 4,
-        width: 250,
-    },
-    socialButton: {
-        width: 250,
-        height: 40,
-        margin: 6,
-        borderWidth: 1,
-        borderRadius: 6,
-        textAlign: "center",
-        paddingTop: 8,
-        fontSize: 19
     },
     errorMessage: {
         fontSize: 18,

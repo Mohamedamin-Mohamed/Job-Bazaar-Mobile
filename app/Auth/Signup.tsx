@@ -220,7 +220,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                         style={styles.commonText}
                         autoCapitalize="none"
                         keyboardType="default"
-                        placeholder="Email"
+                        placeholder="Email"  placeholderTextColor="#2b2b2b"
                         onChangeText={(text) => handleUserDetails("email", text)}
                         value={userDetails.email}/>
                     <TextInput
@@ -228,7 +228,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                         style={styles.commonText}
                         autoCapitalize="none"
                         keyboardType="default"
-                        placeholder="First Name"
+                        placeholder="First Name"  placeholderTextColor="#2b2b2b"
                         onChangeText={(text) => handleUserDetails("firstName", text)}
                         value={userDetails.firstName}/>
                     <TextInput
@@ -236,7 +236,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                         style={styles.commonText}
                         autoCapitalize="none"
                         keyboardType="default"
-                        placeholder="Last Name"
+                        placeholder="Last Name"  placeholderTextColor="#2b2b2b"
                         onChangeText={(text) => handleUserDetails("lastName", text)}
                         value={userDetails.lastName}/>
                     <TextInput
@@ -245,7 +245,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                         secureTextEntry={true}
                         autoCapitalize="none"
                         keyboardType="default"
-                        placeholder="Create Password"
+                        placeholder="Create Password" placeholderTextColor="#2b2b2b"
                         onChangeText={(text) => handlePasswords("createPasswd", text)}
                         value={passwords.createPasswd}/>
                     <TextInput
@@ -254,7 +254,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                         secureTextEntry={true}
                         autoCapitalize="none"
                         keyboardType="default"
-                        placeholder="Confirm Password"
+                        placeholder="Confirm Password" placeholderTextColor="#2b2b2b"
                         onChangeText={(text) => handlePasswords("confirmPasswd", text)}
                         value={passwords.confirmPasswd}/>
                     <View style={styles.pickerView}>
@@ -267,14 +267,11 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
                                 setSelectedVal(itemValue)
                             }>
                             <Picker.Item
-                                label="Select your role"
-                                value=""/>
+                                label="Select your role" color="#2b2b2b" value=""/>
                             <Picker.Item
-                                label="Employer"
-                                value="Employer"/>
+                                label="Employer" color="#2b2b2b" value="Employer"/>
                             <Picker.Item
-                                label="Applicant"
-                                value="Applicant"/>
+                                label="Applicant" color="#2b2b2b" value="Applicant"/>
                         </Picker>
                     </View>
                     <TouchableOpacity disabled={disabled} onPress={handleSignup}>
@@ -342,6 +339,7 @@ const styles = StyleSheet.create({
     },
     pickerItems: {
         height: 150,
+        color: '#2b2b2b'
     },
     addedStyling: {
         color: "#367c2b",

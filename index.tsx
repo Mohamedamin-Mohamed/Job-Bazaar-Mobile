@@ -1,8 +1,8 @@
-import App from "@/app/App";
+import App from "@/app/App"
 
-const Homepage = () => {
+const Index = ()=> {
     return (
-        <App/>
+        <App />
     )
 }
-export default Homepage
+export default Index

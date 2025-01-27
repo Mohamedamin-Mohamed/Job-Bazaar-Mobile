@@ -110,11 +110,11 @@ const ResetPassword = ({navigation}: { navigation: ResetPasswordProp }) => {
                         <Text style={styles.textCentered}>Set a new password.</Text>
                     </View>
                     <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
-                               style={styles.passwordInput} keyboardType="default"
+                               style={styles.passwordInput} keyboardType="default"  placeholderTextColor="#2b2b2b"
                                onChangeText={text => handlePasswords('newPass', text)} passwordRules="minlength: 16"
                                placeholder="New Password"/>
                     <TextInput secureTextEntry={true} autoCapitalize="none" editable={!disabled}
-                               style={styles.passwordInput} keyboardType="default"
+                               style={styles.passwordInput} keyboardType="default" placeholderTextColor="#2b2b2b"
                                onChangeText={text => handlePasswords('confirmPass', text)}
                                placeholder="Confirm new password"/>
                     {err && <Text style={styles.errorMessage}>{err}</Text>}
