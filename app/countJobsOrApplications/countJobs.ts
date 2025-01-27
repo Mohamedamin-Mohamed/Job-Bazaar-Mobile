@@ -1,4 +1,4 @@
-import {Job} from "../Types/types";
+import {Job} from "@/Types/types";
 
 const countJobs = (jobs: Job[]) => {
     const active = jobs.filter(job => job.jobStatus === 'active').length
