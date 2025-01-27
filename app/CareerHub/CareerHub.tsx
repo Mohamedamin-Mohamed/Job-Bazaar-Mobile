@@ -1,7 +1,7 @@
 import {ScrollView, StyleSheet, Text, View} from "react-native";
 import Interests from "./Interests";
-import {useDispatch, useSelector} from "react-redux";
-import {Address, Application, Job, Referral, RootStackParamList, RootState} from "../Types/types";
+import {useSelector} from "react-redux";
+import {Application, Feedback, Job, Referral, RootStackParamList, RootState} from "@/Types/types";
 import Explore from "./Explore";
 import Activity from "./Activity";
 import {useEffect, useMemo, useState} from "react";
@@ -10,28 +10,22 @@ import getUploadedJobs from "../fetchRequests/getUploadedJobs";
 import getReferrals from "../fetchRequests/getReferrals";
 import countApplications from "../countJobsOrApplications/countApplications";
 import countJobs from "../countJobsOrApplications/countJobs";
-import addressFetcher from "@/app/fetchRequests/addressFetcher";
-import * as Location from 'expo-location';
-import {setLocationInfo} from "@/app/Redux/locationSlice";
 import {StackNavigationProp} from "@react-navigation/stack";
 import getJobById from "@/app/fetchRequests/getJobById";
+import getFeedbacks from "@/app/fetchRequests/getFeedbacks";
 
 
 type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
-type UserLocation = {
-    latitude: number,
-    longitude: number
-}
+
 const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
-    const [location, setLocation] = useState<UserLocation>({latitude: 0, longitude: 0})
     const [loading, setLoading] = useState(false)
     const user = useSelector((state: RootState) => state.userInfo)
     const {email, role, firstName, lastName} = useSelector((state: RootState) => state.userInfo);
     const abbreviatedName = useMemo(() => `${firstName[0]}${lastName[0]}`, [firstName, lastName]);
 
-    const dispatch = useDispatch()
     const [records, setRecords] = useState<Application[] | Job[]>([])
     const [referrals, setReferrals] = useState<Referral[]>([])
+    const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
     const [jobStatuses, setJobStatuses] = useState<Record<string, string>>({});
     const [count, setCount] = useState(0)
 
@@ -45,17 +39,20 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
                 : await getUploadedJobs(email, controller);
 
             const referralsResponse = isApplicant ? await getReferrals(email, controller) : null;
+            const feedbackResponse = isApplicant ? await getFeedbacks(email, controller) : null
 
-            const [jobsOrApplications, referrals] = await Promise.all([
+            const [jobsOrApplications, referrals, feedbacks] = await Promise.all([
                 fetchJobsOrApplications.ok ? fetchJobsOrApplications.json() : [],
-                referralsResponse?.ok ? await referralsResponse.json() : []
+                referralsResponse?.ok ? await referralsResponse.json() : [],
+                feedbackResponse?.ok ? await feedbackResponse.json() : []
             ]);
 
             setRecords(jobsOrApplications);
             setReferrals(referrals);
+            setFeedbacks(feedbacks)
 
-        } catch (exp) {
-            console.error('Error is ', exp);
+        } catch (err: any) {
+
         } finally {
             setLoading(false)
         }
@@ -72,8 +69,10 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
                         const data: Job = await response.json();
                         return {jobId: application.jobId, status: data.jobStatus};
                     }
-                } catch (error) {
-                    console.error(`Error fetching job status for jobId: ${application.jobId}`, error);
+                } catch (err) {
+                    if (!(err instanceof DOMException && err.name === 'AbortError')) {
+                        console.error(`Error fetching job status for jobId: ${application.jobId}`, err);
+                    }
                 }
                 return null;
             });
@@ -88,7 +87,6 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
 
             setJobStatuses(statuses);
         } catch (err) {
-            console.error("Error fetching job statuses:", err);
         }
     };
 
@@ -99,7 +97,7 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
         return () => {
             controller.abort();
         };
-    }, [records]);
+    }, []);
 
     useEffect(() => {
         if (role === 'Applicant') {
@@ -113,72 +111,25 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
 
     useEffect(() => {
         const controller = new AbortController();
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchData(controller).catch(err => {
-                if (err.name !== 'AbortError') {
-                    console.error("Focus fetch error:", err);
-                }
-            });
-        });
-        return () => {
-            unsubscribe();
-            controller.abort();
-        }
-    }, [navigation, email, role]);
 
-    useEffect(() => {
-        const getLocation = async () => {
+        const fetchDataOnFocus = async () => {
             try {
-                const {status} = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    console.error('Permission to access location was denied');
-                    return;
-                }
-
-                const location = await Location.getCurrentPositionAsync();
-                const {latitude, longitude} = location.coords
-                setLocation({latitude, longitude});
+                await fetchData(controller);
             } catch (err) {
-                console.error(err);
+                if (!(err instanceof DOMException && err.name === "AbortError")) {
+                    console.error("Error in fetchDataOnFocus:", err);
+                }
             }
         };
 
-        getLocation().catch(err => console.error(err))
+        const unsubscribe = navigation.addListener('focus', fetchDataOnFocus);
+        fetchDataOnFocus().catch(console.error);
+
+        return () => {
+            unsubscribe();
+            controller.abort();
+        };
     }, []);
-
-
-    const fetchAddress = async (controller: AbortController) => {
-        try {
-            const response = await addressFetcher(location, controller);
-            if (!response.ok) {
-                console.log(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-
-            if (!data.address) {
-                console.error("Address not found");
-            }
-
-            const address: Address = {
-                city: data.address.city || data.address.village || data.address.town || data.address.municipality || '',
-                state: data.address.state || '',
-                country: data.address.country || '',
-            };
-
-            dispatch(setLocationInfo(address));
-        } catch (err) {
-            console.error("Error fetching address:", err);
-        }
-    };
-
-    useEffect(() => {
-        if (location.latitude !== 0 && location.longitude !== 0) {
-            const controller = new AbortController();
-            fetchAddress(controller).catch(err => console.error(err));
-            return () => controller.abort();
-        }
-    }, [location]);
-
 
     return (
         <ScrollView>
@@ -202,6 +153,7 @@ const CareerHub = ({navigation}: { navigation: CareerHubProp }) => {
                             navigation={navigation}
                             records={records}
                             referrals={referrals}
+                            feedbacks={feedbacks}
                             count={count}
                             loading={loading}
                         />
@@ -234,7 +186,6 @@ const styles = StyleSheet.create({
         height: 96,
         borderRadius: 48,
         backgroundColor: '#367c2b',
-        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
     },
