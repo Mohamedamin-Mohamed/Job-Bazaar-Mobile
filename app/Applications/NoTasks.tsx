@@ -1,6 +1,6 @@
 import {Image, StyleSheet, Text, View} from "react-native";
 import {useSelector} from "react-redux";
-import {RootState} from "../Types/types";
+import {RootState} from "@/Types/types";
 
 const NoTasks = () => {
     const userInfo = useSelector((state: RootState) => state.userInfo)
