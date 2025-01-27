@@ -1,140 +1,167 @@
-import {Application, Job, RootStackParamList, RootState} from "../Types/types";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {useEffect, useState} from "react";
+import {Application, Job, RootStackParamList, RootState} from "@/Types/types";
+import {NavigationProp} from "@react-navigation/core";
+import {useSelector} from "react-redux";
 import countApplications from "../countJobsOrApplications/countApplications";
+import getJobById from "@/app/fetchRequests/getJobById";
 import Active from "./ApplicationStatus/Active";
 import InActive from "./ApplicationStatus/InActive";
-import {NavigationProp} from "@react-navigation/core";
 import NoApplicationsOrJobs from "@/app/Applications/ApplicationStatus/NoApplicationsOrJobs";
 import CompanyInfo from "@/app/Applications/ViewJobDescription/CompanyInfo";
-import {useSelector} from "react-redux";
-import getJobById from "@/app/fetchRequests/getJobById";
 
-type DisplayAppliedJobsProps = {
-    navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>,
-    appliedJobs: Application[],
-    refreshJobs: () => void
+interface DisplayAppliedJobsProps {
+    navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>;
+    appliedJobs: Application[];
+    refreshJobs: ()=> void
 }
 
+type TabType = 'active' | 'inactive';
+
 const DisplayAppliedJobs = ({navigation, appliedJobs, refreshJobs}: DisplayAppliedJobsProps) => {
-    const [activeButton, setActiveButton] = useState('active');
-    const [jobStatusesLoading, setJobStatusesLoading] = useState(true)
-    const role = useSelector((state: RootState) => state.userInfo).role;
+    const [activeTab, setActiveTab] = useState<TabType>('active');
+    const [jobStatusesLoading, setJobStatusesLoading] = useState(true);
     const [jobStatuses, setJobStatuses] = useState<Record<string, string>>({});
-    const {active, inactive} = countApplications(appliedJobs, jobStatuses);
 
-    useEffect(() => {
-        return navigation.addListener('focus', () => {
-            refreshJobs();
-        });
-    }, [navigation, refreshJobs]);
+    const role = useSelector((state: RootState) => state.userInfo.role);
 
-    const fetchJobById = async (application: Application, controller: AbortController) => {
+    const fetchJobById = useCallback(async (
+        application: Application,
+        controller: AbortController
+    ): Promise<string | undefined> => {
         try {
-            const response = await getJobById(application.employerEmail, application.jobId, controller);
-            if (response.ok) {
-                const data: Job = await response.json();
-                return data.jobStatus;
+            const response = await getJobById(
+                application.employerEmail,
+                application.jobId,
+                controller
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        } catch (exp) {
-            console.error(exp);
+
+            const data: Job = await response.json();
+            return data.jobStatus;
+        } catch (err) {
+            if (!(err instanceof DOMException && err.name === 'AbortError')) {
+                console.error('Error fetching job status:', err);
+            }
         }
-    };
+    }, []);
 
-    const fetchAllJobStatuses = async (controller: AbortController) => {
+    const fetchAllJobStatuses = useCallback(async (controller: AbortController) => {
         setJobStatusesLoading(true);
-        const statuses: Record<string, string> = {};
         try {
-            for (const application of appliedJobs) {
-                const status = await fetchJobById(application, controller);
-                if (status) {
-                    statuses[application.jobId] = status;
+            const statusPromises = appliedJobs.map(application =>
+                fetchJobById(application, controller)
+                    .then(status => ({jobId: application.jobId, status}))
+            );
+
+            const results = await Promise.all(statusPromises);
+
+            const newStatuses = results.reduce((acc, result) => {
+                if (result?.status) {
+                    acc[result.jobId] = result.status;
                 }
-            }
+                return acc;
+            }, {} as Record<string, string>);
+
+            setJobStatuses(newStatuses);
         } catch (err) {
             console.error("Error fetching job statuses:", err);
+
         } finally {
-            setJobStatuses(statuses);
             setJobStatusesLoading(false);
         }
-    };
+    }, [appliedJobs, fetchJobById]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const unsubscribe = navigation.addListener('focus', refreshJobs);
+
+        return () => {
+            unsubscribe();
+            controller.abort();
+        };
+    }, [navigation, refreshJobs]);
 
     useEffect(() => {
         const controller = new AbortController();
         fetchAllJobStatuses(controller).catch(err => console.error(err));
-        return () => {
-            controller.abort();
-        };
-    }, [appliedJobs]);
+        return () => controller.abort();
+    }, []);
 
-    const renderedComponent =
-        activeButton === "active" ? (
-            <Active
-                appliedJobs={appliedJobs}
-                activeApplications={active}
-                navigation={navigation}
-                refreshJobs={refreshJobs}
-                jobStatuses={jobStatuses}
-            />
+    const {active, inactive} = useMemo(() =>
+            countApplications(appliedJobs, jobStatuses),
+        [appliedJobs, jobStatuses]
+    );
+
+    const renderTabButton = (tab: TabType, count: number, label: string) => (
+        <View style={styles.tabButtonContainer}>
+            <TouchableOpacity style={[styles.tabButton, activeTab === tab && styles.activeTabButton]}
+                              onPress={() => setActiveTab(tab)} disabled={jobStatusesLoading}>
+                <Text style={styles.tabButtonText}>
+                    {label} ({jobStatusesLoading ? "..." : count})
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
+
+    const renderContent = () => {
+        if (jobStatusesLoading) {
+            return (
+                <ActivityIndicator
+                    size="large"
+                    color="#367c2b"
+                    style={styles.loader}/>
+            );
+        }
+
+        const props = {
+            appliedJobs,
+            navigation,
+            refreshJobs,
+            jobStatuses
+        };
+
+        return activeTab === "active" ? (
+            <Active {...props} activeApplications={active}/>
         ) : (
-            <InActive
-                appliedJobs={appliedJobs}
-                inActiveApplications={inactive}
-                navigation={navigation}
-                refreshJobs={refreshJobs}
-                jobStatuses={jobStatuses}
-            />
+            <InActive {...props} inActiveApplications={inactive}/>
         );
+    };
 
     return (
         <View style={styles.container}>
-            <View style={styles.childContainer}>
+            <View style={styles.contentContainer}>
                 <Text style={styles.headerText}>My Applications</Text>
-                {appliedJobs.length > 1 ? (
+
+                {appliedJobs.length === 0 ? (
+                    <NoApplicationsOrJobs navigation={navigation} role={role}/>
+                ) : (
                     <>
-                        <Text style={styles.text}>
+                        <Text style={styles.description}>
                             As the employer is evaluating your qualifications, we may contact you
                             to provide additional information. Thank you for your interest and thank you for
                             using Job Bazaar.
                         </Text>
-                        <View style={styles.activityButtons}>
-                            <View style={{flex: 1}}>
-                                <TouchableOpacity
-                                    style={[styles.buttons, activeButton === 'active' && styles.buttonClicked]}
-                                    onPress={() => setActiveButton('active')}
-                                    disabled={jobStatusesLoading}>
-                                    <Text style={styles.buttonsText}>
-                                        Active ({jobStatusesLoading ? "..." : active})
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{flex: 1}}>
-                                <TouchableOpacity
-                                    style={[styles.buttons, activeButton !== 'active' && styles.buttonClicked]}
-                                    onPress={() => setActiveButton('inactive')}
-                                    disabled={jobStatusesLoading}>
-                                    <Text style={styles.buttonsText}>
-                                        Inactive ({jobStatusesLoading ? "..." : inactive})
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
+
+                        <View style={styles.tabsContainer}>
+                            {renderTabButton('active', active, 'Active')}
+                            {renderTabButton('inactive', inactive, 'Inactive')}
                         </View>
-                        {jobStatusesLoading ? (
-                            <ActivityIndicator size="large" color="#367c2b"
-                                               style={{flex: 1, justifyContent: "center", alignItems: "center"}}/>
-                        ) : (
-                            renderedComponent
-                        )}
+
+                        {renderContent()}
                     </>
-                ) : (
-                    <NoApplicationsOrJobs navigation={navigation} role={role}/>
                 )}
             </View>
-            <View style={{justifyContent: "center", alignItems: "center", width: "90%"}}>
+
+            <View style={styles.companyInfoContainer}>
                 <CompanyInfo role={role}/>
             </View>
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
@@ -143,7 +170,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    childContainer: {
+    contentContainer: {
         width: "90%",
         padding: 24,
         backgroundColor: "white",
@@ -154,26 +181,39 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold"
     },
-    text: {
+    description: {
         fontSize: 16,
         marginVertical: 24,
     },
-    activityButtons: {
+    tabsContainer: {
         flexDirection: "row",
         marginVertical: 10,
     },
-    buttons: {
+    tabButtonContainer: {
+        flex: 1,
+    },
+    tabButton: {
         justifyContent: "center",
         alignItems: "center"
     },
-    buttonsText: {
+    tabButtonText: {
         fontSize: 17,
     },
-    buttonClicked: {
+    activeTabButton: {
         borderBottomWidth: 2.5,
         borderBottomColor: "#0875e1",
         paddingBottom: 10
+    },
+    loader: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    companyInfoContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: "90%"
     }
+});
 
-})
-export default DisplayAppliedJobs
+export default DisplayAppliedJobs;
