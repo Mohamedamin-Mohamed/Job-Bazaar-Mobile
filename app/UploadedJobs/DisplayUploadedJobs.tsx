@@ -1,8 +1,8 @@
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Job, RootStackParamList, RootState} from "../Types/types";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {useEffect, useState} from "react";
 import {StackNavigationProp} from "@react-navigation/stack";
-import getJobById from "../fetchRequests/getJobById";
+import getJobById from "@/app/FetchRequests/getJobById";
 import {useSelector} from "react-redux";
 import JobsModal from "../Modals/JobsModal";
 import daysFromUploadedDate from "../Utilities/daysFromUploadedDate";
@@ -92,8 +92,8 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
         setDisplayModal(!displayModal)
     }
     return (
-        <ScrollView>
-            <View>
+        <ScrollView style={styles.scrollView}>
+            <View style={styles.outerContainer}>
                 <View style={styles.containerParent}>
                     <Text
                         style={styles.numberOfJobsHeader}>{numberOfActiveJobs} {numberOfActiveJobs > 1 ? "jobs" : "job"} found</Text>
@@ -136,10 +136,18 @@ const DisplayUploadedJobs = ({uploadedJobs, employerEmail, navigation}: {
             </View>
         </ScrollView>
     )
+
 }
 const styles = StyleSheet.create({
+    scrollView: {
+        backgroundColor: "#fff",
+        flex: 1,
+    },
+    outerContainer: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
     containerParent: {
-        backgroundColor: "white",
         padding: 24,
         gap: 12,
     },
@@ -156,6 +164,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "gray",
         paddingBottom: 10,
-    }
-})
+    },
+});
+
 export default DisplayUploadedJobs
