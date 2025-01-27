@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "@/app/Types/types";
+import {RootState} from "@/Types/types";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {DrawerContentComponentProps, DrawerContentScrollView, DrawerItem} from "@react-navigation/drawer";
 import {DrawerNavigationHelpers} from "@react-navigation/drawer/src/types";
@@ -19,7 +19,8 @@ type DrawerItemType = {
 
 const DrawerList: DrawerItemType[] = [
     {icon: 'workspaces', label: 'Career Hub', navigateTo: 'CareerHub', roles: ['Applicant', 'Employer']},
-    {icon: 'star-outline', label: 'Profile', navigateTo: 'Profile', roles: ['Applicant']},
+    {icon: 'work', label: 'Experience', navigateTo: 'Experience', roles: ['Applicant']},
+    {icon: 'explore', label: 'Career Interests', navigateTo: 'CareerInterests', roles: ['Applicant']},
     {icon: 'work-outline', label: 'Uploaded Jobs', navigateTo: 'UploadedJobs', roles: ['Employer']},
     {icon: 'drive-folder-upload', label: 'Upload Job', navigateTo: 'UploadJob', roles: ['Employer']},
     {icon: 'search', label: 'Job Search', navigateTo: 'AvailableJobs', roles: ['Applicant']},
@@ -27,6 +28,7 @@ const DrawerList: DrawerItemType[] = [
     {icon: 'feedback', label: 'Feedbacks', navigateTo: 'Feedbacks', roles: ['Applicant']},
     {icon: 'hub', label: 'Management Hub', navigateTo: 'ManagementHub', roles: ['Employer']},
     {icon: 'group-add', label: 'My Referrals', navigateTo: 'MyReferrals', roles: ['Applicant']},
+    {icon: 'settings', label: 'Settings', navigateTo: 'Settings', roles: ['Applicant', 'Employer']}
 ];
 
 type DrawerLayoutProps = {
@@ -43,8 +45,7 @@ const DrawerLayout = ({navigation, icon, label, navigateTo}: DrawerLayoutProps) 
     )
 }
 
-const DrawerItems = ({navigation}: { navigation: DrawerNavigationHelpers }) => {
-    const userRole = useSelector((state: RootState) => state.userInfo).role
+const DrawerItems = ({navigation, userRole}: { navigation: DrawerNavigationHelpers, userRole: string }) => {
     const filteredDrawerList = DrawerList.filter(item => item.roles.includes(userRole))
     return (
         <>
@@ -64,13 +65,14 @@ const DrawerItems = ({navigation}: { navigation: DrawerNavigationHelpers }) => {
 const DrawerContent = (props: DrawerContentComponentProps) => {
     const {navigation} = props
     const userInfo = useSelector((state: RootState) => state.userInfo)
+    const role = userInfo.role
     const dispatch = useDispatch()
 
     const handleSignOut = async () => {
         dispatch(clearUserInfo())
         dispatch(clearLocationInfo())
 
-        await AsyncStorage.setItem('token', '').catch(err => console.error(err))
+        await AsyncStorage.removeItem('token').catch(err => console.error(err))
 
         navigation.dispatch(CommonActions.reset({
             index: 0,
@@ -96,7 +98,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
                     </View>
                 </View>
                 <View style={styles.drawerItemsView}>
-                    <DrawerItems navigation={navigation}/>
+                    <DrawerItems navigation={navigation} userRole={role}/>
                 </View>
             </DrawerContentScrollView>
             <View style={[styles.drawerItemsView, {borderBottomWidth: 0.4, borderTopWidth: 0}]}>
