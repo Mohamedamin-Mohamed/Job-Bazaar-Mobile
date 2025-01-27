@@ -1,20 +1,18 @@
 import {ScrollView, StyleSheet, View} from "react-native";
-import ProfileCompleteness from "@/app/Tabs/Experience/ProfileCompleteness/ProfileCompleteness";
-import Education from "@/app/Tabs/Experience/Education/Education";
-import WorkExperience from "@/app/Tabs/Experience/Work Experience/WorkExperience";
-import {RootTabParamList} from "@/Types/types";
-import Contact from "@/app/Tabs/Experience/Contact";
-import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
+import ProfileCompleteness from "@/app/Experience/ProfileCompleteness/ProfileCompleteness";
+import Education from "@/app/Experience/Education/Education";
+import WorkExperience from "@/app/Experience/Work Experience/WorkExperience";
+import {RootStackParamList} from "@/Types/types";
+import {StackScreenProps} from "@react-navigation/stack";
 
-type NavigationProp = BottomTabScreenProps<RootTabParamList, 'Experience'>
-const Experience = ({route, navigation}: NavigationProp) => {
+type NavigationProp = StackScreenProps<RootStackParamList, 'Experience'>
+const Experience = ({navigation}: NavigationProp) => {
     return (
         <ScrollView>
             <View style={styles.container}>
                 <ProfileCompleteness/>
-                <Education navigation={navigation} route={route}/>
-                <WorkExperience navigation={navigation} route={route}/>
-                <Contact/>
+                <Education navigation={navigation}/>
+                <WorkExperience navigation={navigation}/>
             </View>
         </ScrollView>
     )
