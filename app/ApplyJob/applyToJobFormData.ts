@@ -1,5 +1,5 @@
 import {format} from "date-fns";
-import {JobApplication, User} from "../Types/types";
+import {JobApplication, User} from "@/Types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const applyToJobFormData = async (jobApplication: JobApplication, user: User) => {
