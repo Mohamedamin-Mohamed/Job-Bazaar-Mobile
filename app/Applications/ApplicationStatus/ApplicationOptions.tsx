@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Application, RootStackParamList} from "@/app/Types/types";
 import {NavigationProp} from "@react-navigation/core";
+import {Application, RootStackParamList} from "@/Types/types";
 
 interface ApplicationOptionsProps {
     navigation: NavigationProp<RootStackParamList, 'AppliedJobs'>,
@@ -10,7 +10,6 @@ interface ApplicationOptionsProps {
 }
 
 const ApplicationOptions = ({navigation, application, handleClickClose, withdrawApp}: ApplicationOptionsProps) => {
-
     const viewDescription = () => {
         //what the below line does is it closes the application options component
         handleClickClose(application.jobId)
@@ -22,11 +21,6 @@ const ApplicationOptions = ({navigation, application, handleClickClose, withdraw
                 <TouchableOpacity onPress={() => viewDescription()}>
                     <Text style={styles.viewButton}>View Application</Text>
                 </TouchableOpacity>
-                {application.isActive === 'true' &&
-                    <TouchableOpacity onPress={() => withdrawApp && withdrawApp(application)}>
-                        <Text style={styles.withdrawButton}>Withdraw Application</Text>
-                    </TouchableOpacity>
-                }
             </View>
         </View>
     )
@@ -34,7 +28,6 @@ const ApplicationOptions = ({navigation, application, handleClickClose, withdraw
 const styles = StyleSheet.create({
     container: {
         position: "absolute",
-        left: 150,
         top: 30,
         marginTop: 10
     },
