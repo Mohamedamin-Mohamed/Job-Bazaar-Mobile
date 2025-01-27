@@ -4,7 +4,7 @@ import RoleSuggestions from "@/app/Modals/RoleSuggestions";
 
 const RoleBased = () => {
     const [viewSuggestions, setViewSuggestions] = useState(false)
-    const image = require('../../../Images/empty_self_chat.png')
+    const image = require('../../Images/empty_self_chat.png')
 
     const handleModalDisplay = ()=> {
         setViewSuggestions(prevState => !prevState)
