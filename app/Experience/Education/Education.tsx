@@ -2,21 +2,19 @@ import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import getEducation from "@/app/fetchRequests/getEducation";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {Education as EducationType, RootState, RootTabParamList} from "@/Types/types";
+import {Education as EducationType, RootStackParamList, RootState} from "@/Types/types";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import imageSearch from "@/app/fetchRequests/imageSearch";
 import {format} from "date-fns";
 import deleteEducation from "@/app/fetchRequests/deleteEducation";
 import Toast from "react-native-toast-message";
 import AddEducation from "@/app/Modals/AddEducation";
-import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
+import {StackNavigationProp} from "@react-navigation/stack";
 
-type NavigationProp = BottomTabScreenProps<RootTabParamList, 'Experience'>
-
-const Education = ({navigation}: NavigationProp) => {
+const Education = ({navigation}: { navigation: StackNavigationProp<RootStackParamList, 'Experience'> }) => {
     const [education, setEducation] = useState<EducationType | null>(null)
     const [imgUrl, setImgUrl] = useState<string | null>(null)
-    const fallBackImageUrl = require('../../../Images/COLOURBOX50538417.webp')
+    const fallBackImageUrl = require('../../Images/COLOURBOX50538417.webp')
     const [loading, setLoading] = useState(false)
     const [displayModal, setDisplayModal] = useState(false)
     const applicantEmail = useSelector((state: RootState) => state.userInfo).email
@@ -30,7 +28,7 @@ const Education = ({navigation}: NavigationProp) => {
                 setEducation(educationData)
             }
         } catch (err) {
-            console.error("Couldn't fetch education, ", err)
+
         } finally {
             setLoading(false)
         }
