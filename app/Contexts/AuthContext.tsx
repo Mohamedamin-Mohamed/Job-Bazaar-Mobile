@@ -1,6 +1,6 @@
 import {createContext, ReactNode, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import validateToken from "@/app/fetchRequests/validateToken";
+import validateToken from "@/app/FetchRequests/validateToken";
 import {NavigationProp} from "@react-navigation/core";
 import {RootStackParamList} from "@/Types/types";
 import Toast from "react-native-toast-message";
