@@ -1,6 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
-import {RootStackParamList} from "@/app/Types/types";
+import {RootStackParamList} from "@/Types/types";
 
 type ApplicationConfirmationProps = StackScreenProps<RootStackParamList, 'ApplicationConfirmation'>
 
