@@ -13,5 +13,4 @@ const countApplications = (applications: Application[], jobStatuses: Record<stri
 
     return {active, inactive};
 };
-
 export default countApplications;
