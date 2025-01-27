@@ -1,4 +1,14 @@
-import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from "react-native";
 import {useRef, useState} from "react";
 import {usePreventRemove} from "@react-navigation/native";
 import {Picker} from "@react-native-picker/picker";
@@ -6,7 +16,7 @@ import emailValidation from "../Regex/emailValidation";
 import signup from "../fetchRequests/signup";
 import Toast from "react-native-toast-message";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 
 type SignupNavigationProp = StackNavigationProp<RootStackParamList, "Signup">;
 
@@ -43,10 +53,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
         }));
     };
 
-    // const hasNonEmptyValue = Object.values(userDetails).some((value) => value) ||
-    //     Object.values(passwords).some((value) => value) || selectedVal;
-
-    usePreventRemove(!signupCompletedRef.current && Boolean(Object.values(userDetails).some((value) => value)), ({ data }) => {
+    usePreventRemove(!signupCompletedRef.current && Boolean(Object.values(userDetails).some((value) => value)) && !loading, ({data}) => {
         Alert.alert(
             "Discard Changes.",
             "Are you sure you want to go back? You will lose all progress on this form.",
@@ -115,7 +122,7 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
         if (!isPasswordValid(passwords.createPasswd)) {
             Toast.show({
                 type: "error",
-                text1: "Password must be 16+ characters or 8+ with letters and numbers.",
+                text1: "16+ chars or 8+ (letters & numbers).",
                 onShow: () => setDisabled(true),
                 onHide: () => setDisabled(false)
             });
@@ -129,33 +136,71 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
 
         try {
             setLoading(true);
-            const signResponse = await signup({
-                ...userDetails,
-                password: passwords.confirmPasswd,
-                role: selectedVal,
-            }, new AbortController());
+
+            const signResponse = await signup(
+                {
+                    ...userDetails,
+                    password: passwords.confirmPasswd,
+                    role: selectedVal,
+                },
+                new AbortController()
+            );
 
             if (signResponse.ok) {
-                const data = await signResponse.json();
-                const message = data.message;
+                try {
+                    const data = await signResponse.json();
+                    const message = data?.message || "Signup successful!";
 
-                Toast.show({
-                    type: "success",
-                    text1: message,
-                    onHide: () => {
-                        signupCompletedRef.current = true; // Mark signup as completed
-                        navigation.replace("Login");
-                    },
-                });
+                    // mark signup as completed before showing toast
+                    signupCompletedRef.current = true;
+
+                    Toast.show({
+                        type: "success",
+                        text1: message,
+                        text2: "Redirecting to login",
+                        onHide: () => {
+                            navigation.replace("Login");
+                        },
+                    });
+                } catch (jsonError) {
+                    console.error("Error parsing success response JSON:", jsonError);
+                    Toast.show({
+                        type: "error",
+                        text1: "Signup was successful, but an issue occurred. Please log in.",
+                    });
+                }
             } else {
-                const errorMessage = await signResponse.text(); // Handle backend errors
-                Toast.show({
-                    type: "error",
-                    text1: errorMessage || "Signup failed. Please try again.",
-                });
+                try {
+                    const responseText = await signResponse.text();
+                    let data: { message?: string } | null;
+
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch {
+                        data = null;
+                    }
+
+                    const errorMessage = data?.message || "Signup failed. Please try again.";
+
+                    signupCompletedRef.current = true;
+                    const toastType = data ? "error" : "success";
+                    const toastMessage = data ? errorMessage : "Account created please login.";
+                    const toastSubtitle = data ? "Redirecting to login" : "";
+
+                    Toast.show({
+                        type: toastType,
+                        text1: toastMessage,
+                        text2: toastSubtitle,
+                        onHide: () => {
+                            navigation.replace("Login");
+                        },
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
             }
         } catch (error) {
-            console.error(error);
+            console.error("Signup error:", error);
             Toast.show({
                 type: "error",
                 text1: "Something went wrong. Please try again.",
@@ -166,87 +211,89 @@ const Signup = ({navigation}: { navigation: SignupNavigationProp }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.childContainer}>
-                <Text style={styles.headerText}>Signup</Text>
-                <TextInput
-                    editable={!disabled}
-                    style={styles.commonText}
-                    autoCapitalize="none"
-                    keyboardType="default"
-                    placeholder="Email"
-                    onChangeText={(text) => handleUserDetails("email", text)}
-                    value={userDetails.email}/>
-                <TextInput
-                    editable={!disabled}
-                    style={styles.commonText}
-                    autoCapitalize="none"
-                    keyboardType="default"
-                    placeholder="First Name"
-                    onChangeText={(text) => handleUserDetails("firstName", text)}
-                    value={userDetails.firstName}/>
-                <TextInput
-                    editable={!disabled}
-                    style={styles.commonText}
-                    autoCapitalize="none"
-                    keyboardType="default"
-                    placeholder="Last Name"
-                    onChangeText={(text) => handleUserDetails("lastName", text)}
-                    value={userDetails.lastName}/>
-                <TextInput
-                    editable={!disabled}
-                    style={styles.commonText}
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                    keyboardType="default"
-                    placeholder="Create Password"
-                    onChangeText={(text) => handlePasswords("createPasswd", text)}
-                    value={passwords.createPasswd}/>
-                <TextInput
-                    editable={!disabled}
-                    style={styles.commonText}
-                    secureTextEntry={true}
-                    autoCapitalize="none"
-                    keyboardType="default"
-                    placeholder="Confirm Password"
-                    onChangeText={(text) => handlePasswords("confirmPasswd", text)}
-                    value={passwords.confirmPasswd}/>
-                <View style={styles.pickerView}>
-                    <Picker
-                        enabled={!disabled}
-                        style={styles.pickerItems}
-                        mode="dropdown"
-                        selectedValue={selectedVal}
-                        onValueChange={(itemValue) =>
-                            setSelectedVal(itemValue)
-                        }>
-                        <Picker.Item
-                            label="Select your role"
-                            value=""/>
-                        <Picker.Item
-                            label="Employer"
-                            value="Employer"/>
-                        <Picker.Item
-                            label="Applicant"
-                            value="Applicant"/>
-                    </Picker>
-                </View>
-                <TouchableOpacity disabled={disabled} onPress={handleSignup}>
-                    {loading ? (
-                        <ActivityIndicator size="small" color="#367c2b"
-                                           style={[styles.commonText, styles.addedStyling]}/>
-                    ) : (
-                        <Text style={[styles.commonText, styles.addedStyling,]}>Sign Up</Text>)}
-                </TouchableOpacity>
-                <View style={styles.accountView}>
-                    <Text style={styles.accountText}>Already have an account?</Text>
-                    <TouchableOpacity disabled={disabled} onPress={() => navigation.replace("Login")}>
-                        <Text style={styles.loginButton}>Login</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <View style={styles.childContainer}>
+                    <Text style={styles.headerText}>Signup</Text>
+                    <TextInput
+                        editable={!disabled}
+                        style={styles.commonText}
+                        autoCapitalize="none"
+                        keyboardType="default"
+                        placeholder="Email"
+                        onChangeText={(text) => handleUserDetails("email", text)}
+                        value={userDetails.email}/>
+                    <TextInput
+                        editable={!disabled}
+                        style={styles.commonText}
+                        autoCapitalize="none"
+                        keyboardType="default"
+                        placeholder="First Name"
+                        onChangeText={(text) => handleUserDetails("firstName", text)}
+                        value={userDetails.firstName}/>
+                    <TextInput
+                        editable={!disabled}
+                        style={styles.commonText}
+                        autoCapitalize="none"
+                        keyboardType="default"
+                        placeholder="Last Name"
+                        onChangeText={(text) => handleUserDetails("lastName", text)}
+                        value={userDetails.lastName}/>
+                    <TextInput
+                        editable={!disabled}
+                        style={styles.commonText}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        keyboardType="default"
+                        placeholder="Create Password"
+                        onChangeText={(text) => handlePasswords("createPasswd", text)}
+                        value={passwords.createPasswd}/>
+                    <TextInput
+                        editable={!disabled}
+                        style={styles.commonText}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                        keyboardType="default"
+                        placeholder="Confirm Password"
+                        onChangeText={(text) => handlePasswords("confirmPasswd", text)}
+                        value={passwords.confirmPasswd}/>
+                    <View style={styles.pickerView}>
+                        <Picker
+                            enabled={!disabled}
+                            style={styles.pickerItems}
+                            mode="dropdown"
+                            selectedValue={selectedVal}
+                            onValueChange={(itemValue) =>
+                                setSelectedVal(itemValue)
+                            }>
+                            <Picker.Item
+                                label="Select your role"
+                                value=""/>
+                            <Picker.Item
+                                label="Employer"
+                                value="Employer"/>
+                            <Picker.Item
+                                label="Applicant"
+                                value="Applicant"/>
+                        </Picker>
+                    </View>
+                    <TouchableOpacity disabled={disabled} onPress={handleSignup}>
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#367c2b"
+                                               style={[styles.commonText, styles.addedStyling]}/>
+                        ) : (
+                            <Text style={[styles.commonText, styles.addedStyling,]}>Sign Up</Text>)}
                     </TouchableOpacity>
+                    <View style={styles.accountView}>
+                        <Text style={styles.accountText}>Already have an account?</Text>
+                        <TouchableOpacity disabled={disabled} onPress={() => navigation.replace("Login")}>
+                            <Text style={styles.loginButton}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
+                <Toast/>
             </View>
-            <Toast/>
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -288,6 +335,7 @@ const styles = StyleSheet.create({
         color: "#367c2b",
         fontWeight: "bold",
         marginTop: 9,
+        textDecorationLine: "underline"
     },
     pickerView: {
         height: 160
