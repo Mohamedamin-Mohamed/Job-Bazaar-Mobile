@@ -1,11 +1,8 @@
-import {ActivityIndicator, ScrollView, StyleSheet, Text, View} from "react-native";
-import {Job, RootStackParamList, RootState} from "@/app/Types/types";
+import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {RootStackParamList, RootState} from "@/Types/types";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useSelector} from "react-redux";
 import daysFromUploadedDate from "@/app/Utilities/daysFromUploadedDate";
-import getUploadedJobs from "@/app/fetchRequests/getUploadedJobs";
-import {useEffect, useState} from "react";
-import getApplicantsPerJob from "@/app/fetchRequests/getApplicantsPerJob";
 
 const ViewJob = ({route}: NativeStackScreenProps<RootStackParamList, 'ViewJob'>) => {
     const {job} = route.params;
