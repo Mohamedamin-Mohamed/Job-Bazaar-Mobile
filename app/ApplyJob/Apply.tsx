@@ -1,4 +1,5 @@
 import {
+    Alert,
     Keyboard,
     ScrollView,
     StyleSheet,
@@ -8,20 +9,22 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
-import {JobApplication, RootStackParamList, RootState} from "../Types/types";
+import {JobApplication, RootStackParamList, RootState} from "@/Types/types";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {CheckBox} from '@rneui/themed';
-import {useState} from "react";
+import {useRef, useState} from "react";
 import Toast from "react-native-toast-message";
 import {useSelector} from "react-redux";
 import applyToJobFormData from "./applyToJobFormData";
 import * as DocumentPicker from 'expo-document-picker';
 import Buttons from "../FixedButtons/Buttons";
 import applyToJob from "../fetchRequests/applyToJob";
+import {usePreventRemove} from "@react-navigation/native";
 
 type ApplyNavigationProps = NativeStackScreenProps<RootStackParamList, 'Apply'>
 const Apply = ({navigation, route}: ApplyNavigationProps) => {
     const {job} = route.params
+    const applyJobCompletedRef = useRef(false)
     const [toggleCheckBox1, setToggleCheckBox1] = useState(false)
     const [toggleCheckBox2, setToggleCheckBox2] = useState(false)
     const [disabled, setDisabled] = useState(false)
@@ -89,7 +92,7 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
     const handleSave = async () => {
         const updatedJobApplication = {
             ...jobApplication,
-            employerContact: !toggleCheckBox1 && !toggleCheckBox2 ? '' : toggleCheckBox1 ? 'all available jobs' : 'only roles I apply to'
+            employerContact: !toggleCheckBox1 && !toggleCheckBox2 ? '' : toggleCheckBox1 ? 'All available jobs' : 'Only roles I apply to'
         };
         setJobApplication(updatedJobApplication);
 
@@ -111,6 +114,8 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                 const response = await applyToJob(formData)
                 const text = await response.text()
 
+                // Set the ref before showing toast by marking login as completed
+                applyJobCompletedRef.current = true;
                 Toast.show({
                     type: response.ok ? 'success' : 'error',
                     text1: text,
@@ -153,6 +158,37 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
         }
     };
 
+    const checkIfFieldIsFilled = () => {
+        return (
+            jobApplication.country !== '' ||
+            jobApplication.city !== '' ||
+            jobApplication.postalCode !== '' ||
+            jobApplication.gender !== '' ||
+            jobApplication.nationality !== '' ||
+            jobApplication.resume.name !== '' ||
+            jobApplication.resume.file?.fileUri !== '' ||
+            jobApplication.resume.file.mimeType !== '' ||
+            jobApplication.resume.file.size > 0 ||
+            (toggleCheckBox1 || toggleCheckBox2)
+        )
+    }
+
+    const valid = checkIfFieldIsFilled()
+
+    usePreventRemove(!applyJobCompletedRef.current && valid && !loading, ({data}) => {
+        Alert.alert('Discard Application', 'Are you sure you want to leave this page? Any information you’ve entered will be lost.', [
+            {
+                text: 'Discard',
+                style: "destructive",
+                onPress: () => navigation.dispatch(data.action)
+            },
+            {
+                text: 'Cancel',
+                style: "cancel"
+            }
+        ])
+    })
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView>
@@ -169,7 +205,7 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                             <Text style={styles.labels}>Resume*</Text>
                             <View style={{flexDirection: "column", marginLeft: "auto"}}>
                                 <Text
-                                    style={[styles.resumeText, jobApplication.resume.name ? {width: "44%"} : {}]}>
+                                    style={[styles.resumeText, jobApplication.resume.name ? {width: "54%"} : {}]}>
                                     {jobApplication.resume.name ? jobApplication.resume.name : "No Resume Available"}</Text>
                                 <TouchableOpacity onPress={() => handleFileUpload('resume')} disabled={disabled}>
                                     <Text style={styles.uploadResumeButton}>Upload Resume...</Text>
@@ -204,18 +240,18 @@ const Apply = ({navigation, route}: ApplyNavigationProps) => {
                                        onChangeText={text => handleChange('nationality', text)} editable={!disabled}/>
                         </View>
                         <View style={{flexDirection: "row", marginVertical: 24}}>
-                            <Text style={[styles.labels, {fontSize: 17, width: "40%"}]}>Additional Attachments</Text>
+                            <Text style={[styles.labels, {fontSize: 17, width: "29%"}]}>Additional Attachments</Text>
                             <View style={{flexDirection: "column", marginLeft: "auto"}}>
                                 <Text
-                                    style={[styles.resumeText, jobApplication.additionalDocument.name ? {width: "44%"} : {}]}>
+                                    style={[styles.resumeText, jobApplication.additionalDocument.name ? {width: "54%"} : {width: "100%"}]}>
                                     {jobApplication.additionalDocument.name ? jobApplication.additionalDocument.name : "Upload documents(s)"} </Text>
                                 <TouchableOpacity onPress={() => handleFileUpload('additionalDoc')} disabled={disabled}>
                                     <Text style={[styles.uploadResumeButton]}>Additional Doc..</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection: "row", width: "40%", marginVertical: 24}}>
-                            <Text style={{marginTop: 12, fontSize: 14}}>Consent to contact for roles. *</Text>
+                        <View style={{flexDirection: "row", width: "46%", marginVertical: 24}}>
+                            <Text style={[styles.labels, {width: "94%"}]}>Consent to contact for roles. *</Text>
                             <View style={{flexDirection: "column", marginTop: 10, gap: 12}}>
                                 <View style={{flexDirection: "row"}}>
                                     <CheckBox checked={toggleCheckBox1}
