@@ -1,5 +1,5 @@
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Job, RootStackParamList, RootState} from "../Types/types";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {useEffect, useState} from "react";
 import {StackNavigationProp} from "@react-navigation/stack";
 import getJobById from "../fetchRequests/getJobById";
