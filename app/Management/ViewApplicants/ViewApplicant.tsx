@@ -1,13 +1,13 @@
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Job, JobApplicationData, RootStackParamList} from "@/app/Types/types";
+import {Job, JobApplicationData, RootStackParamList} from "@/Types/types";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import {useEffect, useState} from "react";
-import getJobApplicants from "@/app/fetchRequests/getJobApplicants";
+import getJobApplicants from "@/app/FetchRequests/getJobApplicants";
 import ResumeViewer from "@/app/Modals/ResumeViewer";
 import NoApplicants from "@/app/Management/ViewApplicants/NoApplicants";
 import FeedbackModal from "@/app/Modals/FeedbackModal";
-import getJobById from "@/app/fetchRequests/getJobById";
+import getJobById from "@/app/FetchRequests/getJobById";
 
 type ViewApplicantRouteProp = NativeStackScreenProps<RootStackParamList, 'ViewApplicants'>
 
@@ -40,7 +40,6 @@ const ViewApplicant = ({navigation, route}: ViewApplicantRouteProp) => {
         setLoading(true);
         try {
             const response = await getJobApplicants(job.jobId, controller);
-            setLoading(false);
             if (response.ok) {
                 const applicants = await response.json();
                 if (applicants && Array.isArray(applicants) && applicants.length > 0) {
@@ -48,12 +47,6 @@ const ViewApplicant = ({navigation, route}: ViewApplicantRouteProp) => {
                 }
             }
         } catch (err) {
-            Toast.show({
-                type: 'error',
-                text1: 'Unknown error while fetching job applicants',
-                onShow: () => setDisabled(true),
-                onHide: () => setDisabled(false),
-            });
         } finally {
             setLoading(false);
         }
@@ -76,7 +69,6 @@ const ViewApplicant = ({navigation, route}: ViewApplicantRouteProp) => {
         }
     }
 
-
     const fetchJobStatuses = async (applicants: JobApplicationData[], controller: AbortController) => {
         const statuses: Record<string, string> = {};
         for (const applicant of applicants) {
@@ -87,7 +79,7 @@ const ViewApplicant = ({navigation, route}: ViewApplicantRouteProp) => {
             }
         }
         setJobStatuses(statuses);
-    };
+    }
 
     useEffect(() => {
         const controller = new AbortController();
@@ -145,8 +137,7 @@ const ViewApplicant = ({navigation, route}: ViewApplicantRouteProp) => {
                                                     onPress={() => {
                                                         setJobApplicant(applicant);
                                                         handleFeedbackDisplayModal();
-                                                    }}
-                                                >
+                                                    }}>
                                                     <Text style={styles.feedbackText}>Leave Review</Text>
                                                 </TouchableOpacity>
                                                 :
@@ -244,6 +235,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     position: {
+        textAlign: "center",
         fontSize: 18,
         marginBottom: 20,
         fontWeight: "600",
