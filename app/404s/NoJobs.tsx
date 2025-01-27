@@ -1,6 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../Types/types";
+import {RootStackParamList} from "@/Types/types";
 
 type UploadedJobsNavigationProp = StackNavigationProp<RootStackParamList, 'UploadedJobs'>
 type AvailableJobsNavigationProp = StackNavigationProp<RootStackParamList, 'AvailableJobs'>
@@ -21,9 +21,10 @@ const NoJobs = ({role, navigation}: { role: string, navigation: NavigationPropUn
         <View style={styles.container}>
             <View style={styles.childContainer}>
                 <Image source={require('../Images/404_illustration.png')} style={styles.image}/>
-                <Text style={[styles.texts, {fontSize: 24}]}>No Uploaded jobs</Text>
                 <Text
-                    style={styles.texts}>{role === 'Applicant' ? "Sorry, there are no available jobs yet" : "Sorry, No jobs uploaded or active."}</Text>
+                    style={[styles.texts, {fontSize: 24}]}>{role === 'Employer' ? "No Uploaded Jobs" : "No Available Jobs"}</Text>
+                <Text
+                    style={styles.texts}>{role === 'Applicant' ? "Sorry, there are no available jobs yet" : "Sorry, you have no active or uploaded jobs.."}</Text>
             </View>
             <View style={styles.parentButtons}>
                 <TouchableOpacity style={{width: "64%"}} onPress={() => handleNavigation()}>
