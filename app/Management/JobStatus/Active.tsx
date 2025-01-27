@@ -7,23 +7,23 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
-import {Job, RootStackParamList, RootState} from "@/app/Types/types";
 import {NavigationProp} from "@react-navigation/core";
-import {useState} from "react";
+import React, {useState} from "react";
 import {useSelector} from "react-redux";
 import Header from "@/app/Applications/ApplicationStatus/Header";
 import NoApplicationsOrJobs from "@/app/Applications/ApplicationStatus/NoApplicationsOrJobs";
-import JobOptions from "@/app/Management/JobStatus/JobOptions";
-import updateJob from "@/app/fetchRequests/updateJob";
+import updateJob from "@/app/FetchRequests/updateJob";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 
 interface InActiveProps {
     uploadedJobs: Job[],
     activeApplications: number,
     navigation: NavigationProp<RootStackParamList, 'ManagementHub'>,
     refreshJobs: () => void
+    applicantsPerJob: Record<string, number>
 }
 
-const Active = ({uploadedJobs, activeApplications, navigation, refreshJobs}: InActiveProps) => {
+const Active = ({uploadedJobs, activeApplications, navigation, refreshJobs, applicantsPerJob}: InActiveProps) => {
     const [clicked, setClicked] = useState<Record<string, boolean>>({})
     const [loading, setLoading] = useState(false)
     const userInfo = useSelector((state: RootState) => state.userInfo)
@@ -56,11 +56,7 @@ const Active = ({uploadedJobs, activeApplications, navigation, refreshJobs}: InA
     }
 
     const viewDescription = (job: Job) => {
-        navigation.navigate('ViewJobDescription', {job})
-    }
-
-    const handleClickClose = (jobId: string) => {
-        setClicked({[jobId]: false})
+        navigation.navigate('ViewJobDescription', {job, applicantsPerJob})
     }
 
     const withdrawJob = async (job: Job) => {
@@ -89,17 +85,10 @@ const Active = ({uploadedJobs, activeApplications, navigation, refreshJobs}: InA
                             {sortedUploadedJobs.map((job) => (
                                 job.jobStatus === 'active' && (
                                     <View key={job.jobId} style={styles.childViews}>
-                                        <TouchableOpacity onPress={() => viewDescription(job)}>
+                                        <TouchableOpacity style={{width: "86%"}} onPress={() => viewDescription(job)}>
                                             <Text style={styles.positionText}>{job.position}</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => handleClick(job.jobId)}>
-                                            <Text style={{fontSize: 20}}>...</Text>
-                                        </TouchableOpacity>
-                                        {clicked[job.jobId] && (
-                                            <JobOptions navigation={navigation} job={job}
-                                                        handleClickClose={handleClickClose}
-                                                        withdrawJob={withdrawJob}/>
-                                        )}
+                                        <Text style={styles.applicantsPerJob}>{applicantsPerJob[job.jobId] ?? 0}</Text>
                                     </View>
                                 )
                             ))}
@@ -115,7 +104,7 @@ const styles = StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     childViews: {
         marginVertical: 12,
@@ -124,11 +113,16 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         flexDirection: "row",
         justifyContent: "space-between",
+        backgroundColor: "white"
     },
     positionText: {
         fontSize: 18,
         color: "#0875e1",
-        marginTop: 4
+        marginTop: 4,
     },
+    applicantsPerJob: {
+        color: "#217a37",
+        fontSize: 18
+    }
 })
 export default Active
