@@ -5,14 +5,14 @@ import {Application, Feedback, Job, Referral, RootStackParamList, RootState} fro
 import Explore from "./Explore";
 import Activity from "./Activity";
 import {useEffect, useMemo, useState} from "react";
-import getAppliedJobs from "../fetchRequests/getAppliedJobs";
-import getUploadedJobs from "../fetchRequests/getUploadedJobs";
-import getReferrals from "../fetchRequests/getReferrals";
+import getAppliedJobs from "@/app/FetchRequests/getAppliedJobs";
+import getUploadedJobs from "@/app/FetchRequests/getUploadedJobs";
+import getReferrals from "@/app/FetchRequests/getReferrals";
 import countApplications from "../countJobsOrApplications/countApplications";
 import countJobs from "../countJobsOrApplications/countJobs";
 import {StackNavigationProp} from "@react-navigation/stack";
-import getJobById from "@/app/fetchRequests/getJobById";
-import getFeedbacks from "@/app/fetchRequests/getFeedbacks";
+import getJobById from "@/app/FetchRequests/getJobById";
+import getFeedbacks from "@/app/FetchRequests/getFeedbacks";
 
 
 type CareerHubProp = StackNavigationProp<RootStackParamList, 'CareerHub'>
