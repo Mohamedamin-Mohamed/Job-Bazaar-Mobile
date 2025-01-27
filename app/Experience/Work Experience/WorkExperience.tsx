@@ -2,12 +2,12 @@ import {ActivityIndicator, Image, StyleSheet, Text, View} from "react-native";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {RootStackParamList, RootState, WorkExperience as WorkExperienceType} from "@/Types/types";
-import getWorkExperience from "@/app/fetchRequests/getWorkExperience";
+import getWorkExperience from "@/app/FetchRequests/getWorkExperience";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import imageSearch from "@/app/fetchRequests/imageSearch";
+import imageSearch from "@/app/FetchRequests/imageSearch";
 import {format} from "date-fns";
 import Toast from "react-native-toast-message";
-import deleteWorkExperience from "@/app/fetchRequests/deleteWorkExperience";
+import deleteWorkExperience from "@/app/FetchRequests/deleteWorkExperience";
 import AddWorkExperience from "@/app/Modals/AddWorkExperience";
 import {StackNavigationProp} from "@react-navigation/stack";
 
