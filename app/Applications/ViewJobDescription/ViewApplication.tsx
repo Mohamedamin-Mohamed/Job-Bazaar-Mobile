@@ -1,14 +1,14 @@
 import {ActivityIndicator, ScrollView, StyleSheet, Text, View} from "react-native";
-import {Education, RootStackParamList, RootState, WorkExperience} from "@/app/Types/types";
+import {Education, RootStackParamList, RootState, WorkExperience} from "@/Types/types";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useEffect, useState} from "react";
-import getEducation from "@/app/fetchRequests/getEducation";
-import getWorkExperience from "@/app/fetchRequests/getWorkExperience";
+import getEducation from "@/app/FetchRequests/getEducation";
+import getWorkExperience from "@/app/FetchRequests/getWorkExperience";
 import {useSelector} from "react-redux";
 import daysFromAppliedDate from "@/app/Utilities/daysFromAppliedDate";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackParamList, 'ViewApplication'>) => {
+const ViewApplication = ({route}: NativeStackScreenProps<RootStackParamList, 'ViewApplication'>) => {
     const {application} = route.params
     const [education, setEducation] = useState<Education | null>(null)
     const [workExperience, setWorkExperience] = useState<WorkExperience | null>(null)
@@ -25,7 +25,7 @@ const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackPa
                     setEducation(educationData)
                 }
             } catch (err) {
-                console.error("Couldn't fetch education, ", err)
+
             }
 
             try {
@@ -35,7 +35,7 @@ const ViewApplication = ({route, navigation}: NativeStackScreenProps<RootStackPa
                     setWorkExperience(workExperienceData)
                 }
             } catch (err) {
-                console.error("Couldn't fetch work experience, ", err)
+
             }
         } catch (err) {
             console.error(err)

@@ -1,8 +1,8 @@
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {Job, RootStackParamList, RootState} from "@/app/Types/types";
+import {Job, RootStackParamList, RootState} from "@/Types/types";
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
-import getJobById from "@/app/fetchRequests/getJobById";
+import getJobById from "@/app/FetchRequests/getJobById";
 import Location from "@/app/Applications/ViewJobDescription/Location";
 import Info from "@/app/Applications/ViewJobDescription/Info";
 import JobDescription from "@/app/Applications/ViewJobDescription/JobDescription";
@@ -26,12 +26,11 @@ const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
 
         const monthName = month ? monthNames[month - 1] : ''
         return monthName ? `${monthName} ${day}, ${year}` : ''
-
     }
 
     const fetchJobById = async (controller: AbortController) => {
         if (!application) {
-            return; // Don't fetch if application is not present
+            return;
         }
 
         try {
@@ -40,14 +39,18 @@ const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
                 const data: Job = await response.json();
                 setJob(data);
             }
-        } catch (err) {
-            console.error("Couldn't fetch job by id:", err);
+        } catch (err: any) {
+
         }
     }
 
     useEffect(() => {
         const controller = new AbortController()
-        fetchJobById(controller).catch(err => console.error(err))
+        const fetchJobs = async (controller: AbortController) => {
+            await fetchJobById(controller)
+        }
+
+        fetchJobs(controller).catch(err => console.error(err))
 
         return () => {
             controller.abort()
@@ -69,7 +72,7 @@ const ViewDescription = ({route, navigation}: ViewApplicationProps) => {
                             <TouchableOpacity style={styles.applicationButton} onPress={() => viewApplication()}>
                                 <Text style={styles.applicationButtonText}>View Application Desc.</Text>
                             </TouchableOpacity>
-                            {application.isActive === "false" &&
+                            {(application.isActive === "false") &&
                                 <TouchableOpacity style={styles.inActiveApp}>
                                     <Text style={styles.inActiveAppText}>{application.applicationStatus}</Text>
                                 </TouchableOpacity>
