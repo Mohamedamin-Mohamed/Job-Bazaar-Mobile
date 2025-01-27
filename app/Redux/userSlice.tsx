@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {SetUserInfoPayload, User} from "../Types/types";
+import {SetUserInfoPayload, User} from "@/Types/types";
 
 const initialState: User = {
     email: '',
