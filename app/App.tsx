@@ -38,8 +38,6 @@ import LandingPanel from "@/app/Panels/LandingPanel";
 import CareerInterests from "@/app/CareerInterests/CareerInterests";
 import Experience from "@/app/Experience/Experience";
 import ViewSettings from "@/app/Settings/ViewSettings";
-import {useEffect} from "react";
-import * as Updates from "expo-updates"
 
 const StackNav = () => {
     const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -108,22 +106,6 @@ const DrawerNav = () => {
 }
 
 const App = () => {
-    const onFetchUpdateAsync = async ()=> {
-        try{
-            const update = await Updates.checkForUpdateAsync();
-            if(update.isAvailable){
-                await Updates.fetchUpdateAsync()
-                await Updates.reloadAsync()
-            }
-        }
-        catch (err){
-            alert(`Error fetching latest Expo update: ${err}`)
-        }
-    }
-
-    useEffect(() => {
-        onFetchUpdateAsync().catch(err => console.error(err))
-    }, []);
     return (
         <Provider store={store}>
             <PersistGate persistor={persistor} loading={null}>
